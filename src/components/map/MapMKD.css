@@ -1,0 +1,286 @@
+/* Основни стилови за региони */
+.region-group {
+  transition: all 0.3s ease;
+}
+
+.region-group:hover {
+  cursor: pointer;
+}
+
+/* SVG контејнер - респонзивен */
+.map-container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.map-container svg {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 80vh;
+}
+
+/* Општи стилови за path елементи */
+.region-group path {
+  stroke: #888888;
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+  transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
+}
+
+/* Стилови за секој регион поединечно - подобрени бои */
+.region-group.region-pelagonianRegion path {
+  fill: #e8f5e8 !important; /* ok */
+}
+
+.region-group.region-eastRegion path {
+  fill: #fff2cc !important; /* ok */
+}
+
+.region-group.region-southwestRegion path {
+  fill: #ffebee !important; /* ok */
+}
+
+.region-group.region-southeastRegion path {
+  fill: #e3f2fd !important; /* ok */
+}
+
+.region-group.region-vardarRegion path {
+  fill: #fdd2e0 !important; /* ok */
+}
+
+.region-group.region-skopjeRegion path {
+  fill: #fff9c4 !important; /* ok */
+}
+
+.region-group.region-northeastRegion path {
+  fill: #e0f2f1 !important; /* ok */
+}
+
+.region-group.region-polishRegion path {
+  fill: #f3e5f5 !important; /* ok */
+}
+
+/* Hover ефекти за региони - со карактеристични граници */
+
+.region-group.region-pelagonianRegion:hover path {
+  fill: #81c784 !important;
+  stroke: #2e7d32 !important;
+}
+
+.region-group.region-eastRegion:hover path {
+  fill: #ffcc80 !important;
+  stroke: #f57f17 !important;
+}
+
+.region-group.region-southwestRegion:hover path {
+  fill: #ef5350 !important;
+  stroke: #c62828 !important;
+}
+
+.region-group.region-southeastRegion:hover path {
+  fill: #64b5f6 !important;
+  stroke: #1565c0 !important;
+}
+
+.region-group.region-vardarRegion:hover path {
+  fill: #e81e62 !important;
+  stroke: #ad1457 !important;
+}
+
+.region-group.region-polishRegion:hover path {
+  fill: #ba68c8 !important;
+  stroke: #7b1fa2 !important;
+}
+
+.region-group.region-northeastRegion:hover path {
+  fill: #4db6ac !important;
+  stroke: #00695c !important;
+}
+
+.region-group.region-skopjeRegion:hover path {
+  fill: #ffd900 !important;
+  stroke: #ab9400 !important;
+}
+
+/* thickening the city lines when hover */
+.region-group:hover path {
+  stroke-width: 1.8px !important;
+}
+
+/* Едноставни ефекти за подобро визуелно разликување */
+.region-group {
+  transition: all 0.3s ease;
+}
+
+.region-group:hover {
+  cursor: pointer;
+  filter: brightness(1.05);
+}
+
+/* Tooltip стилови за прикажување на ID на општини */
+.municipality-tooltip {
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.tooltip-content {
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile devices (up to 768px) */
+@media screen and (max-width: 768px) {
+  .map-container {
+    padding: 0.5rem;
+  }
+  
+  .map-container svg {
+    max-height: 70vh;
+  }
+  
+  /* Поголеми stroke за полесно допирање */
+  .region-group path {
+    stroke-width: 1.2;
+  }
+  
+  .region-group:hover path,
+  .region-group:active path {
+    stroke-width: 2.5px !important;
+  }
+  
+  /* Touch-friendly tooltip */
+  .tooltip-content {
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    min-width: 80px;
+  }
+  
+  /* Touch states за мобилни уреди */
+  .region-group:active path {
+    filter: brightness(1.2);
+  }
+}
+
+/* Tablet devices (769px to 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .map-container {
+    padding: 1rem;
+  }
+  
+  .map-container svg {
+    max-height: 75vh;
+  }
+  
+  .region-group path {
+    stroke-width: 1.0;
+  }
+  
+  .region-group:hover path {
+    stroke-width: 2.0px !important;
+  }
+  
+  .tooltip-content {
+    font-size: 15px;
+    padding: 9px 13px;
+  }
+}
+
+/* Very small devices (up to 480px) */
+@media screen and (max-width: 480px) {
+  .map-container {
+    padding: 0.25rem;
+  }
+  
+  .map-container svg {
+    max-height: 60vh;
+  }
+  
+  /* Уште поголеми области за допирање */
+  .region-group path {
+    stroke-width: 1.5;
+  }
+  
+  .region-group:hover path,
+  .region-group:active path {
+    stroke-width: 3.0px !important;
+  }
+  
+  .tooltip-content {
+    font-size: 18px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    min-width: 100px;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .map-container {
+    padding: 0.25rem;
+  }
+  
+  .map-container svg {
+    max-height: 85vh;
+    max-width: 90vw;
+  }
+  
+  .tooltip-content {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}
+
+/* Touch device specific improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* За уреди без hover (мобилни) */
+  .region-group:active {
+    transform: scale(1.02);
+  }
+  
+  .region-group:active path {
+    filter: brightness(1.3) !important;
+  }
+  
+  /* Tooltip positioning за touch devices */
+  .municipality-tooltip {
+    transform: translateY(-50px);
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .region-group path {
+    stroke-width: 0.5;
+  }
+  
+  .region-group:hover path {
+    stroke-width: 1.2px !important;
+  }
+}
+
+/* Focus states за accessibility */
+.region-group:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.region-group:focus path {
+  stroke-width: 2px !important;
+  stroke: #007bff !important;
+}
