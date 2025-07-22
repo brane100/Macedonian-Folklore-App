@@ -54,17 +54,66 @@ const getBorderMunicipalityStyle = (municipalityId) => {
 };
 
 // Компонента за генерирање на path елементи со автоматски стилови
-const MunicipalityPath = ({ id, d, onMouseEnter, onMouseMove, onMouseLeave, ...props }) => (
-  <path
-    id={id}
-    style={getBorderMunicipalityStyle(id)}
-    d={d}
-    onMouseEnter={(e) => onMouseEnter && onMouseEnter(e, id)}
-    onMouseMove={onMouseMove}
-    onMouseLeave={onMouseLeave}
-    {...props}
-  />
-);
+const MunicipalityPath = ({ id, d, onMouseEnter, onMouseMove, onMouseLeave, ...props }) => {
+  const handleTouchStart = (e) => {
+    e.preventDefault();
+    if (onMouseEnter) {
+      const touch = e.touches[0];
+      const syntheticEvent = {
+        ...e,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        currentTarget: e.currentTarget
+      };
+      onMouseEnter(syntheticEvent, id);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    if (onMouseLeave) {
+      onMouseLeave(e);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (onMouseEnter) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const syntheticEvent = {
+          ...e,
+          clientX: rect.left + rect.width / 2,
+          clientY: rect.top + rect.height / 2,
+          currentTarget: e.currentTarget
+        };
+        onMouseEnter(syntheticEvent, id);
+      }
+    } else if (e.key === 'Escape') {
+      if (onMouseLeave) {
+        onMouseLeave(e);
+      }
+    }
+  };
+
+  return (
+    <path
+      id={id}
+      style={getBorderMunicipalityStyle(id)}
+      d={d}
+      onMouseEnter={(e) => onMouseEnter && onMouseEnter(e, id)}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onKeyDown={handleKeyDown}
+      tabIndex="0"
+      role="button"
+      aria-label={`Municipality ${id}`}
+      {...props}
+    />
+  );
+};
 
 // Компонента за групирање општини по региони
 const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, children, ...props }) => (
@@ -77,6 +126,28 @@ const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, chil
 
 const MapMKD = (props) => {
   const [tooltip, setTooltip] = React.useState({ show: false, id: '', x: 0, y: 0 });
+  const [screenSize, setScreenSize] = React.useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1000,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800
+  });
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleResize = () => {
+        setScreenSize({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+        // Hide tooltip on resize to prevent positioning issues
+        if (tooltip.show) {
+          setTooltip(prev => ({ ...prev, show: false }));
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [tooltip.show]);
 
   // Функција за добивање на името на општината
   // const getMunicipalityName = (municipalityId) => {
@@ -85,19 +156,41 @@ const MapMKD = (props) => {
   
   const handleMouseEnter = (e, municipalityId, regionId) => {
     //const municipalityName = getMunicipalityName(municipalityId);
+    const tooltipOffset = screenSize.width < 768 ? 40 : 30;
+    let x = e.clientX;
+    let y = e.clientY - tooltipOffset;
+    
+    // Adjust for screen edges
+    const tooltipWidth = 100; // Approximate tooltip width
+    if (x < tooltipWidth / 2) x = tooltipWidth / 2;
+    if (x > screenSize.width - tooltipWidth / 2) x = screenSize.width - tooltipWidth / 2;
+    if (y < 50) y = e.clientY + tooltipOffset;
+    if (y > screenSize.height - 50) y = screenSize.height - 50;
+    
     setTooltip({
       show: true,
       id: municipalityId,
-      x: e.clientX,
-      y: e.clientY - 30
+      x: x,
+      y: y
     });
   };
 
   const handleMouseMove = (e) => {
+    const tooltipOffset = screenSize.width < 768 ? 40 : 30;
+    let x = e.clientX;
+    let y = e.clientY - tooltipOffset;
+    
+    // Adjust for screen edges
+    const tooltipWidth = 100; // Approximate tooltip width
+    if (x < tooltipWidth / 2) x = tooltipWidth / 2;
+    if (x > screenSize.width - tooltipWidth / 2) x = screenSize.width - tooltipWidth / 2;
+    if (y < 50) y = e.clientY + tooltipOffset;
+    if (y > screenSize.height - 50) y = screenSize.height - 50;
+    
     setTooltip(prev => ({
       ...prev,
-      x: e.clientX,
-      y: e.clientY - 30
+      x: x,
+      y: y
     }));
   };
 
@@ -106,14 +199,18 @@ const MapMKD = (props) => {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="map-container" style={{ position: 'relative' }}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="1000"
-        height="793"
+        viewBox="0 0 1000 793"
         strokeLinejoin="round"
         strokeWidth="0.5"
         version="1.2"
+        style={{ 
+          width: '100%', 
+          height: 'auto',
+          display: 'block'
+        }}
       >
         <g className="layer">
           <g id="features">
