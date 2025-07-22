@@ -1,24 +1,26 @@
-
-import './App.css';
-import MapMKD from './components/map/MapMKD.jsx';
+import logo from './logo.svg';
+// import './App.css';
+import MapMKD from './components/map/MapMKD';
 
 function App() {
   return (
-    <>
+    <div className="App">
       <header className="App-header">
-        <h1>Macedonian Folklore App</h1>
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
       </header>
-      <main>
-        <p>Explore the rich folklore of Macedonia through this interactive map.</p>
-      </main>
-      <footer className="App-footer">
-        <p>&copy; 2023 Macedonian Folklore App</p>
-      </footer>
-      {/* Render the map component */}
-      <div className="map-container">
         <MapMKD />
-      </div>
-    </>
+    </div>
   );
 }
 
