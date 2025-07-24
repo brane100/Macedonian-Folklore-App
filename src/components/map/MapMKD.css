@@ -62,6 +62,7 @@
   stroke: #007bff;
 }
 
+
 /* Стилови за секој регион поединечно - подобрени бои */
 .region-group.region-pelagonianRegion path {
   fill: #e8f5e8 !important; /* ok */
@@ -93,6 +94,18 @@
 
 .region-group.region-polishRegion path {
   fill: #f3e5f5 !important; /* ok */
+}
+
+/* Стил за сите региони заедно */
+.region-group.region-pelagonianRegion path,
+.region-group.region-eastRegion path,
+.region-group.region-southwestRegion path,
+.region-group.region-southeastRegion path,
+.region-group.region-vardarRegion path,
+.region-group.region-skopjeRegion path,
+.region-group.region-northeastRegion path,
+.region-group.region-polishRegion path {
+  fill: #000000 !important; /* Uniform color */
 }
 
 /* Hover ефекти за региони - со карактеристични граници */
@@ -152,6 +165,17 @@
   filter: brightness(1.05);
 }
 
+.region-group.region-pelagonianRegion:hover path,
+.region-group.region-eastRegion:hover path,
+.region-group.region-southwestRegion:hover path,
+.region-group.region-southeastRegion:hover path,
+.region-group.region-vardarRegion:hover path,
+.region-group.region-skopjeRegion:hover path,
+.region-group.region-northeastRegion:hover path,
+.region-group.region-polishRegion:hover path {
+  fill: #ef5350 !important; /* Uniform color */
+  stroke: #c62828 !important;
+}
 /* Tooltip стилови за прикажување на ID на општини */
 .municipality-tooltip {
   pointer-events: none;
@@ -191,7 +215,7 @@
     stroke-width: 1.2;
   }
   
-  .region-group:hover path,
+  .region-group:hover:hover path,
   .region-group:active path {
     stroke-width: 2.5px !important;
   }
@@ -249,7 +273,7 @@
     stroke-width: 1.5;
   }
   
-  .region-group:hover path,
+  .region-group:hover:hover path,
   .region-group:active path {
     stroke-width: 3.0px !important;
   }
