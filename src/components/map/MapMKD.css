@@ -47,7 +47,7 @@
 
 /* Општи стилови за path елементи */
 .region-group path {
-  stroke: #666666;
+  stroke: #888888;
   stroke-width: 0.9;
   stroke-linejoin: round;
   transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
@@ -56,85 +56,85 @@
 
 /* Focus states за accessibility */
 .region-group path:focus {
-  outline: 2px solid #dc3545;
+  outline: 2px solid #007bff;
   outline-offset: 1px;
   stroke-width: 2px;
-  stroke: #dc3545;
+  stroke: #007bff;
 }
 
 /* Стилови за секој регион поединечно - подобрени бои */
 .region-group.region-pelagonianRegion path {
-  fill: #f8f9fa !important; /* Light gray */
+  fill: #e8f5e8 !important; /* ok */
 }
 
 .region-group.region-eastRegion path {
-  fill: #fff9e6 !important; /* Light yellow */
+  fill: #fff2cc !important; /* ok */
 }
 
 .region-group.region-southwestRegion path {
-  fill: #ffe6e6 !important; /* Light red */
+  fill: #ffebee !important; /* ok */
 }
 
 .region-group.region-southeastRegion path {
-  fill: #f0f0f0 !important; /* Light gray */
+  fill: #e3f2fd !important; /* ok */
 }
 
 .region-group.region-vardarRegion path {
-  fill: #fff3cd !important; /* Light yellow */
+  fill: #fdd2e0 !important; /* ok */
 }
 
 .region-group.region-skopjeRegion path {
-  fill: #ffeb3b !important; /* Yellow */
+  fill: #fff9c4 !important; /* ok */
 }
 
 .region-group.region-northeastRegion path {
-  fill: #ffffff !important; /* White */
+  fill: #e0f2f1 !important; /* ok */
 }
 
 .region-group.region-polishRegion path {
-  fill: #e9ecef !important; /* Light gray */
+  fill: #f3e5f5 !important; /* ok */
 }
 
 /* Hover ефекти за региони - со карактеристични граници */
 
 .region-group.region-pelagonianRegion:hover path {
-  fill: #dee2e6 !important;
-  stroke: #6c757d !important;
+  fill: #81c784 !important;
+  stroke: #2e7d32 !important;
 }
 
 .region-group.region-eastRegion:hover path {
-  fill: #ffd700 !important;
-  stroke: #ffcc02 !important;
+  fill: #ffcc80 !important;
+  stroke: #f57f17 !important;
 }
 
 .region-group.region-southwestRegion:hover path {
-  fill: #dc3545 !important;
-  stroke: #b02a37 !important;
+  fill: #ef5350 !important;
+  stroke: #c62828 !important;
 }
 
 .region-group.region-southeastRegion:hover path {
-  fill: #adb5bd !important;
-  stroke: #6c757d !important;
+  fill: #64b5f6 !important;
+  stroke: #1565c0 !important;
 }
 
 .region-group.region-vardarRegion:hover path {
-  fill: #ffc107 !important;
-  stroke: #d39e00 !important;
+  fill: #e81e62 !important;
+  stroke: #ad1457 !important;
 }
 
 .region-group.region-polishRegion:hover path {
-  fill: #ced4da !important;
-  stroke: #6c757d !important;
+  fill: #ba68c8 !important;
+  stroke: #7b1fa2 !important;
 }
 
 .region-group.region-northeastRegion:hover path {
-  fill: #f8f9fa !important;
-  stroke: #dee2e6 !important;
+  fill: #4db6ac !important;
+  stroke: #00695c !important;
 }
 
 .region-group.region-skopjeRegion:hover path {
-  fill: #ffc107 !important;
-  stroke: #d39e00 !important;
+  fill: #ffd900 !important;
+  stroke: #ab9400 !important;
 }
 
 /* thickening the city lines when hover */
