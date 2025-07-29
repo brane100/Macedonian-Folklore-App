@@ -1,15 +1,88 @@
-# Getting Started with Create React App
+# 🏛️ Macedonian Folklore App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack web application dedicated to preserving and sharing the rich folklore traditions of Macedonia.
 
-## Available Scripts
+## 📁 Project Structure
 
-In the project directory, you can run:
+```
+macedonian-folklore-app/
+├── frontend/          # React.js frontend application
+├── backend/           # Node.js/Express backend API
+└── README.md         # This file
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation & Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd macedonian-folklore-app
+   ```
+
+2. **Install dependencies for both frontend and backend**
+   ```bash
+   npm run install:all
+   ```
+
+3. **Start development servers**
+   ```bash
+   # Start both frontend and backend simultaneously
+   npm run dev
+   
+   # Or start them separately:
+   npm run start:frontend  # Frontend on http://localhost:4444
+   npm run start:backend   # Backend on http://localhost:4445
+   ```
+
+## 🛠️ Available Scripts
+
+### Root Level Commands
+- `npm run install:all` - Install dependencies for both frontend and backend
+- `npm run dev` - Start both frontend and backend in development mode
+- `npm run build:all` - Build both frontend and backend for production
+- `npm run test:all` - Run tests for both frontend and backend
+
+### Frontend Commands
+- `npm run start:frontend` - Start the React development server
+- `npm run build:frontend` - Build the React app for production
+- `npm run test:frontend` - Run frontend tests
+
+### Backend Commands
+- `npm run start:backend` - Start the Express server
+- `npm run build:backend` - Build the backend for production
+- `npm run test:backend` - Run backend tests
+
+## 🎨 Features
+
+- **Interactive Map**: Explore folklore by Macedonian regions
+- **Multilingual Support**: Macedonian and English languages
+- **User Authentication**: Login system for content management
+- **Responsive Design**: Works on all devices
+- **Traditional Styling**: Design inspired by Macedonian cultural elements
+
+## 🌍 Tech Stack
+
+### Frontend
+- React.js
+- CSS3 with Macedonian-inspired design
+- Interactive SVG maps
+
+### Backend
+- Node.js
+- Express.js
+
+## 📱 Usage
 
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Open [http://localhost:4444](http://localhost:4444) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
