@@ -1,6 +1,6 @@
 const express = require('express');
-const posts = require('./routes/posts'); // Importing the posts route
-const cors = require('cors');``
+const posts = require('./routes/prispevki'); // Importing the posts route
+const cors = require('cors');
 require('dotenv').config();
 const DB = require('./DB/dbConn'); // Importing the database connection
 
