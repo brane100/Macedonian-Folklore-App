@@ -1,0 +1,178 @@
+.wizard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, 
+    var(--light-yellow) 0%, 
+    var(--light-gray) 50%, 
+    var(--light-red) 100%);
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Macedonian folklore background pattern */
+.wizard-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(139, 0, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure content is above background */
+.wizard-container > * {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Progress indicator styles */
+.wizard-container::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-yellow), var(--primary-red));
+  z-index: 1000;
+  transition: width 0.3s ease;
+  box-shadow: 0 2px 10px rgba(255, 193, 7, 0.5);
+}
+
+/* Step 1 - 25% width */
+.wizard-container[data-step="1"]::after { width: 25%; }
+/* Step 2 - 50% width */
+.wizard-container[data-step="2"]::after { width: 50%; }
+/* Step 3 - 75% width */
+.wizard-container[data-step="3"]::after { width: 75%; }
+/* Step 4 - 100% width */
+.wizard-container[data-step="4"]::after { width: 100%; }
+
+/* Floating folklore elements */
+.wizard-container::before {
+  content: '🎭 🏛️ 🎪 🗺️ 📜 💃 🎵 📚';
+  position: absolute;
+  top: 10%;
+  left: -100px;
+  font-size: 2rem;
+  opacity: 0.1;
+  animation: floatAcross 20s linear infinite;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+@keyframes floatAcross {
+  0% { transform: translateX(-100px); }
+  100% { transform: translateX(calc(100vw + 100px)); }
+}
+
+/* Add decorative corners */
+.wizard-container {
+  position: relative;
+}
+
+.wizard-container::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 60px;
+  height: 60px;
+  border-top: 4px solid var(--primary-yellow);
+  border-left: 4px solid var(--primary-yellow);
+  border-radius: 10px 0 0 0;
+  z-index: 0;
+}
+
+.wizard-container::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-bottom: 4px solid var(--primary-red);
+  border-right: 4px solid var(--primary-red);
+  border-radius: 0 0 10px 0;
+  z-index: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .wizard-container {
+    padding: 1rem 0.5rem;
+    min-height: 100vh;
+  }
+  
+  .wizard-container::before,
+  .wizard-container::after {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+  }
+  
+  .wizard-container::before {
+    top: 10px;
+    left: 10px;
+  }
+  
+  .wizard-container::after {
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wizard-container {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .wizard-container::before,
+  .wizard-container::after {
+    display: none;
+  }
+}
+
+/* Smooth transitions between steps */
+.wizard-container > * {
+  animation: stepFadeIn 0.5s ease-in-out;
+}
+
+@keyframes stepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add a subtle shadow to the main content */
+.wizard-container > div {
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
+}
+
+/* CSS Variables (ensure these are defined) */
+:root {
+  --primary-yellow: #ffc107;
+  --primary-red: #dc3545;
+  --royal-red: #8b0000;
+  --white: #ffffff;
+  --light-gray: #f8f9fa;
+  --medium-gray: #dee2e6;
+  --dark-gray: #6c757d;
+  --light-yellow: #fff8dc;
+  --light-red: #ffe6e6;
+}
