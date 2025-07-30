@@ -1,3 +1,82 @@
+/* Global App Styles */
+.App {
+  text-align: left;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Global CSS Variables */
+:root {
+  --primary-yellow: #ffc107;
+  --primary-red: #dc3545;
+  --royal-red: #8b0000;
+  --white: #ffffff;
+  --light-gray: #f8f9fa;
+  --medium-gray: #dee2e6;
+  --dark-gray: #6c757d;
+  --light-yellow: #fff8dc;
+  --light-red: #ffe6e6;
+}
+
+/* Global Resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
+  line-height: 1.6;
+}
+
+/* Global Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-yellow), var(--primary-red));
+  color: var(--white);
+}
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--royal-red);
+  border: 2px solid var(--primary-yellow);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--royal-red);
+  border: 2px solid var(--royal-red);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Global Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
 .App {
   text-align: center;
 }
