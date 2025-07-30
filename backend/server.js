@@ -1,14 +1,16 @@
 const express = require('express');
-const posts = express.Router();
-const cors = require('cors');
+const posts = require('./routes/posts'); // Importing the posts route
+const cors = require('cors');``
 require('dotenv').config();
+const DB = require('./DB/dbConn'); // Importing the database connection
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4445;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/posts', posts); // Use the posts route
 
 // Routes
 app.get('/', (req, res) => {
@@ -17,6 +19,16 @@ app.get('/', (req, res) => {
     version: '1.0.0'
   });
 });
+
+// app.get('/test-env', (req, res) => {
+//     res.json({
+//         port: process.env.PORT,
+//         dbHost: process.env.DB_HOST,
+//         frontendUrl: process.env.FRONTEND_URL,
+//         nodeEnv: process.env.NODE_ENV,
+//         message: 'Environment variables loaded successfully!'
+//     });
+// });
 
 // Folklore routes (example)
 app.get('/api/folklore', (req, res) => {
