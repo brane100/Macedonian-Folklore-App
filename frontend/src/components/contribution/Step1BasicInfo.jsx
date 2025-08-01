@@ -1,5 +1,5 @@
 import React from 'react';
-import './Step1BasicInfo.css';
+// import './Step1BasicInfo.css';
 
 export default function Step1BasicInfo({ formData, setFormData, nextStep }) {
   return (

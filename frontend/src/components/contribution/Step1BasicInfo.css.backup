@@ -1,5 +1,22 @@
-/* Step 1 Basic Info Container */
-.step1-container {
+/* Step 1 Basic Info - Scoped to Wizard Contain  content: '📝';
+  font-size: 2.5rem;
+  position: absolute;
+  left: -3rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.wizard-container h2::after {
+  content: '🏛️';
+  font-size: 2.5rem;
+  position: absolute;
+  right: -3rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Label styling */
+.wizard-container label {ainer .step1-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
@@ -11,7 +28,7 @@
 }
 
 /* Macedonian folklore top border */
-.step1-container::before {
+.wizard-container .step1-container::before {
   content: '';
   position: absolute;
   top: 0;
@@ -32,7 +49,7 @@
 }
 
 /* Header styling */
-h2 {
+.wizard-container h2 {
   color: var(--royal-red);
   font-family: Georgia, serif;
   font-size: 2.2rem;
@@ -44,7 +61,7 @@ h2 {
   position: relative;
 }
 
-h2::before {
+.wizard-container h2::before {
   content: '📝';
   font-size: 2.5rem;
   position: absolute;
