@@ -1,0 +1,13 @@
+GET http://localhost:3001/users
+
+###
+
+POST http://localhost:3001/users
+Content-Type: application/json
+{
+    "ime": "Stanko",
+    "priimek": "Stankovski",
+    "email": "stanko@example.com",
+    "geslo": "password123",
+    "vloga": "navaden"
+}

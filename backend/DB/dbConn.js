@@ -63,6 +63,15 @@ dataPool.createPrispevek = (opis, je_anonimen, referenca_opis, referenca_url) =>
   })
 }
 
+dataPool.createUser = (ime, priimek, email, geslo, vloga) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`INSERT INTO ${process.env.DB_DATABASE}.Uporabnik (ime, priimek, email, geslo, vloga) VALUES (?,?,?,?,?)`, [ime, priimek, email, geslo, vloga], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
 dataPool.AuthUser = (email) => {
   return new Promise((resolve, reject) => {
     conn.query(`SELECT * FROM Uporabnik WHERE email = ?`, email, (err, res) => {

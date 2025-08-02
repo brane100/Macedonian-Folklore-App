@@ -7,6 +7,8 @@ const DB = require('./DB/dbConn'); // Importing the database connection
 const app = express();
 const PORT = process.env.PORT || 4445;
 
+const users = [{name: 'stanko'}]
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -69,6 +71,38 @@ app.post('/api/auth/login', (req, res) => {
     });
   }
 });
+
+app.get('/users', (req, res) => {
+  res.json(users);
+});
+
+app.post('/users', async (req, res) => {
+    // const user = {name: req.body.name, password: req.body.password};
+    // users.push(user);
+    // res.status(201).send(); // 201 Created
+    try {
+        // const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(req.body.password, /*salt*/ 10); 
+        // 10 is the salt rounds, a good default value
+
+        // console.log(salt)
+        // console.log(hashedPassword)
+
+        const user = {
+            ime: req.body.ime,
+            priimek: req.body.priimek,
+            email: req.body.email,
+            geslo: hashedPassword,
+            vloga: 'navaden'
+        }
+
+        // users.push(user)
+        await DB.createUser(user.ime, user.priimek, user.email, user.geslo, user.vloga);
+        res.status(201).send()
+    } catch {
+        res.status(500).send()
+    }
+})
 
 app.listen(PORT, () => {
   console.log(`🏛️ Macedonian Folklore API server running on port ${PORT}`);
