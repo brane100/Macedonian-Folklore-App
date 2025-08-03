@@ -1,6 +1,6 @@
 const express = require('express')
 const prispevki = express.Router()
-const DB = require('../DB/dbConn')
+const DB = require('../db/dbConn')
 
 //Gets all the news in the DB
 prispevki.get('/', async (req, res, next) => {
