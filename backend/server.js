@@ -1,9 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const posts = require('./routes/prispevki'); // Importing the posts route
 const cors = require('cors');
-require('dotenv').config();
-const DB = require('./DB/dbConn.js'); // Importing the database connection
 
+const DB = require('./DB/dbConn.js'); // Importing the database connection
+// console.log('Ovdje load');
+
+// console.log('DB_USER:', process.env.DB_USER);
+// console.log('Ovdje load');
 const app = express();
 const PORT = process.env.PORT || 4445;
 
