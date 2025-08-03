@@ -2,7 +2,7 @@ const express = require('express');
 const posts = require('./routes/prispevki'); // Importing the posts route
 const cors = require('cors');
 require('dotenv').config();
-const DB = require('./db/dbConn.js'); // Importing the database connection
+const DB = require('./DB/dbConn.js'); // Importing the database connection
 
 const app = express();
 const PORT = process.env.PORT || 4445;
