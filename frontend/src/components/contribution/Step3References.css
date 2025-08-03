@@ -53,14 +53,14 @@ h2::before {
   transform: translateY(-50%);
 }
 
-h2::after {
+/* h2::after {
   content: '📖';
   font-size: 2.5rem;
   position: absolute;
   right: -60px;
   top: 50%;
   transform: translateY(-50%);
-}
+} */
 
 /* Label styling */
 label {
