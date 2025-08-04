@@ -5,6 +5,7 @@ import './AppRouter.css';
 // Import existing components
 import MapMKD from './map/MapMKD';
 import Login from './Login/Login';
+import Register from './Register/Register';
 import CreateContributionWizard from './contribution/CreateContributionWizard';
 
 // 404 Component
@@ -416,6 +417,7 @@ export default function AppRouter() {
             <Route path="/" element={<Home />} />
             <Route path="/mapa" element={<MapMKD />} />
             <Route path="/prijava" element={<Login />} />
+            <Route path="/registracija" element={<Register />} />
             <Route path="/dodaj-prispevek" element={<CreateContributionWizard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

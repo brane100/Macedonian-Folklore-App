@@ -2,7 +2,13 @@ require('dotenv').config();
 
 const express = require('express');
 const posts = require('./routes/prispevki'); // Importing the posts route
+const uporabnik = require('./routes/uporabnik'); // Importing the uporabnik route
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const flash = require('express-flash');
+const session = require('express-session');
+const methodOverride = require('method-override');
+
 
 const DB = require('./DB/dbConn.js'); // Importing the database connection
 // console.log('Ovdje load');
@@ -18,6 +24,9 @@ const users = [{name: 'stanko'}]
 app.use(cors());
 app.use(express.json());
 app.use('/posts', posts); // Use the posts route
+app.use('/uporabnik', uporabnik); // Use the uporabnik route
+app.use(express.urlencoded({ extended: false }));
+
 
 // Routes
 app.get('/', (req, res) => {
