@@ -30,10 +30,6 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/posts', posts); // Use the posts route
-app.use('/uporabnik', uporabnik); // Use the uporabnik route
-app.use('/moderacija', moderacija); // Use the moderation route
-
 app.use(express.urlencoded({ extended: false }));
 
 app.set('trust proxy', 1) // trust first proxy
@@ -51,20 +47,10 @@ app.use(session({
   }
 }))
 
-// Authentication middleware functions
-function checkAuthenticated(req, res, next) {
-    if (req.session && req.session.logged_in) {
-        return next();
-    }
-    return res.status(401).json({ message: 'Authentication required', redirectTo: '/login' });
-}
-
-function checkNotAuthenticated(req, res, next) {
-    if (req.session && req.session.logged_in) {
-        return res.status(403).json({ message: 'Already authenticated', redirectTo: '/' });
-    }
-    next();
-}
+// Mount routes AFTER session middleware
+app.use('/posts', posts); // Use the posts route
+app.use('/uporabnik', uporabnik); // Use the uporabnik route
+app.use('/moderacija', moderacija); // Use the moderation route
 
 // Routes
 app.get('/', (req, res) => {

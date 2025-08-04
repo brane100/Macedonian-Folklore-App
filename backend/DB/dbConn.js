@@ -116,6 +116,52 @@ dataPool.updateUserRole = (userId, newRole) => {
   })
 }
 
+// Delete user (admin function)
+dataPool.deleteUser = (userId) => {
+  return new Promise((resolve, reject) => {
+    // First check if user has any contributions that reference them
+    conn.query(`SELECT COUNT(*) as count FROM Prispevek WHERE uporabnik_id = ?`, [userId], (err, res) => {
+      if (err) { 
+        console.error('Error checking user contributions:', err);
+        return reject(err);
+      }
+      
+      const contributionCount = res[0].count;
+      
+      if (contributionCount > 0) {
+        // If user has contributions, we need to handle them first
+        // Option 1: Set contributions to anonymous (set uporabnik_id to NULL)
+        conn.query(`UPDATE Prispevek SET uporabnik_id = NULL WHERE uporabnik_id = ?`, [userId], (updateErr) => {
+          if (updateErr) {
+            console.error('Error updating user contributions:', updateErr);
+            return reject(updateErr);
+          }
+          
+          // Now delete the user
+          conn.query(`DELETE FROM Uporabnik WHERE id = ?`, [userId], (deleteErr, deleteRes) => {
+            if (deleteErr) { 
+              console.error('Error deleting user:', deleteErr);
+              return reject(deleteErr);
+            }
+            console.log(`User ${userId} deleted successfully, ${contributionCount} contributions made anonymous`);
+            return resolve(deleteRes);
+          });
+        });
+      } else {
+        // No contributions, safe to delete user directly
+        conn.query(`DELETE FROM Uporabnik WHERE id = ?`, [userId], (deleteErr, deleteRes) => {
+          if (deleteErr) { 
+            console.error('Error deleting user:', deleteErr);
+            return reject(deleteErr);
+          }
+          console.log(`User ${userId} deleted successfully`);
+          return resolve(deleteRes);
+        });
+      }
+    });
+  });
+}
+
 // Get pending contributions (for moderation)
 dataPool.getPendingContributions = () => {
   return new Promise((resolve, reject) => {

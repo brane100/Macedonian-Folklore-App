@@ -140,6 +140,61 @@ moderacija.put('/users/:id/role', requireSuperAdmin, async (req, res) => {
     }
 });
 
+// Delete user (SuperAdmin only)
+moderacija.delete('/users/:id', requireSuperAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        console.log(`Attempting to delete user with ID: ${id}`);
+        
+        // Check if user exists first
+        const user = await DB.getUserById(id);
+        if (!user) {
+            console.log(`User with ID ${id} not found`);
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        
+        // Prevent deletion of the current superadmin (optional safety check)
+        if (req.session.user_id == id) {
+            console.log(`User ${id} tried to delete their own account`);
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot delete your own account'
+            });
+        }
+        
+        console.log(`Deleting user: ${user.ime} ${user.priimek} (${user.email})`);
+        
+        // Use the existing DB.deleteUser method that already handles contributions
+        await DB.deleteUser(id);
+        
+        console.log(`User ${id} deleted successfully`);
+        res.json({
+            success: true,
+            message: 'User deleted successfully'
+        });
+        
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        
+        // Provide more specific error messages
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot delete user: User has associated data that must be removed first'
+            });
+        }
+        
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting user: ' + (error.message || 'Unknown error')
+        });
+    }
+});
+
 // Get moderation statistics
 moderacija.get('/stats', requireModerator, async (req, res) => {
     try {

@@ -111,6 +111,36 @@ const AdminPanel = () => {
         }
     };
 
+    // Delete user (SuperAdmin only)
+    const deleteUser = async (userId, userName) => {
+        if (!isSuperAdmin) return;
+        
+        const confirmDelete = window.confirm(
+            `Дали сте сигурни дека сакате да го избришете корисникот "${userName}"?\n\nОваа акција не може да се отповика!`
+        );
+        
+        if (!confirmDelete) return;
+        
+        try {
+            const response = await fetch(`http://localhost:3001/moderacija/users/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                alert('Корисникот е успешно избришан!');
+                fetchUsers(); // Refresh list
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message || 'Грешка при бришење на корисникот');
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('Грешка при бришење на корисникот');
+        }
+    };
+
     useEffect(() => {
         if (activeTab === 'moderation') {
             fetchPendingContributions();
@@ -248,8 +278,21 @@ const AdminPanel = () => {
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <button className="role-update-btn">
-                                                        💾 Зачувај
+                                                    <button 
+                                                        className="delete-user-btn"
+                                                        onClick={() => deleteUser(user.id, `${user.ime} ${user.priimek}`)}
+                                                        style={{
+                                                            background: '#dc3545',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            padding: '0.5rem 1rem',
+                                                            borderRadius: '6px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '0.9rem',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    >
+                                                        �️ Избриши
                                                     </button>
                                                 </td>
                                             </tr>

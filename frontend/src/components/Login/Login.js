@@ -48,16 +48,45 @@ export default function Login(props) {
 
             if (response.ok) {
                 const data = await response.json();
-                login(data.user); // Update auth state
-                navigate('/'); // Redirect to home page on successful login
+                
+                // Check if login was actually successful
+                if (data.success !== false && data.user) {
+                    login(data.user); // Update auth state
+                    navigate('/'); // Redirect to home page on successful login
+                } else {
+                    // Handle cases where response is ok but login failed
+                    alert(data.message || 'Невалидни податоци за најавување');
+                }
             } else {
-                const errorData = await response.json();
-                console.error('Login failed:', errorData.message);
-                alert(errorData.message || 'Грешка при најавување');
+                // Handle HTTP error responses
+                try {
+                    const errorData = await response.json();
+                    console.error('Login failed:', errorData.message);
+                    
+                    // Provide specific error messages based on the response
+                    if (response.status === 401) {
+                        alert('Невалидна е-пошта или лозинка. Проверете ги вашите податоци.');
+                    } else if (response.status === 404) {
+                        const shouldRegister = window.confirm(
+                            'Корисникот не е пронајден. Дали сакате да се регистрирате сега?'
+                        );
+                        if (shouldRegister) {
+                            navigate('/registracija');
+                            return;
+                        }
+                    } else if (response.status === 400) {
+                        alert('Потребни се е-пошта и лозинка.');
+                    } else {
+                        alert(errorData.message || 'Грешка при најавување');
+                    }
+                } catch (parseError) {
+                    // If response doesn't contain JSON
+                    alert('Грешка при најавување. Обидете се повторно.');
+                }
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Грешка при најавување');
+            alert('Мрежна грешка. Проверете ја вашата интернет врска и обидете се повторно.');
         } finally {
             setIsLoggingIn(false);
         }
