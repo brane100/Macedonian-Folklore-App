@@ -78,6 +78,7 @@ uporabnik.post('/login', checkNotAuthenticated, async (req, res) => {
             req.session.logged_in = true;
             //////////////////////////////////////////////////////////
             req.session.email = email;
+            req.session.user_role = queryResult.vloga; // Store user role in session
             //////////////////////////////////////////////////////////
             req.session.user_email = queryResult[0].user_email;
             //////////////////////////////////////////////////////////
@@ -87,7 +88,8 @@ uporabnik.post('/login', checkNotAuthenticated, async (req, res) => {
                     id: queryResult.id,
                     ime: queryResult.ime,
                     priimek: queryResult.priimek,
-                    vloga: queryResult.vloga
+                    vloga: queryResult.vloga,
+                    email: email
                 }
             });
         } else {

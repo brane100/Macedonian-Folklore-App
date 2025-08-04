@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const posts = require('./routes/prispevki'); // Importing the posts route
 const uporabnik = require('./routes/uporabnik'); // Importing the uporabnik route
+const moderacija = require('./routes/moderacija'); // Importing the moderation route
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const flash = require('express-flash');
@@ -31,6 +32,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/posts', posts); // Use the posts route
 app.use('/uporabnik', uporabnik); // Use the uporabnik route
+app.use('/moderacija', moderacija); // Use the moderation route
 
 app.use(express.urlencoded({ extended: false }));
 

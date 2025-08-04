@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { buildApiUrl, API_CONFIG } from '../config/env';
 
 const AuthContext = createContext();
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [initialized, setInitialized] = useState(false);
 
-    const checkAuthStatus = async () => {
+    const checkAuthStatus = useCallback(async () => {
         if (initialized) return; // Prevent multiple calls
         
         try {
@@ -32,7 +32,15 @@ export const AuthProvider = ({ children }) => {
             if (response.ok) {
                 const data = await response.json();
                 setIsAuthenticated(data.isAuthenticated);
-                setUser(data.user);
+                if (data.user) {
+                    // Ensure we have the user role information
+                    setUser({
+                        ...data.user,
+                        vloga: data.user.vloga || 'navaden' // Default role
+                    });
+                } else {
+                    setUser(null);
+                }
             } else {
                 // If response is not ok, user is not authenticated
                 setIsAuthenticated(false);
@@ -46,11 +54,11 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
             setInitialized(true);
         }
-    };
+    }, [initialized]);
 
     useEffect(() => {
         checkAuthStatus();
-    }, []);
+    }, [checkAuthStatus]);
 
     const login = (userData) => {
         setIsAuthenticated(true);

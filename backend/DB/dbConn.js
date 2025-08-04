@@ -96,4 +96,45 @@ dataPool.allUsers = () => {
   })
 }
 
+// Get user by ID with role
+dataPool.getUserById = (id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`SELECT id, ime, priimek, email, vloga FROM Uporabnik WHERE id = ?`, id, (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res[0])
+    })
+  })
+}
+
+// Update user role (admin function)
+dataPool.updateUserRole = (userId, newRole) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`UPDATE Uporabnik SET vloga = ? WHERE id = ?`, [newRole, userId], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+// Get pending contributions (for moderation)
+dataPool.getPendingContributions = () => {
+  return new Promise((resolve, reject) => {
+    conn.query(`SELECT * FROM Prispevek WHERE status = 'pending' OR status IS NULL`, (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+// Approve/reject contribution
+dataPool.updateContributionStatus = (contributionId, status, moderatorNotes = null) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`UPDATE Prispevek SET status = ?, moderator_notes = ?, moderated_at = NOW() WHERE id = ?`, 
+      [status, moderatorNotes, contributionId], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
 module.exports = dataPool;

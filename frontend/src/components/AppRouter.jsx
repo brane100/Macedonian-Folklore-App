@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import './AppRouter.css';
 
@@ -7,8 +7,10 @@ import MapMKD from './map/MapMKD';
 import Login from './Login/Login';
 import Register from './Register/Register';
 import CreateContributionWizard from './contribution/CreateContributionWizard';
+import AdminPanel from './admin/AdminPanel';
 import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { useRole, ModeratorGuard } from './RoleBasedAccess';
 
 // 404 Component
 function NotFound() {
@@ -249,6 +251,7 @@ function Home() {
 function NavigationBar() {
   const location = useLocation();
   const { isAuthenticated, user, logout, loading } = useAuth();
+  const { isModerator } = useRole();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
@@ -281,10 +284,15 @@ function NavigationBar() {
       { path: '/dodaj-prispevek', label: 'Додај прispevok' }
     ];
 
+    // Add admin link for moderators and superadmins
+    if (isAuthenticated && isModerator) {
+      authenticatedLinks.push({ path: '/admin', label: '🛡️ Админ' });
+    }
+
     return isAuthenticated 
       ? [...baseNavigationLinks.slice(0, 3), ...authenticatedLinks, ...baseNavigationLinks.slice(3)]
       : baseNavigationLinks;
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isModerator]);
 
   // Show loading state for critical auth-dependent elements
   if (loading) {
@@ -543,6 +551,32 @@ export default function AppRouter() {
                 } 
               />
               
+              {/* Admin route - requires moderator role */}
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute>
+                    <ModeratorGuard 
+                      fallback={
+                        <div style={{ 
+                          textAlign: 'center', 
+                          padding: '2rem',
+                          background: '#fff3cd',
+                          border: '1px solid #ffeaa7',
+                          borderRadius: '8px',
+                          margin: '2rem'
+                        }}>
+                          <h3>🚫 Недостатни дозволи</h3>
+                          <p>Потребна е улога Komisija или Superadmin за пристап до админ панелот.</p>
+                        </div>
+                      }
+                    >
+                      <AdminPanel />
+                    </ModeratorGuard>
+                  </ProtectedRoute>
+                } 
+              />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
@@ -575,10 +609,10 @@ export default function AppRouter() {
               <div className="footer-section">
                 <h4>Следи не</h4>
                 <div className="social-links">
-                  <a href="#" aria-label="Facebook">📘</a>
-                  <a href="#" aria-label="Instagram">📷</a>
-                  <a href="#" aria-label="YouTube">📹</a>
-                  <a href="#" aria-label="TikTok">🎵</a>
+                  <a href="https://facebook.com" aria-label="Facebook" target="_blank" rel="noopener noreferrer">📘</a>
+                  <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener noreferrer">📷</a>
+                  <a href="https://youtube.com" aria-label="YouTube" target="_blank" rel="noopener noreferrer">📹</a>
+                  <a href="https://tiktok.com" aria-label="TikTok" target="_blank" rel="noopener noreferrer">🎵</a>
                 </div>
               </div>
             </div>

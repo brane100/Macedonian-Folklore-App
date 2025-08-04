@@ -176,6 +176,22 @@ export default function Register() {
                         )}
                     </div>
 
+                    {/* Role selection (for testing purposes) */}
+                    <div className="input-group">
+                        <select
+                            className="register-input"
+                            value={vloga}
+                            onChange={e => setVloga(e.target.value)}
+                            style={{
+                                borderColor: '#ffd700'
+                            }}
+                        >
+                            <option value="navaden">Navaden uporabnik</option>
+                            <option value="komisija">Komisija (Moderator)</option>
+                            <option value="superadmin">Superadmin</option>
+                        </select>
+                    </div>
+
                     <button
                         className="register-button"
                         onClick={() => {
