@@ -78,7 +78,7 @@ dataPool.createUser = (ime, priimek, email, geslo, vloga) => {
   })
 }
 
-dataPool.AuthUser = (email) => {
+dataPool.authUser = (email) => {
   return new Promise((resolve, reject) => {
     conn.query(`SELECT * FROM Uporabnik WHERE email = ?`, email, (err, res) => {
       if (err) { return reject(err) }

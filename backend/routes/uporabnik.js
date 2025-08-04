@@ -33,6 +33,33 @@ uporabnik.post('/register', async (req, res) => {
     res.end();
 })
 
+// Login endpoint
+uporabnik.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required.' });
+    }
+
+    try {
+        const user = await DB.authUser(email);
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password.' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.geslo);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid email or password.' });
+        }
+
+        // Successful login
+        res.json({ message: 'Login successful', user: { id: user.id, ime: user.ime, priimek: user.priimek, vloga: user.vloga } });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'An error occurred during login.' });
+    }
+});
+
 uporabnik.get('/', async (req, res) => {
     try {
         let queryResult = await DB.allUsers();

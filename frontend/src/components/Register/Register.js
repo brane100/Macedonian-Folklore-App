@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import './Register.css';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function Register(props) {
+export default function Register() {
+    
     const [ime, setIme] = useState('');
     const [priimek, setPriimek] = useState('');
     const [email, setEmail] = useState('');
@@ -40,6 +41,8 @@ export default function Register(props) {
             setPasswordError('');
         }
     };
+
+    const validation = emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()
 
     const createUser = async () => {
         try {
@@ -176,36 +179,21 @@ export default function Register(props) {
                     <button
                         className="register-button"
                         onClick={() => {
-                            // Enhanced validation
-                            if (!ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()) {
-                                alert('Сите полиња се задолжителни.');
-                                return;
-                            }
-                            if (!validateEmail(email)) {
-                                alert('Невалиден формат на е-пошта.');
-                                return;
-                            }
-                            if (geslo.length < 8) {
-                                alert('Лозинката мора да содржи најмалку 8 карактери.');
-                                return;
-                            }
                             // Only proceed if no validation errors
-                            if (!emailError && !passwordError) {
+                            if (!validation) {
                                 createUser();
                             }
                         }}
-                        disabled={emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()}
+                        disabled={ validation }
                         style={{
-                            opacity: (emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()) ? 0.6 : 1,
-                            cursor: (emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()) ? 'not-allowed' : 'pointer'
+                            opacity: validation ? 0.6 : 1,
+                            cursor: validation ? 'not-allowed' : 'pointer'
                         }}
                     >
                         Регистрирај се
                     </button>
                 </div>
-                <Link to="/prijava">
-                    Имаш сметка? Најави се
-                </Link>
+                <Link to="/prijava"> Имаш сметка? Најави се </Link>
             </div>
         </div>
     );
