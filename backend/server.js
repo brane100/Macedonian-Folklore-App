@@ -20,13 +20,49 @@ const PORT = process.env.PORT || 4445;
 
 const users = [{name: 'stanko'}]
 
-// Middleware
-app.use(cors());
+// Middleware - CORS configuration for authentication
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'], // Frontend URLs
+  methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
+  credentials: true, // Allow cookies/sessions
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 app.use(express.json());
 app.use('/posts', posts); // Use the posts route
 app.use('/uporabnik', uporabnik); // Use the uporabnik route
+
 app.use(express.urlencoded({ extended: false }));
 
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: 'eeeee tooo',
+  resave: true,
+  saveUninitialized: true,
+  cookie: { 
+    secure: false, // false for development (http), true for production (https)
+    httpOnly: true, // Prevent XSS attacks
+    // make it last for 30 minutes
+    maxAge: 30 * 60 * 1000, // 30 minutes
+    // maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax' // Allow cross-site requests for authentication
+  }
+}))
+
+// Authentication middleware functions
+function checkAuthenticated(req, res, next) {
+    if (req.session && req.session.logged_in) {
+        return next();
+    }
+    return res.status(401).json({ message: 'Authentication required', redirectTo: '/login' });
+}
+
+function checkNotAuthenticated(req, res, next) {
+    if (req.session && req.session.logged_in) {
+        return res.status(403).json({ message: 'Already authenticated', redirectTo: '/' });
+    }
+    next();
+}
 
 // Routes
 app.get('/', (req, res) => {

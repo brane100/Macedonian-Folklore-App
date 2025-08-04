@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import './AppRouter.css';
 
@@ -7,6 +7,8 @@ import MapMKD from './map/MapMKD';
 import Login from './Login/Login';
 import Register from './Register/Register';
 import CreateContributionWizard from './contribution/CreateContributionWizard';
+import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
 
 // 404 Component
 function NotFound() {
@@ -246,6 +248,7 @@ function Home() {
 // Navigation Component with Responsive Design
 function NavigationBar() {
   const location = useLocation();
+  const { isAuthenticated, user, logout, loading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
@@ -265,13 +268,42 @@ function NavigationBar() {
     setIsMobileMenuOpen(false);
   };
 
-  const navigationLinks = [
-    { path: '/', label: 'Почетна' },
-    { path: '/plesi', label: 'Плеси' },
-    { path: '/regioni', label: 'Региони' },
-    { path: '/dodaj-prispevek', label: 'Зачлени се' },
-    { path: '/kontakt', label: 'Контакт' }
-  ];
+  // Memoize navigation links to prevent unnecessary re-renders
+  const navigationLinks = useMemo(() => {
+    const baseNavigationLinks = [
+      { path: '/', label: 'Почетна' },
+      { path: '/plesi', label: 'Плеси' },
+      { path: '/regioni', label: 'Региони' },
+      { path: '/kontakt', label: 'Контакт' }
+    ];
+
+    const authenticatedLinks = [
+      { path: '/dodaj-prispevek', label: 'Додај прispevok' }
+    ];
+
+    return isAuthenticated 
+      ? [...baseNavigationLinks.slice(0, 3), ...authenticatedLinks, ...baseNavigationLinks.slice(3)]
+      : baseNavigationLinks;
+  }, [isAuthenticated]);
+
+  // Show loading state for critical auth-dependent elements
+  if (loading) {
+    return (
+      <nav className="cultural-nav">
+        <div className="nav-container">
+          <Link to="/" className="cultural-logo">
+            🪗 Охрани Култура
+          </Link>
+          <div className="nav-center desktop-nav">
+            <span style={{ opacity: 0.6 }}>Се вчитува...</span>
+          </div>
+          <div className="nav-icons">
+            <span style={{ opacity: 0.6 }}>🔄</span>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <>
@@ -303,9 +335,26 @@ function NavigationBar() {
             <button className="nav-icon-btn desktop-icon" title="Фаворити">
               ❤️
             </button>
-            <Link to="/prijava" className="nav-icon-btn desktop-icon" title="Профил">
-              👤
-            </Link>
+            
+            {/* Authentication-based Profile/Login section */}
+            {isAuthenticated ? (
+              <div className="user-menu desktop-icon">
+                <span className="user-greeting" title={`Најавен како ${user?.ime || 'Корисник'}`}>
+                  👤 {user?.ime || 'Корисник'}
+                </span>
+                <button 
+                  onClick={logout} 
+                  className="logout-btn"
+                  title="Одјави се"
+                >
+                  🚪
+                </button>
+              </div>
+            ) : (
+              <Link to="/prijava" className="nav-icon-btn desktop-icon" title="Најави се">
+                👤 Најави се
+              </Link>
+            )}
             
             {/* Hamburger Menu for Small Screens */}
             <button 
@@ -349,9 +398,33 @@ function NavigationBar() {
               <button className="nav-icon-btn" title="Фаворити">
                 ❤️ Фаворити
               </button>
-              <Link to="/prijava" className="nav-icon-btn" title="Профил" onClick={closeMobileMenu}>
-                👤 Профил
-              </Link>
+              
+              {/* Authentication-based mobile menu */}
+              {isAuthenticated ? (
+                <>
+                  <div className="mobile-user-info">
+                    👤 {user?.ime || 'Корисник'}
+                  </div>
+                  <button 
+                    onClick={() => {
+                      logout();
+                      closeMobileMenu();
+                    }} 
+                    className="nav-icon-btn logout-mobile"
+                  >
+                    🚪 Одјави се
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/prijava" className="nav-icon-btn" onClick={closeMobileMenu}>
+                    👤 Најави се
+                  </Link>
+                  <Link to="/registracija" className="nav-icon-btn" onClick={closeMobileMenu}>
+                    ✏️ Регистрирај се
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -391,9 +464,33 @@ function NavigationBar() {
             <button className="sidebar-icon-btn" title="Фаворити">
               ❤️ Фаворити
             </button>
-            <Link to="/prijava" className="sidebar-icon-btn" title="Профил" onClick={() => setIsSidebarOpen(false)}>
-              👤 Профил
-            </Link>
+            
+            {/* Authentication-based sidebar */}
+            {isAuthenticated ? (
+              <>
+                <div className="sidebar-user-info">
+                  👤 {user?.ime || 'Корисник'}
+                </div>
+                <button 
+                  onClick={() => {
+                    logout();
+                    setIsSidebarOpen(false);
+                  }} 
+                  className="sidebar-icon-btn logout-sidebar"
+                >
+                  🚪 Одјави се
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/prijava" className="sidebar-icon-btn" onClick={() => setIsSidebarOpen(false)}>
+                  👤 Најави се
+                </Link>
+                <Link to="/registracija" className="sidebar-icon-btn" onClick={() => setIsSidebarOpen(false)}>
+                  ✏️ Регистрирај се
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </aside>
@@ -408,63 +505,91 @@ function NavigationBar() {
 
 export default function AppRouter() {
   return (
-    <Router>
-      <div className="app-router">
-        <NavigationBar />
-        
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/mapa" element={<MapMKD />} />
-            <Route path="/prijava" element={<Login />} />
-            <Route path="/registracija" element={<Register />} />
-            <Route path="/dodaj-prispevek" element={<CreateContributionWizard />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        
-        {/* Enhanced Cultural Footer */}
-        <footer className="cultural-footer">
-          <div className="footer-content">
-            <div className="footer-section">
-              <h4>Охрани Култура</h4>
-              <p>Зачувување на македонската фолклорна традиција за идните генерации.</p>
-            </div>
-            <div className="footer-section">
-              <h4>Региони</h4>
-              <ul>
-                <li><Link to="/region/skopski">Скопски</Link></li>
-                <li><Link to="/region/bitola">Битола</Link></li>
-                <li><Link to="/region/ohrid">Охрид</Link></li>
-                <li><Link to="/region/stip">Штип</Link></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h4>Ресурси</h4>
-              <ul>
-                <li><Link to="/za-nas">За нас</Link></li>
-                <li><Link to="/kontakt">Контакт</Link></li>
-                <li><Link to="/uslovni">Услови</Link></li>
-                <li><Link to="/privatnost">Приватност</Link></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h4>Следи не</h4>
-              <div className="social-links">
-                <a href="#" aria-label="Facebook">📘</a>
-                <a href="#" aria-label="Instagram">📷</a>
-                <a href="#" aria-label="YouTube">📹</a>
-                <a href="#" aria-label="TikTok">🎵</a>
+    <AuthProvider>
+      <Router>
+        <div className="app-router">
+          <NavigationBar />
+          
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/mapa" element={<MapMKD />} />
+              
+              {/* Public routes - redirect to home if already logged in */}
+              <Route 
+                path="/prijava" 
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                } 
+              />
+              <Route 
+                path="/registracija" 
+                element={
+                  <PublicRoute>
+                    <Register />
+                  </PublicRoute>
+                } 
+              />
+              
+              {/* Protected routes - require authentication */}
+              <Route 
+                path="/dodaj-prispevek" 
+                element={
+                  <ProtectedRoute>
+                    <CreateContributionWizard />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          
+          {/* Enhanced Cultural Footer */}
+          <footer className="cultural-footer">
+            <div className="footer-content">
+              <div className="footer-section">
+                <h4>Охрани Култура</h4>
+                <p>Зачувување на македонската фолклорна традиција за идните генерации.</p>
+              </div>
+              <div className="footer-section">
+                <h4>Региони</h4>
+                <ul>
+                  <li><Link to="/region/skopski">Скопски</Link></li>
+                  <li><Link to="/region/bitola">Битола</Link></li>
+                  <li><Link to="/region/ohrid">Охрид</Link></li>
+                  <li><Link to="/region/stip">Штип</Link></li>
+                </ul>
+              </div>
+              <div className="footer-section">
+                <h4>Ресурси</h4>
+                <ul>
+                  <li><Link to="/za-nas">За нас</Link></li>
+                  <li><Link to="/kontakt">Контакт</Link></li>
+                  <li><Link to="/uslovni">Услови</Link></li>
+                  <li><Link to="/privatnost">Приватност</Link></li>
+                </ul>
+              </div>
+              <div className="footer-section">
+                <h4>Следи не</h4>
+                <div className="social-links">
+                  <a href="#" aria-label="Facebook">📘</a>
+                  <a href="#" aria-label="Instagram">📷</a>
+                  <a href="#" aria-label="YouTube">📹</a>
+                  <a href="#" aria-label="TikTok">🎵</a>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="footer-bottom">
-            <p>© 2024 Охрани Култура. Сите права се заштитени.</p>
-          </div>
-        </footer>
-        
-        <FloatingChat />
-      </div>
-    </Router>
+            <div className="footer-bottom">
+              <p>© 2024 Охрани Култура. Сите права се заштитени.</p>
+            </div>
+          </footer>
+          
+          <FloatingChat />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }

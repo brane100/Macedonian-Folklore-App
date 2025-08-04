@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
-
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Login(props) {
+    const { login } = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
     const navigate = useNavigate();
 
     // Email validation function
@@ -29,13 +31,15 @@ export default function Login(props) {
 
     const validation = emailError || password.trim() === '' || password.length < 8
 
-    const login = async () => {
+    const handleLogin = async () => {
+        setIsLoggingIn(true);
         try {
             const response = await fetch('http://localhost:3001/uporabnik/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Important for session cookies
                 body: JSON.stringify({
                     email,
                     password
@@ -43,17 +47,21 @@ export default function Login(props) {
             });
 
             if (response.ok) {
-                // const data = await response.json();
+                const data = await response.json();
+                login(data.user); // Update auth state
                 navigate('/'); // Redirect to home page on successful login
             } else {
                 const errorData = await response.json();
+                console.error('Login failed:', errorData.message);
                 alert(errorData.message || 'Грешка при најавување');
             }
         } catch (error) {
-            console.error('Error during login:', error);
+            console.error('Login error:', error);
             alert('Грешка при најавување');
+        } finally {
+            setIsLoggingIn(false);
         }
-    }
+    };
 
 
     return (
@@ -103,21 +111,23 @@ export default function Login(props) {
                         onClick={() => {
                             if (!validation) {
                                 // Proceed with login
-                                login()
+                                handleLogin()
                             }
                         }}
                         className="login-button"
-                        disabled={validation}
+                        disabled={validation || isLoggingIn}
                         style={{
-                            opacity: validation ? 0.5 : 1,
-                            cursor: validation ? 'not-allowed' : 'pointer'
+                            opacity: validation || isLoggingIn ? 0.5 : 1,
+                            cursor: validation || isLoggingIn ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        Најави се
+                        {isLoggingIn ? 'Се најавувам...' : 'Најави се'}
                     </button>
                 </div>
-                <Link to="/registracija">Немаш сметка? Регистрирај се </Link>
+                <Link to="/registracija">
+                    Немаш сметка? Регистрирај се
+                </Link>
             </div>
-        </div >
+        </div>
     )
 }
