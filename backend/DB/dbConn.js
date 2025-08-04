@@ -87,4 +87,13 @@ dataPool.AuthUser = (email) => {
   })
 }
 
+dataPool.allUsers = () => {
+  return new Promise((resolve, reject) => {
+    conn.query(`SELECT * FROM Uporabnik`, (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
 module.exports = dataPool;

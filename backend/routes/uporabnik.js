@@ -32,3 +32,15 @@ uporabnik.post('/register', async (req, res) => {
     }
     res.end();
 })
+
+uporabnik.get('/', async (req, res) => {
+    try {
+        let queryResult = await DB.allUsers();
+        res.json(queryResult);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.sendStatus(500);
+    }
+});
+
+module.exports = uporabnik

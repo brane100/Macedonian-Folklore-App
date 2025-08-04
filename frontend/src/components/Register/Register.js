@@ -1,17 +1,49 @@
 import React, { useState } from 'react';
 import './Register.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Register(props) {
     const [ime, setIme] = useState('');
     const [priimek, setPriimek] = useState('');
     const [email, setEmail] = useState('');
     const [geslo, setGeslo] = useState('');
-    const [vloga, setVloga] = useState('navaden'); // Default role
+    const [vloga, setVloga] = useState('navaden');
+    const navigate = useNavigate();
+    
+    // Add validation state
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+    // Email validation function
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    // Handle email field blur (when user switches away from field)
+    const handleEmailBlur = () => {
+        if (email.trim() === '') {
+            setEmailError('');
+        } else if (!validateEmail(email)) {
+            setEmailError('Невалиден формат на е-пошта');
+        } else {
+            setEmailError('');
+        }
+    };
+
+    // Handle password field blur and real-time validation
+    const handlePasswordChange = (value) => {
+        setGeslo(value);
+        if (value.length > 0 && value.length < 8) {
+            setPasswordError('Лозинката мора да содржи најмалку 8 карактери');
+        } else {
+            setPasswordError('');
+        }
+    };
 
     const createUser = async () => {
         try {
-            const response = await fetch('http://localhost:3001/register', {
+            const response = await fetch('http://localhost:3001/uporabnik/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -27,7 +59,7 @@ export default function Register(props) {
             const data = await response.json();
             if (data.success) {
                 alert(data.message);
-                props.history.push('/prijava');
+                navigate('/prijava');
             } else {
                 alert(data.message || 'Registration failed.');
                 setIme('');
@@ -39,7 +71,6 @@ export default function Register(props) {
         } catch (error) {
             alert('An error occurred during registration.');
             console.error('Registration error:', error);
-            // Reset form fields on error
             setIme('');
             setPriimek('');
             setEmail('');
@@ -83,26 +114,92 @@ export default function Register(props) {
                         </div>
                     </div>
                     
-                    {/* Email and password full width */}
+                    {/* Email field with validation */}
                     <div className="input-group">
                         <input
                             type="email"
                             placeholder="Е-пошта"
-                            className="register-input"
+                            className={`register-input ${emailError ? 'error' : ''}`}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                            onBlur={handleEmailBlur} // Validate when user leaves field
+                            style={{
+                                borderColor: emailError ? '#dc3545' : '#ffd700'
+                            }}
                         />
+                        {emailError && (
+                            <div style={{
+                                color: '#dc3545',
+                                fontSize: '12px',
+                                marginTop: '5px',
+                                fontWeight: '500'
+                            }}>
+                                {emailError}
+                            </div>
+                        )}
                     </div>
+
+                    {/* Password field with validation */}
                     <div className="input-group">
                         <input
                             type="password"
                             placeholder="Лозинка"
-                            className="register-input"
+                            className={`register-input ${passwordError ? 'error' : ''}`}
                             value={geslo}
-                            onChange={e => setGeslo(e.target.value)}
+                            onChange={e => handlePasswordChange(e.target.value)}
+                            style={{
+                                borderColor: passwordError ? '#dc3545' : '#ffd700'
+                            }}
                         />
+                        {passwordError && (
+                            <div style={{
+                                color: '#dc3545',
+                                fontSize: '12px',
+                                marginTop: '5px',
+                                fontWeight: '500'
+                            }}>
+                                {passwordError}
+                            </div>
+                        )}
+                        {/* Password strength indicator */}
+                        {geslo.length > 0 && (
+                            <div style={{
+                                fontSize: '12px',
+                                marginTop: '5px',
+                                color: geslo.length >= 8 ? '#28a745' : '#ffc107'
+                            }}>
+                                {geslo.length >= 8 ? '✓ Добра јачина на лозинка' : `${8 - geslo.length} карактери преостануваат`}
+                            </div>
+                        )}
                     </div>
-                    <button className="register-button" onClick={createUser}>
+
+                    <button
+                        className="register-button"
+                        onClick={() => {
+                            // Enhanced validation
+                            if (!ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()) {
+                                alert('Сите полиња се задолжителни.');
+                                return;
+                            }
+                            if (!validateEmail(email)) {
+                                alert('Невалиден формат на е-пошта.');
+                                return;
+                            }
+                            if (geslo.length < 8) {
+                                alert('Лозинката мора да содржи најмалку 8 карактери.');
+                                return;
+                            }
+                            // Only proceed if no validation errors
+                            if (!emailError && !passwordError) {
+                                createUser();
+                            }
+                        }}
+                        disabled={emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()}
+                        style={{
+                            opacity: (emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()) ? 0.6 : 1,
+                            cursor: (emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()) ? 'not-allowed' : 'pointer'
+                        }}
+                    >
                         Регистрирај се
                     </button>
                 </div>
