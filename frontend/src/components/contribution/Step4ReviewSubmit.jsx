@@ -8,23 +8,89 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     console.log('Submitting:', formData);
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    // Validate required fields from Step 1
+    const requiredFields = {
+      'Име на плес': formData.novPlesIme,
+      'Тип на плес': formData.tipPlesa,
+      'Регија': formData.regijaId
+    };
+
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key, value]) => !value || value.trim() === '')
+      .map(([key]) => key);
+
+    if (missingFields.length > 0) {
+      alert(`❌ Ве молиме пополнете ги следните задолжителни полиња:\n• ${missingFields.join('\n• ')}`);
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      alert("🎉 Прispevок успешно додаден!");
-    }, 2000);
+      return;
+    }
+
+    try {
+      const response = await fetch('/prispevki/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include session cookies
+        body: JSON.stringify({
+          // Dance information
+          novPlesIme: formData.novPlesIme,
+          tipPlesa: formData.tipPlesa,
+          kratkaZgodovina: formData.kratkaZgodovina,
+          opisTehnike: formData.opisTehnike,
+
+          // Region information  
+          regijaId: formData.regijaId,
+
+          // Contribution information
+          opis: formData.opis,
+          jeAnonimen: formData.jeAnonimen,
+          referencaOpis: formData.referencaOpis,
+          referencaUrl: formData.referencaUrl
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsSubmitted(true);
+        alert("🎉 " + result.msg);
+        console.log('Contribution submitted successfully:', result.data);
+      } else {
+        throw new Error(result.msg || 'Грешка при праќање на прispevok');
+      }
+
+    } catch (error) {
+      console.error('Error submitting contribution:', error);
+      alert("❌ Грешка при праќање: " + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getMediaIcon = (type) => {
-    switch(type) {
+    switch (type) {
       case 'image': return '🖼️';
       case 'video': return '🎥';
       case 'audio': return '🎵';
       case 'document': return '📄';
       default: return '📎';
     }
+  };
+
+  const getRegionName = (regijaId) => {
+    const regionMap = {
+      "1": "Пелагонија",
+      "2": "Скопје",
+      "3": "Вардарска Македонија",
+      "4": "Источна Македонија",
+      "5": "Југозападен дел",
+      "6": "Југоисточен дел",
+      "7": "Полог",
+      "8": "Североисточен дел"
+    };
+    return regionMap[regijaId] || 'Непозната регија';
   };
 
   return (
@@ -37,7 +103,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
       {isSubmitted && (
         <div className="success-message">
           <span className="success-icon">🎉</span>
-          Вашиот прispevок е успешно додаден во базата на македонски фолклор!
+          Вашиот прispevok е успешно додаден во базата на македонски фолклор!
         </div>
       )}
 
@@ -45,24 +111,44 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         {/* Basic Information */}
         <div className="review-card">
           <div className="review-item">
+            <span className="review-label">📖 Име на плес:</span>
+            <span className="review-value highlight">{formData.novPlesIme || 'Не е наведено'}</span>
+          </div>
+
+          <div className="review-item">
+            <span className="review-label">🎪 Тип на плес:</span>
+            <span className="review-value">{formData.tipPlesa || 'Не е избран'}</span>
+          </div>
+
+          <div className="review-item">
+            <span className="review-label">📜 Кратка историја:</span>
+            <span className="review-value long-text">{formData.kratkaZgodovina || 'Нема опис'}</span>
+          </div>
+
+          <div className="review-item">
+            <span className="review-label">🎯 Опис на техника:</span>
+            <span className="review-value long-text">{formData.opisTehnike || 'Нема опис'}</span>
+          </div>
+
+          <div className="review-item">
             <span className="review-label">📝 Опис:</span>
             <span className="review-value long-text">{formData.opis || 'Нема опис'}</span>
           </div>
-          
+
           <div className="review-item">
             <span className="review-label">🕶️ Анонимност:</span>
             <span className={`review-value ${formData.jeAnonimen ? 'highlight' : ''}`}>
               {formData.jeAnonimen ? "✅ Да, анонимен прispevok" : "❌ Не, со мое име"}
             </span>
           </div>
-          
+
           <div className="review-item">
             <span className="review-label">🗺️ Регија:</span>
             <span className="review-value highlight">
-              {formData.regijaId || 'Не е избрана регија'}
+              {getRegionName(formData.regijaId)}
             </span>
           </div>
-          
+
           <div className="review-item">
             <span className="review-label">🎭 Плес/Традиција:</span>
             <span className="review-value highlight">
@@ -112,12 +198,12 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         {/* References */}
         <div className="review-card">
           <div className="review-item">
-            <span className="review-label">📚 Референца:</span>
+            <span className="review-label">📄 Референца:</span>
             <span className="review-value long-text">
               {formData.referencaOpis || 'Нема опис на референца'}
             </span>
           </div>
-          
+
           <div className="review-item">
             <span className="review-label">🔗 URL:</span>
             <span className="review-value">
@@ -141,18 +227,22 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
 
       {/* Action Buttons */}
       <div className="action-buttons">
-        <button 
-          onClick={prevStep} 
+        <button
+          onClick={prevStep}
           className="btn btn-back"
           disabled={isSubmitting}
         >
           ⬅️ Назад
         </button>
-        
-        <button 
-          onClick={handleSubmit} 
+
+        <button
+          onClick={handleSubmit}
           className="btn btn-submit"
           disabled={isSubmitting || isSubmitted}
+          style={{
+            opacity: isSubmitting || isSubmitted ? 0.5 : 1,
+            cursor: isSubmitting || isSubmitted ? 'not-allowed' : 'pointer'
+          }}
         >
           {isSubmitting ? (
             <>

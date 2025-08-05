@@ -59,17 +59,48 @@ dataPool.prispevekPlesa = (id) => {
   })
 }
 
-dataPool.createPrispevek = (opis, je_anonimen, referenca_opis, referenca_url) => {
+dataPool.createPrispevek = (opis, je_anonimen, referenca_opis, referenca_url, uporabnik_id = null, ples_id) => {
   return new Promise((resolve, reject) => {
-    conn.query(`INSERT INTO Prispevek (opis, je_anonimen, referenca_opis, referenca_url) VALUES (?, ?, ?, ?)`,
-      [opis, je_anonimen, referenca_opis, referenca_url], (err, res) => {
+    conn.query(`INSERT INTO Prispevek (uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url, status, datum_ustvarjen) VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())`,
+      [uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url], (err, res) => {
         if (err) { return reject(err) }
         return resolve(res)
       })
   })
 }
 
-dataPool.createDance
+// Create or get region by name
+dataPool.createOrGetRegion = (ime, koordinata_x, koordinata_y) => {
+  return new Promise((resolve, reject) => {
+    // First check if region exists
+    conn.query(`SELECT id FROM Regija WHERE ime = ?`, [ime], (err, res) => {
+      if (err) { return reject(err) }
+      
+      if (res.length > 0) {
+        // Region exists, return its ID
+        return resolve({ id: res[0].id, isNew: false })
+      } else {
+        // Create new region
+        conn.query(`INSERT INTO Regija (ime, koordinata_x, koordinata_y) VALUES (?, ?, ?)`,
+          [ime, koordinata_x, koordinata_y], (err, res) => {
+            if (err) { return reject(err) }
+            return resolve({ id: res.insertId, isNew: true })
+          })
+      }
+    })
+  })
+}
+
+// Create dance
+dataPool.createDance = (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`INSERT INTO Ples (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) VALUES (?, ?, ?, ?, ?)`,
+      [regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike], (err, res) => {
+        if (err) { return reject(err) }
+        return resolve(res)
+      })
+  })
+}
 
 dataPool.createUser = (ime, priimek, email, geslo, vloga) => {
   return new Promise((resolve, reject) => {

@@ -2,17 +2,7 @@ const express = require('express')
 const prispevki = express.Router()
 const DB = require('../DB/dbConn')
 
-//Gets        // Map region IDs to region names and coordinates
-        const regionMap = {
-            "1": { ime: "Пелагонија", koordinata_x: 21.4369, koordinata_y: 41.2317 },
-            "2": { ime: "Скопје", koordinata_x: 21.4254, koordinata_y: 41.9981 },
-            "3": { ime: "Вардарска Македонија", koordinata_x: 21.7453, koordinata_y: 41.6086 },
-            "4": { ime: "Источна Македонија", koordinata_x: 22.3744, koordinata_y: 41.7151 },
-            "5": { ime: "Југозападен дел", koordinata_x: 20.8934, koordinata_y: 41.2317 },
-            "6": { ime: "Југоисточен дел", koordinata_x: 22.3744, koordinata_y: 41.3317 },
-            "7": { ime: "Полог", koordinata_x: 20.9590, koordinata_y: 42.0650 },
-            "8": { ime: "Североисточен дел", koordinata_x: 22.1953, koordinata_y: 42.1354 }
-        };
+//Gets all the news in the DB
 prispevki.get('/', async (req, res, next) => {
     try {
         var queryResult = await DB.allPrispevki();
@@ -35,8 +25,6 @@ prispevki.get('/odobren', async (req, res, next) => {
         res.sendStatus(500)
     }
 })
-
-
 
 //Gets one new based on the id
 prispevki.get('/:id', async (req, res, next) => {
@@ -130,9 +118,9 @@ prispevki.post('/submit', async (req, res, next) => {
             "2": { ime: "Скопје", koordinata_x: 21.4254, koordinata_y: 41.9981 },
             "3": { ime: "Вардарска Македонија", koordinata_x: 21.7453, koordinata_y: 41.6086 },
             "4": { ime: "Источна Македонија", koordinata_x: 22.3744, koordinata_y: 41.7151 },
-            "5": { ime: "Југозападен дел", koordinата_x: 20.8934, координата_y: 41.2317 },
+            "5": { ime: "Југозападен дел", koordinata_x: 20.8934, koordinata_y: 41.2317 },
             "6": { ime: "Југоисточен дел", koordinata_x: 22.3744, koordinata_y: 41.3317 },
-            "7": { ime: "Полог", koordinata_x: 20.9590, координата_y: 42.0650 },
+            "7": { ime: "Полог", koordinata_x: 20.9590, koordinata_y: 42.0650 },
             "8": { ime: "Североисточен дел", koordinata_x: 22.1953, koordinata_y: 42.1354 }
         };
 

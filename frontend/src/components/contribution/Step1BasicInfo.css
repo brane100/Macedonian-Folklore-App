@@ -31,8 +31,8 @@
   50% { transform: scaleX(1.02); }
 }
 
-/* Header styling */
-h2 {
+/* Header styling - scoped to step1-container */
+.step1-container .step1-header {
   color: var(--royal-red);
   font-family: Georgia, serif;
   font-size: 2.2rem;
@@ -44,7 +44,7 @@ h2 {
   position: relative;
 }
 
-h2::before {
+.step1-container .step1-header::before {
   content: '📝';
   font-size: 2.5rem;
   position: absolute;
@@ -53,7 +53,7 @@ h2::before {
   transform: translateY(-50%);
 }
 
-h2::after {
+.step1-container .step1-header::after {
   content: '✨';
   font-size: 2.5rem;
   position: absolute;
@@ -62,11 +62,15 @@ h2::after {
   transform: translateY(-50%);
 }
 
-/* Label styling */
-label {
+/* Form group styling */
+.step1-container .form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* Label styling - scoped to step1-container */
+.step1-container .form-label {
   display: block;
   margin-bottom: 0.75rem;
-  margin-top: 2rem;
   font-weight: 700;
   color: var(--royal-red);
   font-size: 1.2rem;
@@ -74,38 +78,59 @@ label {
   padding-left: 2.5rem;
 }
 
+/* Required field indicator */
+.step1-container .form-label.required::after {
+  content: " *";
+  color: #e74c3c;
+  font-weight: bold;
+}
+
 /* Add icons to labels */
-label:nth-of-type(1)::before {
+.step1-container .form-label:nth-of-type(1)::before {
   content: '📖';
   position: absolute;
   left: 0;
   font-size: 1.5rem;
 }
 
-label:nth-of-type(2)::before {
-  content: '🕶️';
-  position: absolute;
-  left: 0;
-  font-size: 1.5rem;
-}
-
-label:nth-of-type(3)::before {
-  content: '🗺️';
-  position: absolute;
-  left: 0;
-  font-size: 1.5rem;
-}
-
-label:nth-of-type(4)::before {
-  content: '🎭';
-  position: absolute;
-  left: 0;
-  font-size: 1.5rem;
-}
-
-/* Textarea styling */
-textarea {
+/* Text input styling - scoped */
+.step1-container .form-input {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 1rem 1.5rem;
+  border: 3px solid var(--medium-gray);
+  border-radius: 15px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  background: linear-gradient(135deg, var(--white), var(--light-gray));
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.step1-container .form-input:focus {
+  outline: none;
+  border-color: var(--primary-yellow);
+  background: var(--white);
+  box-shadow: 
+    inset 0 2px 5px rgba(0,0,0,0.1),
+    0 0 0 4px rgba(255, 193, 7, 0.2),
+    0 5px 15px rgba(255, 193, 7, 0.3);
+  transform: translateY(-2px);
+}
+
+.step1-container .form-input:hover {
+  border-color: var(--primary-yellow);
+  box-shadow: 
+    inset 0 2px 5px rgba(0,0,0,0.1),
+    0 2px 10px rgba(255, 193, 7, 0.2);
+}
+
+/* Textarea styling - scoped */
+.step1-container .form-textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   min-height: 120px;
   padding: 1rem 1.5rem;
   border: 3px solid var(--medium-gray);
@@ -116,10 +141,9 @@ textarea {
   transition: all 0.3s ease;
   background: linear-gradient(135deg, var(--white), var(--light-gray));
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
 }
 
-textarea:focus {
+.step1-container .form-textarea:focus {
   outline: none;
   border-color: var(--primary-yellow);
   background: var(--white);
@@ -130,26 +154,54 @@ textarea:focus {
   transform: translateY(-2px);
 }
 
-textarea:hover {
+.step1-container .form-textarea:hover {
   border-color: var(--primary-yellow);
   box-shadow: 
     inset 0 2px 5px rgba(0,0,0,0.1),
     0 2px 10px rgba(255, 193, 7, 0.2);
 }
 
-/* Checkbox styling */
-input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  margin-right: 1rem;
-  accent-color: var(--primary-red);
-  transform: scale(1.5);
+/* Select dropdown styling - scoped */
+.step1-container .form-select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 1rem 1.5rem;
+  border: 3px solid var(--medium-gray);
+  border-radius: 15px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  background: linear-gradient(135deg, var(--white), var(--light-gray));
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
   cursor: pointer;
-  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.65rem auto;
 }
 
-/* Create custom checkbox container */
-label:nth-of-type(2) {
+.step1-container .form-select:focus {
+  outline: none;
+  border-color: var(--primary-yellow);
+  background: var(--white);
+  box-shadow: 
+    inset 0 2px 5px rgba(0,0,0,0.1),
+    0 0 0 4px rgba(255, 193, 7, 0.2),
+    0 5px 15px rgba(255, 193, 7, 0.3);
+  transform: translateY(-2px);
+}
+
+.step1-container .form-select:hover {
+  border-color: var(--primary-yellow);
+  box-shadow: 
+    inset 0 2px 5px rgba(0,0,0,0.1),
+    0 2px 10px rgba(255, 193, 7, 0.2);
+}
+
+/* Checkbox styling - scoped */
+.step1-container .checkbox-group {
   display: flex;
   align-items: center;
   background: var(--light-yellow);
@@ -160,93 +212,33 @@ label:nth-of-type(2) {
   transition: all 0.3s ease;
 }
 
-label:nth-of-type(2):hover {
+.step1-container .checkbox-group:hover {
   background: var(--primary-yellow);
   color: var(--white);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
 }
 
-/* Select dropdown styling */
-select {
-  width: 100%;
-  padding: 1rem 1.5rem;
-  border: 3px solid var(--medium-gray);
-  border-radius: 15px;
-  font-size: 1.1rem;
-  font-family: inherit;
-  background: linear-gradient(135deg, var(--white), var(--light-gray));
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+.step1-container .form-checkbox {
+  width: 20px;
+  height: 20px;
+  margin-left: 2rem;
+  margin-right: 1rem;
+  accent-color: var(--primary-red);
+  transform: scale(1.5);
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 1rem;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 0.65rem auto;
 }
 
-select:focus {
-  outline: none;
-  border-color: var(--primary-yellow);
-  background: var(--white);
-  box-shadow: 
-    inset 0 2px 5px rgba(0,0,0,0.1),
-    0 0 0 4px rgba(255, 193, 7, 0.2),
-    0 5px 15px rgba(255, 193, 7, 0.3);
-  transform: translateY(-2px);
+.step1-container .checkbox-label {
+  font-weight: 700;
+  color: var(--royal-red);
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
 }
 
-select:hover {
-  border-color: var(--primary-yellow);
-  box-shadow: 
-    inset 0 2px 5px rgba(0,0,0,0.1),
-    0 2px 10px rgba(255, 193, 7, 0.2);
-}
-
-/* Text input styling */
-input[type="text"] {
-  width: 100%;
-  padding: 1rem 1.5rem;
-  border: 3px solid var(--medium-gray);
-  border-radius: 15px;
-  font-size: 1.1rem;
-  font-family: inherit;
-  background: linear-gradient(135deg, var(--white), var(--light-gray));
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  margin-bottom: 1rem;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  border-color: var(--primary-yellow);
-  background: var(--white);
-  box-shadow: 
-    inset 0 2px 5px rgba(0,0,0,0.1),
-    0 0 0 4px rgba(255, 193, 7, 0.2),
-    0 5px 15px rgba(255, 193, 7, 0.3);
-  transform: translateY(-2px);
-}
-
-input[type="text"]:hover {
-  border-color: var(--primary-yellow);
-  box-shadow: 
-    inset 0 2px 5px rgba(0,0,0,0.1),
-    0 2px 10px rgba(255, 193, 7, 0.2);
-}
-
-/* Placeholder styling */
-input[type="text"]::placeholder,
-textarea::placeholder {
-  color: var(--dark-gray);
-  opacity: 0.7;
-  font-style: italic;
-}
-
-/* Button styling */
-button {
+/* Button styling - scoped to step1-container */
+.step1-container .next-button {
   padding: 1.2rem 3rem;
   font-size: 1.3rem;
   font-weight: 600;
@@ -261,33 +253,29 @@ button {
   margin-left: auto;
   margin-right: auto;
   min-width: 200px;
-}
-
-/* Next button styling */
-button {
   background: linear-gradient(135deg, var(--primary-yellow), var(--primary-red));
   color: var(--white);
   border-color: var(--primary-yellow);
   box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
 }
 
-button::after {
+.step1-container .next-button::after {
   content: '➡️';
   margin-left: 0.5rem;
 }
 
-button:hover {
+.step1-container .next-button:hover {
   background: linear-gradient(135deg, var(--primary-red), var(--primary-yellow));
   transform: translateY(-3px);
   box-shadow: 0 10px 25px rgba(220, 53, 69, 0.4);
 }
 
-button:active {
+.step1-container .next-button:active {
   transform: translateY(-1px);
 }
 
-/* Button hover effect */
-button::before {
+/* Button hover effect - scoped */
+.step1-container .next-button::before {
   content: '';
   position: absolute;
   top: 0;
@@ -298,26 +286,28 @@ button::before {
   transition: left 0.5s;
 }
 
-button:hover::before {
+.step1-container .next-button:hover::before {
   left: 100%;
 }
 
-/* Form layout */
-.step1-container {
-  display: flex;
-  flex-direction: column;
+/* Placeholder styling - scoped */
+.step1-container .form-input::placeholder,
+.step1-container .form-textarea::placeholder {
+  color: var(--dark-gray);
+  opacity: 0.7;
+  font-style: italic;
 }
 
-/* Input focus glow effect */
+/* Input focus glow effect - scoped */
 @keyframes inputGlow {
   0% { box-shadow: 0 0 5px rgba(255, 193, 7, 0.5); }
   50% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.8); }
   100% { box-shadow: 0 0 5px rgba(255, 193, 7, 0.5); }
 }
 
-textarea:focus,
-select:focus,
-input[type="text"]:focus {
+.step1-container .form-textarea:focus,
+.step1-container .form-select:focus,
+.step1-container .form-input:focus {
   animation: inputGlow 2s ease-in-out infinite;
 }
 
@@ -332,60 +322,6 @@ input[type="text"]:focus {
   height: 3px;
   background: linear-gradient(90deg, transparent, var(--primary-yellow), transparent);
   border-radius: 3px;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .step1-container {
-    padding: 1rem;
-    margin: 1rem;
-  }
-  
-  h2 {
-    font-size: 1.8rem;
-  }
-  
-  h2::before,
-  h2::after {
-    display: none;
-  }
-  
-  label {
-    font-size: 1rem;
-    padding-left: 2rem;
-  }
-  
-  textarea,
-  select,
-  input[type="text"] {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-  }
-  
-  button {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .step1-container {
-    padding: 0.5rem;
-    margin: 0.5rem;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-  }
-  
-  label {
-    padding-left: 1.5rem;
-  }
-  
-  label:nth-of-type(2) {
-    padding: 0.75rem;
-  }
 }
 
 /* Add subtle animation on load */
@@ -404,15 +340,69 @@ input[type="text"]:focus {
   }
 }
 
-/* Special styling for Macedonian regions */
-select option[value="1"] { color: var(--primary-red); }
-select option[value="2"] { color: var(--royal-red); }
-select option[value="3"] { color: var(--primary-yellow); }
-select option[value="4"] { color: var(--primary-red); }
-select option[value="5"] { color: var(--royal-red); }
-select option[value="6"] { color: var(--primary-yellow); }
-select option[value="7"] { color: var(--primary-red); }
-select option[value="8"] { color: var(--royal-red); }
+/* Special styling for Macedonian regions - scoped */
+.step1-container .form-select option[value="1"] { color: var(--primary-red); }
+.step1-container .form-select option[value="2"] { color: var(--royal-red); }
+.step1-container .form-select option[value="3"] { color: var(--primary-yellow); }
+.step1-container .form-select option[value="4"] { color: var(--primary-red); }
+.step1-container .form-select option[value="5"] { color: var(--royal-red); }
+.step1-container .form-select option[value="6"] { color: var(--primary-yellow); }
+.step1-container .form-select option[value="7"] { color: var(--primary-red); }
+.step1-container .form-select option[value="8"] { color: var(--royal-red); }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .step1-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+  
+  .step1-container .step1-header {
+    font-size: 1.8rem;
+  }
+  
+  .step1-container .step1-header::before,
+  .step1-container .step1-header::after {
+    display: none;
+  }
+  
+  .step1-container .form-label {
+    font-size: 1rem;
+    padding-left: 2rem;
+  }
+  
+  .step1-container .form-textarea,
+  .step1-container .form-select,
+  .step1-container .form-input {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+  
+  .step1-container .next-button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .step1-container {
+    padding: 0.5rem;
+    margin: 0.5rem;
+  }
+  
+  .step1-container .step1-header {
+    font-size: 1.5rem;
+  }
+  
+  .step1-container .form-label {
+    padding-left: 1.5rem;
+  }
+  
+  .step1-container .checkbox-group {
+    padding: 0.75rem;
+  }
+}
 
 /* CSS Variables (add these to your root CSS if not already defined) */
 :root {
