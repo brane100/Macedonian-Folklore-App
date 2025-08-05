@@ -69,6 +69,8 @@ dataPool.createPrispevek = (opis, je_anonimen, referenca_opis, referenca_url) =>
   })
 }
 
+dataPool.createDance
+
 dataPool.createUser = (ime, priimek, email, geslo, vloga) => {
   return new Promise((resolve, reject) => {
     conn.query(`INSERT INTO ${process.env.DB_DATABASE}.Uporabnik (ime, priimek, email, geslo, vloga) VALUES (?,?,?,?,?)`, [ime, priimek, email, geslo, vloga], (err, res) => {
@@ -166,6 +168,22 @@ dataPool.deleteUser = (userId) => {
 dataPool.getPendingContributions = () => {
   return new Promise((resolve, reject) => {
     conn.query(`SELECT * FROM Prispevek WHERE status = 'pending' OR status IS NULL`, (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+// Get approved contributions (for public display)
+dataPool.getApprovedContributions = () => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      SELECT p.*, u.ime, u.priimek, u.email 
+      FROM Prispevek p 
+      LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
+      WHERE p.status = 'odobren' 
+      ORDER BY p.datum_ustvarjen DESC
+    `, (err, res) => {
       if (err) { return reject(err) }
       return resolve(res)
     })

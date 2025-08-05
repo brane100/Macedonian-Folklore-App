@@ -48,7 +48,7 @@ app.use(session({
 }))
 
 // Mount routes AFTER session middleware
-app.use('/posts', posts); // Use the posts route
+app.use('/prispevki', posts); // Use the posts route
 app.use('/uporabnik', uporabnik); // Use the uporabnik route
 app.use('/moderacija', moderacija); // Use the moderation route
 

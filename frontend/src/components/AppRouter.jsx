@@ -8,6 +8,7 @@ import Login from './Login/Login';
 import Register from './Register/Register';
 import CreateContributionWizard from './contribution/CreateContributionWizard';
 import AdminPanel from './admin/AdminPanel';
+import Posts from './posts/Posts';
 import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { useRole, ModeratorGuard } from './RoleBasedAccess';
@@ -538,6 +539,7 @@ export default function AppRouter() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/mapa" element={<MapMKD />} />
+              <Route path="/plesi" element={<Posts />} />
               
               {/* Public routes - redirect to home if already logged in */}
               <Route 

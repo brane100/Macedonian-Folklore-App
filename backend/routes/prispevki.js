@@ -14,6 +14,18 @@ prispevki.get('/', async (req, res, next) => {
     }
 })
 
+//Gets all approved contributions for public display
+prispevki.get('/odobren', async (req, res, next) => {
+    try {
+        var queryResult = await DB.getApprovedContributions();
+        res.json(queryResult)
+    }
+    catch (err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+})
+
 
 
 //Gets one new based on the id
