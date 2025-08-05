@@ -91,6 +91,26 @@ const AdminPanel = () => {
         }
     };
 
+    // Request edits for contribution
+    const requestEdits = async (id, notes = '') => {
+        try {
+            const response = await fetch(`http://localhost:3001/moderacija/request-edit/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ moderatorNotes: notes })
+            });
+            
+            if (response.ok) {
+                alert('Барање за измена испратено!');
+                fetchPendingContributions(); // Refresh list
+            }
+        } catch (error) {
+            console.error('Error requesting edits:', error);
+            alert('Грешка при барање за измена');
+        }
+    };
+
     // Update user role (SuperAdmin only)
     const updateUserRole = async (userId, newRole) => {
         if (!isSuperAdmin) return;
@@ -219,27 +239,13 @@ const AdminPanel = () => {
                         ) : (
                             <div className="contributions-list">
                                 {pendingContributions.map(contribution => (
-                                    <div key={contribution.id} className="contribution-card">
-                                        <h4>Prispevok #{contribution.id}</h4>
-                                        <p><strong>Опис:</strong> {contribution.opis}</p>
-                                        <p><strong>Анонимен:</strong> {contribution.je_anonimen ? 'Да' : 'Не'}</p>
-                                        <p><strong>Референца:</strong> {contribution.referenca_opis}</p>
-                                        
-                                        <div className="moderation-actions">
-                                            <button 
-                                                className="approve-btn"
-                                                onClick={() => approveContribution(contribution.id)}
-                                            >
-                                                ✅ Одобри
-                                            </button>
-                                            <button 
-                                                className="reject-btn"
-                                                onClick={() => rejectContribution(contribution.id)}
-                                            >
-                                                ❌ Отфрли
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <ContributionCard 
+                                        key={contribution.id} 
+                                        contribution={contribution}
+                                        onApprove={approveContribution}
+                                        onReject={rejectContribution}
+                                        onRequestEdit={requestEdits}
+                                    />
                                 ))}
                             </div>
                         )}
@@ -315,6 +321,161 @@ const AdminPanel = () => {
                         )}
                     </div>
                 )}
+            </div>
+        </div>
+    );
+};
+
+// Individual Contribution Card Component
+const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit }) => {
+    const [comment, setComment] = useState('');
+    const [showDetails, setShowDetails] = useState(false);
+
+    const getRegionName = (regijaId) => {
+        const regionMap = {
+            "1": "Пелагонија",
+            "2": "Скопје", 
+            "3": "Вардарска Македонија",
+            "4": "Источна Македонија",
+            "5": "Југозападен дел",
+            "6": "Југоисточен дел",
+            "7": "Полог",
+            "8": "Североисточен дел"
+        };
+        return regionMap[regijaId] || 'Непозната регија';
+    };
+
+    const handleAction = (action) => {
+        if (action === 'approve') {
+            onApprove(contribution.id, comment);
+        } else if (action === 'reject') {
+            onReject(contribution.id, comment);
+        } else if (action === 'edit') {
+            onRequestEdit(contribution.id, comment);
+        }
+        setComment(''); // Clear comment after action
+    };
+
+    return (
+        <div className="contribution-card enhanced">
+            <div className="contribution-header">
+                <h4>🎭 Prispevok #{contribution.id}</h4>
+                <span className="submission-date">
+                    📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString('mk-MK')}
+                </span>
+            </div>
+
+            {/* Basic Info */}
+            <div className="contribution-basic-info">
+                <div className="info-row">
+                    <span className="label">👤 Тип:</span>
+                    <span className="value">{contribution.je_anonimen ? '🕶️ Анонимен' : '📝 Со име'}</span>
+                </div>
+                
+                <div className="info-row">
+                    <span className="label">📝 Опис прispevok:</span>
+                    <span className="value">{contribution.opis || 'Нема опис'}</span>
+                </div>
+
+                <div className="info-row">
+                    <span className="label">📄 Референца опис:</span>
+                    <span className="value">{contribution.referenca_opis || 'Нема референца'}</span>
+                </div>
+
+                <div className="info-row">
+                    <span className="label">🔗 Референца URL:</span>
+                    <span className="value">
+                        {contribution.referenca_url ? (
+                            <a href={contribution.referenca_url} target="_blank" rel="noopener noreferrer">
+                                {contribution.referenca_url}
+                            </a>
+                        ) : 'Нема URL'}
+                    </span>
+                </div>
+            </div>
+
+            {/* Toggle Details Button */}
+            <button 
+                className="toggle-details-btn"
+                onClick={() => setShowDetails(!showDetails)}
+            >
+                {showDetails ? '🔼 Сокриј детали' : '🔽 Прикажи детали'}
+            </button>
+
+            {/* Detailed Dance Information */}
+            {showDetails && (
+                <div className="contribution-details">
+                    <h5>🎪 Детали за плесот</h5>
+                    
+                    <div className="detail-section">
+                        <div className="info-row">
+                            <span className="label">🎭 Име на плес:</span>
+                            <span className="value highlight">{contribution.ime_plesa || 'Неdefinirano'}</span>
+                        </div>
+
+                        <div className="info-row">
+                            <span className="label">🎪 Тип на плес:</span>
+                            <span className="value">{contribution.tip_plesa || 'Неdefinirano'}</span>
+                        </div>
+
+                        <div className="info-row">
+                            <span className="label">🗺️ Регија:</span>
+                            <span className="value">{getRegionName(contribution.regija_id)}</span>
+                        </div>
+
+                        <div className="info-row">
+                            <span className="label">📜 Кратка историја:</span>
+                            <span className="value">{contribution.kratka_zgodovina || 'Нема историја'}</span>
+                        </div>
+
+                        <div className="info-row">
+                            <span className="label">🎯 Опис на техника:</span>
+                            <span className="value">{contribution.opis_tehnike || 'Нема опис на техника'}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Comment Section */}
+            <div className="comment-section">
+                <label htmlFor={`comment-${contribution.id}`} className="comment-label">
+                    💬 Коментар за модератор:
+                </label>
+                <textarea
+                    id={`comment-${contribution.id}`}
+                    className="comment-textarea"
+                    placeholder="Напишете коментар или причина за одлуката..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    rows="3"
+                />
+            </div>
+
+            {/* Moderation Actions */}
+            <div className="moderation-actions enhanced">
+                <button 
+                    className="approve-btn"
+                    onClick={() => handleAction('approve')}
+                    title="Одобри го prispevok-от"
+                >
+                    ✅ Одобри
+                </button>
+                
+                <button 
+                    className="edit-request-btn"
+                    onClick={() => handleAction('edit')}
+                    title="Побарај измени од корисникот"
+                >
+                    ✏️ Побарај измени
+                </button>
+                
+                <button 
+                    className="reject-btn"
+                    onClick={() => handleAction('reject')}
+                    title="Отфрли го prispevok-от"
+                >
+                    ❌ Отфрли
+                </button>
             </div>
         </div>
     );

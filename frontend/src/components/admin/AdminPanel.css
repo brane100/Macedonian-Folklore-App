@@ -247,3 +247,217 @@
     font-size: 0.8rem;
   }
 }
+
+/* Enhanced Contribution Card Styles */
+.contribution-card.enhanced {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3498db;
+  transition: all 0.3s ease;
+}
+
+.contribution-card.enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.contribution-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.contribution-header h4 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+}
+
+.submission-date {
+  background: #ecf0f1;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.contribution-basic-info, .contribution-details {
+  margin-bottom: 1rem;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 0.8rem;
+  align-items: flex-start;
+}
+
+.info-row .label {
+  min-width: 180px;
+  font-weight: bold;
+  color: #34495e;
+  flex-shrink: 0;
+}
+
+.info-row .value {
+  flex: 1;
+  color: #2c3e50;
+  word-wrap: break-word;
+}
+
+.info-row .value.highlight {
+  background: #fff3cd;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.info-row .value a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.info-row .value a:hover {
+  text-decoration: underline;
+}
+
+.toggle-details-btn {
+  background: #ecf0f1;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  transition: background 0.3s ease;
+}
+
+.toggle-details-btn:hover {
+  background: #bdc3c7;
+  color: #2c3e50;
+}
+
+.detail-section {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #9b59b6;
+}
+
+.detail-section h5 {
+  margin: 0 0 1rem 0;
+  color: #8e44ad;
+  font-size: 1.1rem;
+}
+
+.comment-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.comment-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #495057;
+}
+
+.comment-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.moderation-actions.enhanced {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #ecf0f1;
+}
+
+.edit-request-btn {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.edit-request-btn:hover {
+  background: linear-gradient(135deg, #d68910, #dc7633);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(243, 156, 18, 0.3);
+}
+
+.approve-btn, .reject-btn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.approve-btn:hover, .reject-btn:hover, .edit-request-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Status indicators */
+.contribution-card.enhanced[data-status="pending"] {
+  border-left-color: #f39c12;
+}
+
+.contribution-card.enhanced[data-status="approved"] {
+  border-left-color: #27ae60;
+}
+
+.contribution-card.enhanced[data-status="rejected"] {
+  border-left-color: #e74c3c;
+}
+
+@media (max-width: 768px) {
+  .contribution-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .info-row {
+    flex-direction: column;
+  }
+
+  .info-row .label {
+    min-width: auto;
+    margin-bottom: 0.3rem;
+  }
+
+  .moderation-actions.enhanced {
+    flex-direction: column;
+  }
+}

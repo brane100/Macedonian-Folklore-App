@@ -49,6 +49,58 @@ prispevki.get('/user/:id', async (req, res, next) => {
     }
 })
 
+// Get current user's contributions (requires authentication)
+prispevki.get('/my-contributions', async (req, res) => {
+    try {
+        if (!req.session.user_id) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
+        const status = req.query.status; // Optional status filter
+        let queryResult;
+        
+        if (status) {
+            // Filter by specific status
+            queryResult = await DB.query(
+                `SELECT p.*, r.ime as region_name, pl.ime as dance_name, u.ime as contributor_name
+                 FROM Prispevek p
+                 JOIN Regija r ON p.regija_id = r.id
+                 JOIN Ples pl ON p.ples_id = pl.id
+                 LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id
+                 WHERE p.uporabnik_id = ? AND p.status = ?
+                 ORDER BY p.datum_oddaje DESC`,
+                [req.session.user_id, status]
+            );
+        } else {
+            // Get all contributions
+            queryResult = await DB.query(
+                `SELECT p.*, r.ime as region_name, pl.ime as dance_name, u.ime as contributor_name
+                 FROM Prispevek p
+                 JOIN Regija r ON p.regija_id = r.id
+                 JOIN Ples pl ON p.ples_id = pl.id
+                 LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id
+                 WHERE p.uporabnik_id = ?
+                 ORDER BY p.datum_oddaje DESC`,
+                [req.session.user_id]
+            );
+        }
+
+        res.json({
+            success: true,
+            data: queryResult
+        });
+    } catch (err) {
+        console.error('Error fetching user contributions:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching contributions'
+        });
+    }
+});
+
 // Inserts one new item to the database
 prispevki.post('/', async (req, res, next) => {
 

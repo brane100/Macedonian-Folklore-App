@@ -20,13 +20,19 @@ moderacija.get('/pending', requireModerator, async (req, res) => {
     }
 });
 
+// 1 - odobren
+// 2 - zavrnjen
+// 3 - zahteva spremembe / arhiviran
+
 // Approve contribution
 moderacija.post('/approve/:id', requireModerator, async (req, res) => {
     try {
         const { id } = req.params;
         const { moderatorNotes } = req.body;
         
-        await DB.updateContributionStatus(id, 'approved', moderatorNotes);
+        await DB.updateContributionStatus(id, 1);
+        // get the user ID from session
+        await DB.addRevision(id, req.session.user_id, 1, moderatorNotes);
         
         res.json({
             success: true,
@@ -46,8 +52,8 @@ moderacija.post('/reject/:id', requireModerator, async (req, res) => {
     try {
         const { id } = req.params;
         const { moderatorNotes } = req.body;
-        
-        await DB.updateContributionStatus(id, 'rejected', moderatorNotes);
+        await DB.updateContributionStatus(id, 2);
+        await DB.addRevision(id, req.session.user_id, 2, moderatorNotes);
         
         res.json({
             success: true,
@@ -58,6 +64,34 @@ moderacija.post('/reject/:id', requireModerator, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error rejecting contribution'
+        });
+    }
+});
+
+// Request edits for contribution
+moderacija.post('/request-edit/:id', requireModerator, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { moderatorNotes } = req.body;
+        
+        if (!moderatorNotes || moderatorNotes.trim().length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Moderator notes are required when requesting edits'
+            });
+        }
+        
+        await DB.updateContributionStatus(id, 3);
+        await DB.addRevision(id, req.session.user_id, 3, moderatorNotes);
+        res.json({
+            success: true,
+            message: 'Edit request sent successfully'
+        });
+    } catch (error) {
+        console.error('Error requesting edits:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error requesting edits'
         });
     }
 });

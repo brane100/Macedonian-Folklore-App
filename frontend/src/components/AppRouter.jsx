@@ -373,6 +373,12 @@ function NavigationBar() {
                   >
                     🚪 Одјави се
                   </button>
+                  <button 
+                    // onClick={() => navigate('/moji-prispevki')} 
+                    className="dropdown-item"
+                  >
+                    🚪 Мои објави
+                  </button>
                 </div>
               </div>
             ) : (

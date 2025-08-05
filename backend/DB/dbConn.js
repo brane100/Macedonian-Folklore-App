@@ -227,10 +227,20 @@ dataPool.getApprovedContributions = () => {
 }
 
 // Approve/reject contribution
-dataPool.updateContributionStatus = (contributionId, status, moderatorNotes = null) => {
+dataPool.updateContributionStatus = (contributionId, status) => {
   return new Promise((resolve, reject) => {
-    conn.query(`UPDATE Prispevek SET status = ?, moderator_notes = ?, moderated_at = NOW() WHERE id = ?`, 
-      [status, moderatorNotes, contributionId], (err, res) => {
+    conn.query(`UPDATE Prispevek SET status = ? WHERE id = ?`, 
+      [status, contributionId], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+dataPool.addRevision = (contributionId, userId, status, comment) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`INSERT INTO Revizija (prispevek_id, uporabnik_id, status, komentar) VALUES (?, ?, ?, ?)`,
+      [contributionId, userId, status, comment], (err, res) => {
       if (err) { return reject(err) }
       return resolve(res)
     })
