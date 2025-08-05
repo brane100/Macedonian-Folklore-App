@@ -9,6 +9,8 @@ import Register from './Register/Register';
 import CreateContributionWizard from './contribution/CreateContributionWizard';
 import AdminPanel from './admin/AdminPanel';
 import Posts from './posts/Posts';
+import UserSubmissions from './user/UserSubmissions';
+import EditContribution from './user/EditContribution';
 import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { useRole, ModeratorGuard } from './RoleBasedAccess';
@@ -280,7 +282,8 @@ function NavigationBar() {
     ];
 
     const authenticatedLinks = [
-      { path: '/dodaj-prispevek', label: 'Додај' }
+      { path: '/dodaj-prispevek', label: 'Додај' },
+      { path: '/moji-prispevki', label: 'Мои Prispevki' }
     ];
 
     // Only show admin link to moderators/superadmins
@@ -571,6 +574,26 @@ export default function AppRouter() {
                 element={
                   <ProtectedRoute>
                     <CreateContributionWizard />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* User submissions route - requires authentication */}
+              <Route 
+                path="/moji-prispevki" 
+                element={
+                  <ProtectedRoute>
+                    <UserSubmissions />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Edit contribution route - requires authentication */}
+              <Route 
+                path="/prispevki/uredi/:id" 
+                element={
+                  <ProtectedRoute>
+                    <EditContribution />
                   </ProtectedRoute>
                 } 
               />

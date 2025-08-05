@@ -25,6 +25,29 @@ prispevki.get('/odobren', async (req, res, next) => {
     }
 })
 
+//Gets one new based on the id
+prispevki.get('/:id', async (req, res, next) => {
+    try {
+        var queryResult = await DB.enPrispevek(req.params.id)
+        res.json(queryResult)
+    }
+    catch (err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+})
+
+prispevki.get('/user/:id', async (req, res, next) => {
+    try {
+        var queryResult = await DB.prispevekKorisnika(req.params.id)
+        res.json(queryResult)
+    }
+    catch (err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+})
+
 // Test endpoint
 prispevki.get('/test', (req, res) => {
     console.log('Test endpoint hit');
@@ -75,29 +98,6 @@ prispevki.get('/my-contributions', async (req, res) => {
         });
     }
 });
-
-prispevki.get('/user/:id', async (req, res, next) => {
-    try {
-        var queryResult = await DB.prispevekKorisnika(req.params.id)
-        res.json(queryResult)
-    }
-    catch (err) {
-        console.log(err)
-        res.sendStatus(500)
-    }
-})
-
-//Gets one new based on the id - THIS MUST BE LAST among GET routes
-prispevki.get('/:id', async (req, res, next) => {
-    try {
-        var queryResult = await DB.enPrispevek(req.params.id)
-        res.json(queryResult)
-    }
-    catch (err) {
-        console.log(err)
-        res.sendStatus(500)
-    }
-})
 
 // Resubmit contribution for moderation (changes status from 3 back to 0)
 prispevki.post('/resubmit/:id', async (req, res) => {

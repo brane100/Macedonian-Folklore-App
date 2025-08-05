@@ -247,4 +247,48 @@ dataPool.addRevision = (contributionId, userId, status, comment) => {
   })
 }
 
+// Update dance
+dataPool.updateDance = (ples_id, regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) => {
+  return new Promise((resolve, reject) => {
+    if (tip_plesa === 'обредни') {
+      tip_plesa = 0; // Convert to integer for database enum
+    } else if (tip_plesa === 'посветни') {
+      tip_plesa = 1; // Convert to integer for database enum
+    }
+    conn.query(`UPDATE Ples SET regija_id = ?, ime = ?, tip_plesa = ?, kratka_zgodovina = ?, opis_tehnike = ? WHERE id = ?`,
+      [regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike, ples_id], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+// Update prispevek
+dataPool.updatePrispevek = (prispevek_id, opis, referenca_opis, referenca_url) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`UPDATE Prispevek SET opis = ?, referenca_opis = ?, referenca_url = ?, status = 0 WHERE id = ?`,
+      [opis, referenca_opis, referenca_url, prispevek_id], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+// Generic query function
+dataPool.query = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    console.log('🔍 Executing query:', sql);
+    console.log('🔍 With params:', params);
+    
+    conn.query(sql, params, (err, res) => {
+      if (err) { 
+        console.error('❌ Query failed:', err);
+        return reject(err) 
+      }
+      console.log('✅ Query successful, rows returned:', res ? res.length : 0);
+      return resolve(res)
+    })
+  })
+}
+
 module.exports = dataPool;
