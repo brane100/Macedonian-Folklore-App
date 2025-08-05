@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Step4ReviewSubmit.css';
 
 export default function Step4ReviewSubmit({ formData, prevStep }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -57,8 +59,13 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         setIsSubmitted(true);
         alert("🎉 " + result.msg);
         console.log('Contribution submitted successfully:', result.data);
+
+        // Redirect to homepage after 500 milliseconds
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
       } else {
-        throw new Error(result.msg || 'Грешка при праќање на прispevok');
+        throw new Error(result.msg || 'Грешка при праќање на објава');
       }
 
     } catch (error) {
