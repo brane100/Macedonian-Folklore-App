@@ -155,11 +155,11 @@ prispevki.post('/submit', async (req, res, next) => {
         }
 
         // Validate tipPlesa enum
-        const validTipPlesa = ['обредни', 'световни'];
+        const validTipPlesa = ['обредни', 'посветни'];
         if (!validTipPlesa.includes(tipPlesa)) {
             return res.status(400).json({
                 success: false,
-                msg: `Невалиден тип на плес. Дозволени се: обредни, световни ${tipPlesa}`
+                msg: `Невалиден тип на плес. Дозволени се: обредни, посветни -:${tipPlesa}:-`
             });
         }
         console.log("^^ :"+regionInfo.ime +" " + regionInfo.koordinata_x + " " + regionInfo.koordinata_y);
