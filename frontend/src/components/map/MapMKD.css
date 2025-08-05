@@ -47,7 +47,7 @@
 
 /* Општи стилови за path елементи */
 .region-group path {
-  stroke: #888888;
+  stroke: #505050;
   stroke-width: 0.9;
   stroke-linejoin: round;
   transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
@@ -105,7 +105,7 @@
 .region-group.region-skopjeRegion path,
 .region-group.region-northeastRegion path,
 .region-group.region-polishRegion path {
-  fill: #000000 !important; /* Uniform color */
+  fill: #cc0000 !important; /* Uniform color */
 }
 
 /* Hover ефекти за региони - со карактеристични граници */
@@ -173,7 +173,7 @@
 .region-group.region-skopjeRegion:hover path,
 .region-group.region-northeastRegion:hover path,
 .region-group.region-polishRegion:hover path {
-  fill: #ef5350 !important; /* Uniform color */
+  fill: #fdc50e !important; /* Uniform color */
   stroke: #c62828 !important;
 }
 /* Tooltip стилови за прикажување на ID на општини */
