@@ -1,18 +1,6 @@
 const express = require('express')
 const prispevki = express.Router()
 const DB = require('../DB/dbConn')
-
-//Gets        // Map region IDs to region names and coordinates
-        const regionMap = {
-            "1": { ime: "Пелагонија", koordinata_x: 21.4369, koordinata_y: 41.2317 },
-            "2": { ime: "Скопје", koordinata_x: 21.4254, koordinata_y: 41.9981 },
-            "3": { ime: "Вардарска Македонија", koordinata_x: 21.7453, koordinata_y: 41.6086 },
-            "4": { ime: "Источна Македонија", koordinata_x: 22.3744, koordinata_y: 41.7151 },
-            "5": { ime: "Југозападен дел", koordinata_x: 20.8934, koordinata_y: 41.2317 },
-            "6": { ime: "Југоисточен дел", koordinata_x: 22.3744, koordinata_y: 41.3317 },
-            "7": { ime: "Полог", koordinata_x: 20.9590, koordinata_y: 42.0650 },
-            "8": { ime: "Североисточен дел", koordinata_x: 22.1953, koordinata_y: 42.1354 }
-        };
 prispevki.get('/', async (req, res, next) => {
     try {
         var queryResult = await DB.allPrispevki();
@@ -130,9 +118,9 @@ prispevki.post('/submit', async (req, res, next) => {
             "2": { ime: "Скопје", koordinata_x: 21.4254, koordinata_y: 41.9981 },
             "3": { ime: "Вардарска Македонија", koordinata_x: 21.7453, koordinata_y: 41.6086 },
             "4": { ime: "Источна Македонија", koordinata_x: 22.3744, koordinata_y: 41.7151 },
-            "5": { ime: "Југозападен дел", koordinата_x: 20.8934, координата_y: 41.2317 },
+            "5": { ime: "Југозападен дел", koordinata_x: 20.8934, koordinata_y: 41.2317 },
             "6": { ime: "Југоисточен дел", koordinata_x: 22.3744, koordinata_y: 41.3317 },
-            "7": { ime: "Полог", koordinata_x: 20.9590, координата_y: 42.0650 },
+            "7": { ime: "Полог", koordinata_x: 20.9590, koordinata_y: 42.0650 },
             "8": { ime: "Североисточен дел", koordinata_x: 22.1953, koordinata_y: 42.1354 }
         };
 
@@ -144,6 +132,14 @@ prispevki.post('/submit', async (req, res, next) => {
             });
         }
 
+        // Validate region coordinates
+        if (!regionInfo.koordinata_x || !regionInfo.koordinata_y) {
+            return res.status(400).json({
+                success: false,
+                msg: "Невалидни координати за регијата"
+            });
+        }
+
         // Validate required fields
         if (!novPlesIme || !tipPlesa || !regijaId) {
             return res.status(400).json({
@@ -152,18 +148,34 @@ prispevki.post('/submit', async (req, res, next) => {
             });
         }
 
+        // Convert string to integer for database enum
+        let tipPlesInt = 0; // Default to 0 for 'обредни'
+        if (tipPlesa === 'световни') {
+            tipPlesInt = 1;
+        }
+
+        // Validate tipPlesa enum
+        const validTipPlesa = ['обредни', 'световни'];
+        if (!validTipPlesa.includes(tipPlesa)) {
+            return res.status(400).json({
+                success: false,
+                msg: `Невалиден тип на плес. Дозволени се: обредни, световни ${tipPlesa}`
+            });
+        }
+        console.log("^^ :"+regionInfo.ime +" " + regionInfo.koordinata_x + " " + regionInfo.koordinata_y);
         // 1. Create or get region
         const regionResult = await DB.createOrGetRegion(
             regionInfo.ime,
             regionInfo.koordinata_x,
-            regionInfo.koordinata_y
+            regionInfo.koordinata_y 
         );
 
+        console.log("^^ :"+regionResult.id+ " " + novPlesIme + " " + tipPlesInt + " " + kratkaZgodovina + " " + opisTehnike);
         // 2. Create dance
         const danceResult = await DB.createDance(
             regionResult.id,
             novPlesIme,
-            tipPlesa,
+            tipPlesInt,
             kratkaZgodovina || null,
             opisTehnike || null
         );

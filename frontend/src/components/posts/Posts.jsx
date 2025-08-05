@@ -78,6 +78,8 @@ const Posts = () => {
 
     const getTipIcon = (tip) => {
         switch (tip) {
+            case 'обредни': return '⛪';
+            case 'посветни': return '🎭';
             case 'Оро': return '🕺';
             case 'Женско оро': return '💃';
             case 'Машко оро': return '🕺';

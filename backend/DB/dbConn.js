@@ -61,7 +61,7 @@ dataPool.prispevekPlesa = (id) => {
 
 dataPool.createPrispevek = (opis, je_anonimen, referenca_opis, referenca_url, uporabnik_id = null, ples_id) => {
   return new Promise((resolve, reject) => {
-    conn.query(`INSERT INTO Prispevek (uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url, status, datum_ustvarjen) VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())`,
+    conn.query(`INSERT INTO Prispevek (uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url, status, datum_ustvarjen) VALUES (?, ?, ?, ?, ?, ?, 'cakajoc', NOW())`,
       [uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url], (err, res) => {
         if (err) { return reject(err) }
         return resolve(res)
@@ -94,6 +94,11 @@ dataPool.createOrGetRegion = (ime, koordinata_x, koordinata_y) => {
 // Create dance
 dataPool.createDance = (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) => {
   return new Promise((resolve, reject) => {
+    if (tip_plesa === 'обредни') {
+      tip_plesa = 0; // Convert to integer for database enum
+    } else {
+      tip_plesa = 1; // Convert to integer for database enum
+    }
     conn.query(`INSERT INTO Ples (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) VALUES (?, ?, ?, ?, ?)`,
       [regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike], (err, res) => {
         if (err) { return reject(err) }
@@ -198,7 +203,7 @@ dataPool.deleteUser = (userId) => {
 // Get pending contributions (for moderation)
 dataPool.getPendingContributions = () => {
   return new Promise((resolve, reject) => {
-    conn.query(`SELECT * FROM Prispevek WHERE status = 'pending' OR status IS NULL`, (err, res) => {
+    conn.query(`SELECT * FROM Prispevek WHERE status = 'cakajoc' OR status IS NULL`, (err, res) => {
       if (err) { return reject(err) }
       return resolve(res)
     })

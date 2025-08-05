@@ -8,26 +8,9 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     console.log('Submitting:', formData);
-
-    // Validate required fields from Step 1
-    const requiredFields = {
-      'Име на плес': formData.novPlesIme,
-      'Тип на плес': formData.tipPlesa,
-      'Регија': formData.regijaId
-    };
-
-    const missingFields = Object.entries(requiredFields)
-      .filter(([key, value]) => !value || value.trim() === '')
-      .map(([key]) => key);
-
-    if (missingFields.length > 0) {
-      alert(`❌ Ве молиме пополнете ги следните задолжителни полиња:\n• ${missingFields.join('\n• ')}`);
-      setIsSubmitting(false);
-      return;
-    }
-
+    
     try {
-      const response = await fetch('http://localhost:3001/prispevki/submit', {
+      const response = await fetch('/prispevki/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,10 +22,10 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
           tipPlesa: formData.tipPlesa,
           kratkaZgodovina: formData.kratkaZgodovina,
           opisTehnike: formData.opisTehnike,
-
+          
           // Region information  
           regijaId: formData.regijaId,
-
+          
           // Contribution information
           opis: formData.opis,
           jeAnonimen: formData.jeAnonimen,
@@ -52,7 +35,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
       });
 
       const result = await response.json();
-
+      
       if (response.ok && result.success) {
         setIsSubmitted(true);
         alert("🎉 " + result.msg);
@@ -60,7 +43,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
       } else {
         throw new Error(result.msg || 'Грешка при праќање на прispevok');
       }
-
+      
     } catch (error) {
       console.error('Error submitting contribution:', error);
       alert("❌ Грешка при праќање: " + error.message);
@@ -70,7 +53,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
   };
 
   const getMediaIcon = (type) => {
-    switch (type) {
+    switch(type) {
       case 'image': return '🖼️';
       case 'video': return '🎥';
       case 'audio': return '🎵';
@@ -82,7 +65,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
   const getRegionName = (regijaId) => {
     const regionMap = {
       "1": "Пелагонија",
-      "2": "Скопје",
+      "2": "Скопје", 
       "3": "Вардарска Македонија",
       "4": "Источна Македонија",
       "5": "Југозападен дел",
@@ -108,51 +91,49 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
       )}
 
       <div className="review-section">
-        {/* Basic Information */}
+        {/* Dance Information */}
         <div className="review-card">
+          <h3>🎭 Информации за плесот</h3>
           <div className="review-item">
             <span className="review-label">📖 Име на плес:</span>
             <span className="review-value highlight">{formData.novPlesIme || 'Не е наведено'}</span>
           </div>
-
+          
           <div className="review-item">
             <span className="review-label">🎪 Тип на плес:</span>
             <span className="review-value">{formData.tipPlesa || 'Не е избран'}</span>
           </div>
-
+          
           <div className="review-item">
             <span className="review-label">📜 Кратка историја:</span>
             <span className="review-value long-text">{formData.kratkaZgodovina || 'Нема опис'}</span>
           </div>
-
+          
           <div className="review-item">
             <span className="review-label">🎯 Опис на техника:</span>
             <span className="review-value long-text">{formData.opisTehnike || 'Нема опис'}</span>
           </div>
+        </div>
 
+        {/* Basic Information */}
+        <div className="review-card">
+          <h3>ℹ️ Основни информации</h3>
           <div className="review-item">
-            <span className="review-label">📝 Опис:</span>
+            <span className="review-label">📝 Опис на прispevok:</span>
             <span className="review-value long-text">{formData.opis || 'Нема опис'}</span>
           </div>
-
+          
           <div className="review-item">
             <span className="review-label">🕶️ Анонимност:</span>
             <span className={`review-value ${formData.jeAnonimen ? 'highlight' : ''}`}>
               {formData.jeAnonimen ? "✅ Да, анонимен прispevok" : "❌ Не, со мое име"}
             </span>
           </div>
-
+          
           <div className="review-item">
             <span className="review-label">🗺️ Регија:</span>
             <span className="review-value highlight">
               {getRegionName(formData.regijaId)}
-            </span>
-          </div>
-
-          <div className="review-item">
-            <span className="review-label">🎭 Плес/Традиција:</span>
-            <span className="review-value highlight">
-              {formData.plesId || `🆕 Нов: ${formData.novPlesIme || 'Не е наведено'}`}
             </span>
           </div>
         </div>
@@ -197,13 +178,14 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
 
         {/* References */}
         <div className="review-card">
+          <h3>📚 Референци</h3>
           <div className="review-item">
-            <span className="review-label">📄 Референца:</span>
+            <span className="review-label">📄 Опис на референца:</span>
             <span className="review-value long-text">
               {formData.referencaOpis || 'Нема опис на референца'}
             </span>
           </div>
-
+          
           <div className="review-item">
             <span className="review-label">🔗 URL:</span>
             <span className="review-value">
@@ -227,22 +209,18 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
 
       {/* Action Buttons */}
       <div className="action-buttons">
-        <button
-          onClick={prevStep}
+        <button 
+          onClick={prevStep} 
           className="btn btn-back"
           disabled={isSubmitting}
         >
           ⬅️ Назад
         </button>
-
-        <button
-          onClick={handleSubmit}
+        
+        <button 
+          onClick={handleSubmit} 
           className="btn btn-submit"
           disabled={isSubmitting || isSubmitted}
-          style={{
-            opacity: isSubmitting || isSubmitted ? 0.5 : 1,
-            cursor: isSubmitting || isSubmitted ? 'not-allowed' : 'pointer'
-          }}
         >
           {isSubmitting ? (
             <>

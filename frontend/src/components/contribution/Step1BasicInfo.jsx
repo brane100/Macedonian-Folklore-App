@@ -4,7 +4,7 @@ import './Step1BasicInfo.css';
 export default function Step1BasicInfo({ formData, setFormData, nextStep }) {
   const tipoviPlesa = [
     'обредни',
-    'световни'
+    'посветни'
   ];
 
   return (
@@ -39,23 +39,25 @@ export default function Step1BasicInfo({ formData, setFormData, nextStep }) {
       </div>
 
       <div className="form-group">
-        <label className="form-label">Кратка историја</label>
+        <label className="form-label required">Кратка историја</label>
         <textarea
           className="form-textarea"
           placeholder="Опишете ја кратката историја на плесот"
           value={formData.kratkaZgodovina}
           onChange={(e) => setFormData({ ...formData, kratkaZgodovina: e.target.value })}
+          required
           rows="2"
         />
       </div>
 
       <div className="form-group">
-        <label className="form-label">Опис на техника</label>
+        <label className="form-label required">Опис на техника</label>
         <textarea
           className="form-textarea"
           placeholder="Опишете ја техниката на изведување на плесот"
           value={formData.opisTehnike}
           onChange={(e) => setFormData({ ...formData, opisTehnike: e.target.value })}
+          required
           rows="2"
         />
       </div>
