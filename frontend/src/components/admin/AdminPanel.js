@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRole, USER_ROLES } from '../RoleBasedAccess';
+import { useAuth } from '../../contexts/AuthContext';
 import './AdminPanel.css';
 
 const AdminPanel = () => {
     const { userRole, isModerator, isSuperAdmin } = useRole();
+    const { user: currentUser } = useAuth(); // Get current logged-in user
     const [activeTab, setActiveTab] = useState('overview');
     const [pendingContributions, setPendingContributions] = useState([]);
     const [users, setUsers] = useState([]);
@@ -213,7 +215,7 @@ const AdminPanel = () => {
                         {loading ? (
                             <p>Се вчитува...</p>
                         ) : pendingContributions.length === 0 ? (
-                            <p>🎉 Нема pending prispevki за модерација!</p>
+                            <p>🎉 Нема pending prispevки за модерација!</p>
                         ) : (
                             <div className="contributions-list">
                                 {pendingContributions.map(contribution => (
@@ -268,32 +270,42 @@ const AdminPanel = () => {
                                                 <td>{user.ime} {user.priimek}</td>
                                                 <td>{user.email}</td>
                                                 <td>
-                                                    <select 
-                                                        value={user.vloga}
-                                                        onChange={(e) => updateUserRole(user.id, e.target.value)}
-                                                    >
-                                                        <option value={USER_ROLES.USER}>Navaden</option>
+                                                    {currentUser?.id !== user.id ? (
+                                                        <select 
+                                                            value={user.vloga}
+                                                            onChange={(e) => updateUserRole(user.id, e.target.value)}
+                                                        >
+                                                            <option value={USER_ROLES.USER}>Navaden</option>
                                                         <option value={USER_ROLES.MODERATOR}>Komisija</option>
                                                         <option value={USER_ROLES.SUPERADMIN}>Superadmin</option>
                                                     </select>
+                                                    ) : (
+                                                        <span>{user.vloga}</span>
+                                                    )}
                                                 </td>
                                                 <td>
-                                                    <button 
-                                                        className="delete-user-btn"
-                                                        onClick={() => deleteUser(user.id, `${user.ime} ${user.priimek}`)}
-                                                        style={{
-                                                            background: '#dc3545',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            padding: '0.5rem 1rem',
-                                                            borderRadius: '6px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '0.9rem',
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    >
-                                                        �️ Избриши
-                                                    </button>
+                                                    {currentUser?.id !== user.id ? (
+                                                        <button 
+                                                            className="delete-user-btn"
+                                                            onClick={() => deleteUser(user.id, `${user.ime} ${user.priimek}`)}
+                                                            style={{
+                                                                background: '#dc3545',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                padding: '0.5rem 1rem',
+                                                                borderRadius: '6px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '0.9rem',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        >
+                                                            🗑️ Избриши
+                                                        </button>
+                                                    ) : (
+                                                        <span style={{ color: '#666', fontStyle: 'italic' }}>
+                                                            Тековен корисник
+                                                        </span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

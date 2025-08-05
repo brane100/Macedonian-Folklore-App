@@ -81,6 +81,30 @@
   margin: 0 2rem;
 }
 
+/* Compact Navigation for smaller screens */
+.nav-center.compact-nav {
+  display: none; /* Hidden by default */
+  gap: 1rem;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.compact-nav .nav-link {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* Ensure compact nav doesn't interfere with desktop */
+@media (min-width: 1200px) {
+  .compact-nav {
+    display: none !important;
+  }
+}
+
 .nav-link {
   padding: 0.8rem 1.5rem;
   font-weight: 500;
@@ -91,6 +115,22 @@
   position: relative;
   white-space: nowrap;
   display: inline-block;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--macedonia-red);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+  width: 80%;
 }
 
 .nav-link:hover {
@@ -139,6 +179,166 @@
 .nav-icon-btn:hover {
   background: var(--macedonia-cream);
   transform: scale(1.1);
+}
+
+/* User Menu and Authentication */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--macedonia-cream);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  border: 2px solid var(--macedonia-yellow);
+}
+
+.user-greeting {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.logout-btn {
+  background: var(--macedonia-red);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.logout-btn:hover {
+  background: var(--macedonia-dark-red);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
+}
+
+/* User Dropdown - Clean Design */
+.user-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-profile-btn {
+  background: var(--macedonia-cream);
+  border: 2px solid var(--macedonia-yellow);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.user-profile-btn:hover {
+  background: var(--macedonia-yellow);
+  transform: scale(1.05);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 2px solid var(--macedonia-yellow);
+  border-radius: 8px;
+  box-shadow: var(--shadow-medium);
+  min-width: 160px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.user-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  padding: 0.8rem 1rem;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdown-item:hover {
+  background: var(--macedonia-cream);
+}
+
+.dropdown-item.user-info {
+  font-weight: 600;
+  border-bottom: 1px solid var(--macedonia-light-gray);
+  cursor: default;
+}
+
+.dropdown-item.user-info:hover {
+  background: none;
+}
+
+.dropdown-item.logout-action:hover {
+  background: var(--macedonia-red);
+  color: white;
+}
+
+/* Mobile user info */
+.mobile-user-info {
+  background: var(--macedonia-cream);
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.logout-mobile {
+  background: var(--macedonia-red) !important;
+  color: white !important;
+}
+
+.logout-mobile:hover {
+  background: var(--macedonia-dark-red) !important;
+}
+
+/* Sidebar user info */
+.sidebar-user-info {
+  background: var(--macedonia-cream);
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.logout-sidebar {
+  background: var(--macedonia-red) !important;
+  color: white !important;
+}
+
+.logout-sidebar:hover {
+  background: var(--macedonia-dark-red) !important;
 }
 
 /* Hamburger Menu for Small Screens */
@@ -1120,13 +1320,23 @@
 
 /* Tablet Landscape (1024px to 1199px) - Medium Screens with Sidebar */
 @media (max-width: 1199px) and (min-width: 768px) {
-  /* Hide desktop navigation */
+  /* Hide desktop navigation but show compact navigation */
   .desktop-nav {
     display: none !important;
   }
   
-  .desktop-icon {
+  /* Show compact navigation for essential links */
+  .compact-nav {
+    display: flex !important;
+  }
+  
+  .desktop-icon:not(.user-dropdown) {
     display: none !important;
+  }
+  
+  /* Keep user dropdown visible */
+  .user-dropdown.desktop-icon {
+    display: flex !important;
   }
   
   /* Show sidebar toggle */
@@ -1174,13 +1384,23 @@
     padding: 1rem;
   }
   
-  /* Hide desktop navigation, show sidebar toggle */
+  /* Hide desktop navigation but show compact navigation */
   .desktop-nav {
     display: none !important;
   }
   
-  .desktop-icon {
+  /* Show compact navigation for essential links */
+  .compact-nav {
+    display: flex !important;
+  }
+  
+  .desktop-icon:not(.user-dropdown) {
     display: none !important;
+  }
+  
+  /* Keep user dropdown visible */
+  .user-dropdown.desktop-icon {
+    display: flex !important;
   }
   
   .tablet-only {
@@ -1256,6 +1476,18 @@
   /* Hide desktop and tablet navigation */
   .desktop-nav {
     display: none !important;
+  }
+  
+  /* Show compact navigation for essential links */
+  .compact-nav {
+    display: flex !important;
+    gap: 0.5rem;
+    margin: 0 0.5rem;
+  }
+  
+  .compact-nav .nav-link {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8rem;
   }
   
   .desktop-icon {
@@ -1389,6 +1621,11 @@
   
   .nav-icons {
     gap: 0.5rem;
+  }
+  
+  /* Ensure logout is always accessible */
+  .user-dropdown.desktop-icon {
+    display: none !important; /* Force use of mobile menu */
   }
   
   .cultural-hero {

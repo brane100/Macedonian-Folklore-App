@@ -274,23 +274,22 @@ function NavigationBar() {
   // Memoize navigation links to prevent unnecessary re-renders
   const navigationLinks = useMemo(() => {
     const baseNavigationLinks = [
-      { path: '/', label: 'Почетна' },
       { path: '/plesi', label: 'Плеси' },
-      { path: '/regioni', label: 'Региони' },
-      { path: '/kontakt', label: 'Контакт' }
+      { path: '/mapa', label: 'Мапа' }
     ];
 
     const authenticatedLinks = [
-      { path: '/dodaj-prispevek', label: 'Додај прispevok' }
+      { path: '/dodaj-prispevek', label: 'Додај' }
     ];
 
-    // Add admin link for moderators and superadmins
+    // Only show admin link to moderators/superadmins
+    const adminLinks = [];
     if (isAuthenticated && isModerator) {
-      authenticatedLinks.push({ path: '/admin', label: '🛡️ Админ' });
+      adminLinks.push({ path: '/admin', label: '🛡️ Админ' });
     }
 
     return isAuthenticated 
-      ? [...baseNavigationLinks.slice(0, 3), ...authenticatedLinks, ...baseNavigationLinks.slice(3)]
+      ? [...baseNavigationLinks, ...authenticatedLinks, ...adminLinks]
       : baseNavigationLinks;
   }, [isAuthenticated, isModerator]);
 
@@ -335,6 +334,19 @@ function NavigationBar() {
             ))}
           </div>
           
+          {/* Compact Navigation for smaller screens */}
+          <div className="nav-center compact-nav">
+            {navigationLinks.map((link, index) => (
+              <Link 
+                key={index}
+                to={link.path} 
+                className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          
           {/* Navigation Icons */}
           <div className="nav-icons">
             <button className="nav-icon-btn desktop-icon" title="Пребарај">
@@ -346,21 +358,25 @@ function NavigationBar() {
             
             {/* Authentication-based Profile/Login section */}
             {isAuthenticated ? (
-              <div className="user-menu desktop-icon">
-                <span className="user-greeting" title={`Најавен како ${user?.ime || 'Корисник'}`}>
-                  👤 {user?.ime || 'Корисник'}
-                </span>
-                <button 
-                  onClick={logout} 
-                  className="logout-btn"
-                  title="Одјави се"
-                >
-                  🚪
+              <div className="user-dropdown desktop-icon">
+                <button className="user-profile-btn" title={`Најавен како ${user?.ime || 'Корисник'}`}>
+                  👤
                 </button>
+                <div className="dropdown-menu">
+                  <div className="dropdown-item user-info">
+                    {user?.ime || 'Корисник'}
+                  </div>
+                  <button 
+                    onClick={logout} 
+                    className="dropdown-item logout-action"
+                  >
+                    🚪 Одјави се
+                  </button>
+                </div>
               </div>
             ) : (
               <Link to="/prijava" className="nav-icon-btn desktop-icon" title="Најави се">
-                👤 Најави се
+                👤
               </Link>
             )}
             
