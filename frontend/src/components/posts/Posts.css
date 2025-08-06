@@ -50,6 +50,12 @@
     gap: 0.5rem;
 }
 
+.filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .filter-section label, .sort-section label {
     font-weight: 600;
     color: #34495e;
@@ -73,6 +79,26 @@
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
+.clear-filter-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.clear-filter-btn:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
 /* Stats */
 .posts-stats {
     display: flex;
@@ -90,6 +116,16 @@
     font-weight: 600;
     font-size: 0.9rem;
     box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+}
+
+.stats-item.search-indicator {
+    background: #9b59b6;
+    box-shadow: 0 3px 10px rgba(155, 89, 182, 0.3);
+}
+
+.stats-item.filter-indicator {
+    background: #e67e22;
+    box-shadow: 0 3px 10px rgba(230, 126, 34, 0.3);
 }
 
 /* Posts Grid */

@@ -21,6 +21,8 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
             
             if (response.ok) {
                 const data = await response.json();
+                console.log('Fetched posts data:', data); // Debug log
+                console.log('First post structure:', data[0]); // Debug log
                 setPosts(data);
             } else {
                 setError('Грешка при вчитување на присpevки');
@@ -34,12 +36,34 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
     };
 
     const getRegions = () => {
-        const regions = [...new Set(posts.map(post => post.regija).filter(Boolean))];
-        return regions;
+        console.log('Posts array:', posts); // Debug log
+        console.log('Posts length:', posts.length); // Debug log
+        
+        const allRegions = posts.map(post => {
+            console.log('Post regija:', post.regija); // Debug each post's region
+            return post.regija;
+        });
+        console.log('All regions (before filter):', allRegions); // Debug log
+        
+        const filteredRegions = allRegions.filter(Boolean);
+        console.log('Filtered regions (after removing empty):', filteredRegions); // Debug log
+        
+        const uniqueRegions = [...new Set(filteredRegions)];
+        console.log('Unique regions:', uniqueRegions); // Debug log
+        
+        const sortedRegions = uniqueRegions.sort();
+        console.log('Available regions (final):', sortedRegions); // Debug log
+        
+        return sortedRegions;
     };
 
     const filteredAndSortedPosts = () => {
         let filteredPosts = posts;
+
+        // Debug logs
+        console.log('Total posts:', posts.length);
+        console.log('Current filter:', filter);
+        console.log('Search query:', searchQuery);
 
         // Filter by search query first
         if (searchQuery && searchQuery.trim() !== '') {
@@ -61,9 +85,16 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
             });
         }
 
+        console.log('After search filter:', filteredPosts.length);
+
         // Filter by region
         if (filter !== 'all') {
-            filteredPosts = filteredPosts.filter(post => post.regija === filter);
+            const beforeRegionFilter = filteredPosts.length;
+            filteredPosts = filteredPosts.filter(post => {
+                console.log(`Comparing post region "${post.regija}" with filter "${filter}"`);
+                return post.regija === filter;
+            });
+            console.log(`Region filter: ${beforeRegionFilter} -> ${filteredPosts.length}`);
         }
 
         // Sort posts
@@ -93,7 +124,7 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
         if (post.je_anonimen) {
             return 'Анонимен';
         }
-        return post.ime && post.priimek ? `${post.ime} ${post.priimek}` : 'Непознат автор';
+        return post.user_ime && post.priimek ? `${post.user_ime} ${post.priimek}` : 'Непознат автор';
     };
 
     const getTipIcon = (tip) => {
@@ -175,19 +206,30 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
             <div className="posts-controls">
                 <div className="filter-section">
                     <label htmlFor="region-filter">📍 Филтрирај по регион:</label>
-                    <select 
-                        id="region-filter"
-                        value={filter} 
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="filter-select"
-                    >
-                        <option value="all">Сите региони</option>
-                        {getRegions().map(region => (
-                            <option key={region} value={region}>
-                                {getRegijaIcon(region)} {region}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="filter-controls">
+                        <select 
+                            id="region-filter"
+                            value={filter} 
+                            onChange={(e) => setFilter(e.target.value)}
+                            className="filter-select"
+                        >
+                            <option value="all">Сите региони</option>
+                            {getRegions().map(region => (
+                                <option key={region} value={region}>
+                                    {getRegijaIcon(region)} {region}
+                                </option>
+                            ))}
+                        </select>
+                        {filter !== 'all' && (
+                            <button 
+                                onClick={() => setFilter('all')} 
+                                className="clear-filter-btn"
+                                title="Исчисти филтер"
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="sort-section">
@@ -215,6 +257,11 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                 {searchQuery && (
                     <span className="stats-item search-indicator">
                         🔍 Пребарување: "{searchQuery}"
+                    </span>
+                )}
+                {filter !== 'all' && (
+                    <span className="stats-item filter-indicator">
+                        📍 Филтер: {filter}
                     </span>
                 )}
             </div>
