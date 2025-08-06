@@ -100,9 +100,9 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
         // Sort posts
         switch (sortBy) {
             case 'newest':
-                return filteredPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                return filteredPosts.sort((a, b) => new Date(b.datum_ustvarjen) - new Date(a.datum_ustvarjen));
             case 'oldest':
-                return filteredPosts.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                return filteredPosts.sort((a, b) => new Date(a.datum_ustvarjen) - new Date(b.datum_ustvarjen));
             case 'alphabetical':
                 return filteredPosts.sort((a, b) => (a.ime_plesa || '').localeCompare(b.ime_plesa || ''));
             default:
@@ -357,7 +357,7 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                                         👤 {getAuthorName(post)}
                                     </span>
                                     <span className="post-date">
-                                        📅 {formatDate(post.created_at)}
+                                        📅 {formatDate(post.datum_ustvarjen)}
                                     </span>
                                 </div>
                                 <div className="post-actions">

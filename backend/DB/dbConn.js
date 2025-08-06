@@ -242,8 +242,7 @@ dataPool.getApprovedContributions = () => {
       LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
       LEFT JOIN Ples pl ON p.ples_id = pl.id
       LEFT JOIN Regija r ON pl.regija_id = r.id
-      WHERE p.status = 'odobren' 
-      ORDER BY p.datum_ustvarjen DESC
+      WHERE p.status = 'odobren'
     `, (err, res) => {
       if (err) { return reject(err) }
       return resolve(res)
