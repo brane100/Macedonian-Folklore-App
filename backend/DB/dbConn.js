@@ -63,9 +63,9 @@ dataPool.createPrispevek = (opis, je_anonimen, referenca_opis, referenca_url, up
   return new Promise((resolve, reject) => {
     conn.query(`INSERT INTO Prispevek (uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url, status, datum_ustvarjen) VALUES (?, ?, ?, ?, ?, ?, 'cakajoc', NOW())`,
       [uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url], (err, res) => {
-        if (err) { 
+        if (err) {
           console.error('Database error in createPrispevek:', err);
-          return reject(err) 
+          return reject(err)
         }
         console.log('Successfully created prispevek with ID:', res.insertId);
         return resolve(res)
@@ -78,11 +78,11 @@ dataPool.createOrGetRegion = (ime, koordinata_x, koordinata_y) => {
   return new Promise((resolve, reject) => {
     // First check if region exists
     conn.query(`SELECT id FROM Regija WHERE ime = ?`, [ime], (err, res) => {
-      if (err) { 
+      if (err) {
         console.error('Database error in createOrGetRegion (SELECT):', err);
-        return reject(err) 
+        return reject(err)
       }
-      
+
       if (res.length > 0) {
         // Region exists, return its ID
         console.log('Found existing region with ID:', res[0].id);
@@ -91,9 +91,9 @@ dataPool.createOrGetRegion = (ime, koordinata_x, koordinata_y) => {
         // Create new region
         conn.query(`INSERT INTO Regija (ime, koordinata_x, koordinata_y) VALUES (?, ?, ?)`,
           [ime, koordinata_x, koordinata_y], (err, res) => {
-            if (err) { 
+            if (err) {
               console.error('Database error in createOrGetRegion (INSERT):', err);
-              return reject(err) 
+              return reject(err)
             }
             console.log('Created new region with ID:', res.insertId);
             return resolve({ id: res.insertId, isNew: true })
@@ -111,14 +111,14 @@ dataPool.createDance = (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnik
     } else if (tip_plesa === 'посветни') {
       tip_plesa = 'posvetni'; // Convert to integer for database enum
     }
-    
+
     console.log('Creating dance with params:', { regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike });
-    
+
     conn.query(`INSERT INTO Ples (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) VALUES (?, ?, ?, ?, ?)`,
       [regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike], (err, res) => {
-        if (err) { 
+        if (err) {
           console.error('Database error in createDance:', err);
-          return reject(err) 
+          return reject(err)
         }
         console.log('Successfully created dance with ID:', res.insertId);
         return resolve(res)
@@ -178,13 +178,13 @@ dataPool.deleteUser = (userId) => {
   return new Promise((resolve, reject) => {
     // First check if user has any contributions that reference them
     conn.query(`SELECT COUNT(*) as count FROM Prispevek WHERE uporabnik_id = ?`, [userId], (err, res) => {
-      if (err) { 
+      if (err) {
         console.error('Error checking user contributions:', err);
         return reject(err);
       }
-      
+
       const contributionCount = res[0].count;
-      
+
       if (contributionCount > 0) {
         // If user has contributions, we need to handle them first
         // Option 1: Set contributions to anonymous (set uporabnik_id to NULL)
@@ -193,10 +193,10 @@ dataPool.deleteUser = (userId) => {
             console.error('Error updating user contributions:', updateErr);
             return reject(updateErr);
           }
-          
+
           // Now delete the user
           conn.query(`DELETE FROM Uporabnik WHERE id = ?`, [userId], (deleteErr, deleteRes) => {
-            if (deleteErr) { 
+            if (deleteErr) {
               console.error('Error deleting user:', deleteErr);
               return reject(deleteErr);
             }
@@ -207,7 +207,7 @@ dataPool.deleteUser = (userId) => {
       } else {
         // No contributions, safe to delete user directly
         conn.query(`DELETE FROM Uporabnik WHERE id = ?`, [userId], (deleteErr, deleteRes) => {
-          if (deleteErr) { 
+          if (deleteErr) {
             console.error('Error deleting user:', deleteErr);
             return reject(deleteErr);
           }
@@ -222,7 +222,16 @@ dataPool.deleteUser = (userId) => {
 // Get pending contributions (for moderation)
 dataPool.getPendingContributions = () => {
   return new Promise((resolve, reject) => {
-    conn.query(`SELECT * FROM Prispevek WHERE status = 'cakajoc' OR status IS NULL`, (err, res) => {
+    conn.query(`SELECT p.*, 
+             u.ime AS user_ime, u.priimek, u.email, 
+             pl.ime AS ime_plesa, pl.tip_plesa, 
+             pl.kratka_zgodovina, pl.opis_tehnike,
+             r.ime AS regija
+      FROM Prispevek p 
+      LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
+      LEFT JOIN Ples pl ON p.ples_id = pl.id
+      LEFT JOIN Regija r ON pl.regija_id = r.id
+      WHERE p.status = 'odobren'`, (err, res) => {
       if (err) { return reject(err) }
       return resolve(res)
     })
@@ -253,11 +262,11 @@ dataPool.getApprovedContributions = () => {
 // Approve/reject contribution
 dataPool.updateContributionStatus = (contributionId, status) => {
   return new Promise((resolve, reject) => {
-    conn.query(`UPDATE Prispevek SET status = ? WHERE id = ?`, 
+    conn.query(`UPDATE Prispevek SET status = ? WHERE id = ?`,
       [status, contributionId], (err, res) => {
-      if (err) { return reject(err) }
-      return resolve(res)
-    })
+        if (err) { return reject(err) }
+        return resolve(res)
+      })
   })
 }
 
@@ -265,9 +274,9 @@ dataPool.addRevision = (contributionId, userId, status, comment) => {
   return new Promise((resolve, reject) => {
     conn.query(`INSERT INTO Revizija (prispevek_id, uporabnik_id, status, komentar) VALUES (?, ?, ?, ?)`,
       [contributionId, userId, status, comment], (err, res) => {
-      if (err) { return reject(err) }
-      return resolve(res)
-    })
+        if (err) { return reject(err) }
+        return resolve(res)
+      })
   })
 }
 
@@ -281,9 +290,9 @@ dataPool.updateDance = (ples_id, regija_id, ime, tip_plesa, kratka_zgodovina, op
     }
     conn.query(`UPDATE Ples SET regija_id = ?, ime = ?, tip_plesa = ?, kratka_zgodovina = ?, opis_tehnike = ? WHERE id = ?`,
       [regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike, ples_id], (err, res) => {
-      if (err) { return reject(err) }
-      return resolve(res)
-    })
+        if (err) { return reject(err) }
+        return resolve(res)
+      })
   })
 }
 
@@ -292,9 +301,9 @@ dataPool.updatePrispevek = (prispevek_id, opis, referenca_opis, referenca_url) =
   return new Promise((resolve, reject) => {
     conn.query(`UPDATE Prispevek SET opis = ?, referenca_opis = ?, referenca_url = ?, status = 0 WHERE id = ?`,
       [opis, referenca_opis, referenca_url, prispevek_id], (err, res) => {
-      if (err) { return reject(err) }
-      return resolve(res)
-    })
+        if (err) { return reject(err) }
+        return resolve(res)
+      })
   })
 }
 
@@ -303,11 +312,11 @@ dataPool.query = (sql, params = []) => {
   return new Promise((resolve, reject) => {
     console.log('🔍 Executing query:', sql);
     console.log('🔍 With params:', params);
-    
+
     conn.query(sql, params, (err, res) => {
-      if (err) { 
+      if (err) {
         console.error('❌ Query failed:', err);
-        return reject(err) 
+        return reject(err)
       }
       console.log('✅ Query successful, rows returned:', res ? res.length : 0);
       return resolve(res)

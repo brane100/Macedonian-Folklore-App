@@ -563,7 +563,7 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
                     <div className="detail-section">
                         <div className="info-row">
                             <span className="label">🎭 Име на плес:</span>
-                            <span className="value highlight">{contribution.ime_plesa || 'Неdefinirano'}</span>
+                            <span className="value highlight">{contribution.ime || 'Неdefinirano'}</span>
                         </div>
 
                         <div className="info-row">
