@@ -11,11 +11,29 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
     setIsSubmitting(true);
     console.log('Submitting:', formData);
 
+    // Map region ID to region data
+    const getRegionData = (regijaId) => {
+      const regionMap = {
+        "1": { ime: "Пелагонија", koordinata_x: 21.4, koordinata_y: 41.0 },
+        "2": { ime: "Скопје", koordinata_x: 21.4, koordinata_y: 42.0 },
+        "3": { ime: "Вардарска Македонија", koordinata_x: 21.6, koordinata_y: 41.6 },
+        "4": { ime: "Источна Македонија", koordinata_x: 22.4, koordinata_y: 41.8 },
+        "5": { ime: "Югозападен дел", koordinata_x: 20.8, koordinata_y: 41.2 },
+        "6": { ime: "Югоисточен дел", koordinata_x: 22.0, koordinata_y: 41.2 },
+        "7": { ime: "Полог", koordinata_x: 20.9, koordinata_y: 42.0 },
+        "8": { ime: "Североисточен дел", koordinata_x: 22.2, koordinata_y: 42.2 }
+      };
+      return regionMap[regijaId] || { ime: "Непозната регија", koordinata_x: 0, koordinata_y: 0 };
+    };
+
     // Validate required fields from Step 1
     const requiredFields = {
       'Име на плес': formData.novPlesIme,
       'Тип на плес': formData.tipPlesa,
-      'Регија': formData.regijaId
+      'Регија': formData.regijaId,
+      'Опис': formData.opis,
+      'Кратка историја': formData.kratkaZgodovina,
+      'Опис на техниката': formData.opisTehnike
     };
 
     const missingFields = Object.entries(requiredFields)
@@ -28,6 +46,21 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
       return;
     }
 
+    const regionData = getRegionData(formData.regijaId);
+
+    // Test session before actual submission
+    console.log('Testing session...');
+    try {
+      const sessionTest = await fetch('http://localhost:3001/prispevki/test-session', {
+        method: 'GET',
+        credentials: 'include'
+      });
+      const sessionData = await sessionTest.json();
+      console.log('Session test result:', sessionData);
+    } catch (error) {
+      console.error('Session test failed:', error);
+    }
+
     try {
       const response = await fetch('http://localhost:3001/prispevki/submit', {
         method: 'POST',
@@ -36,20 +69,23 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         },
         credentials: 'include', // Include session cookies
         body: JSON.stringify({
-          // Dance information
-          novPlesIme: formData.novPlesIme,
-          tipPlesa: formData.tipPlesa,
-          kratkaZgodovina: formData.kratkaZgodovina,
-          opisTehnike: formData.opisTehnike,
-
-          // Region information  
-          regijaId: formData.regijaId,
-
-          // Contribution information
-          opis: formData.opis,
-          jeAnonimen: formData.jeAnonimen,
-          referencaOpis: formData.referencaOpis,
-          referencaUrl: formData.referencaUrl
+          regija: {
+            ime: regionData.ime,
+            koordinata_x: regionData.koordinata_x,
+            koordinata_y: regionData.koordinata_y
+          },
+          ples: {
+            ime: formData.novPlesIme,
+            tip_plesa: formData.tipPlesa,
+            kratka_zgodovina: formData.kratkaZgodovina,
+            opis_tehnike: formData.opisTehnike
+          },
+          prispevek: {
+            opis: formData.opis,
+            je_anonimen: formData.jeAnonimen,
+            referenca_opis: formData.referencaOpis,
+            referenca_url: formData.referencaUrl
+          }
         })
       });
 

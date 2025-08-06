@@ -63,7 +63,11 @@ dataPool.createPrispevek = (opis, je_anonimen, referenca_opis, referenca_url, up
   return new Promise((resolve, reject) => {
     conn.query(`INSERT INTO Prispevek (uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url, status, datum_ustvarjen) VALUES (?, ?, ?, ?, ?, ?, 'cakajoc', NOW())`,
       [uporabnik_id, ples_id, opis, je_anonimen, referenca_opis, referenca_url], (err, res) => {
-        if (err) { return reject(err) }
+        if (err) { 
+          console.error('Database error in createPrispevek:', err);
+          return reject(err) 
+        }
+        console.log('Successfully created prispevek with ID:', res.insertId);
         return resolve(res)
       })
   })
@@ -74,16 +78,24 @@ dataPool.createOrGetRegion = (ime, koordinata_x, koordinata_y) => {
   return new Promise((resolve, reject) => {
     // First check if region exists
     conn.query(`SELECT id FROM Regija WHERE ime = ?`, [ime], (err, res) => {
-      if (err) { return reject(err) }
+      if (err) { 
+        console.error('Database error in createOrGetRegion (SELECT):', err);
+        return reject(err) 
+      }
       
       if (res.length > 0) {
         // Region exists, return its ID
+        console.log('Found existing region with ID:', res[0].id);
         return resolve({ id: res[0].id, isNew: false })
       } else {
         // Create new region
         conn.query(`INSERT INTO Regija (ime, koordinata_x, koordinata_y) VALUES (?, ?, ?)`,
           [ime, koordinata_x, koordinata_y], (err, res) => {
-            if (err) { return reject(err) }
+            if (err) { 
+              console.error('Database error in createOrGetRegion (INSERT):', err);
+              return reject(err) 
+            }
+            console.log('Created new region with ID:', res.insertId);
             return resolve({ id: res.insertId, isNew: true })
           })
       }
@@ -95,13 +107,20 @@ dataPool.createOrGetRegion = (ime, koordinata_x, koordinata_y) => {
 dataPool.createDance = (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) => {
   return new Promise((resolve, reject) => {
     if (tip_plesa === 'обредни') {
-      tip_plesa = 0; // Convert to integer for database enum
-    } else {
-      tip_plesa = 1; // Convert to integer for database enum
+      tip_plesa = 'obredni'; // Convert to integer for database enum
+    } else if (tip_plesa === 'посветни') {
+      tip_plesa = 'posvetni'; // Convert to integer for database enum
     }
+    
+    console.log('Creating dance with params:', { regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike });
+    
     conn.query(`INSERT INTO Ples (regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike) VALUES (?, ?, ?, ?, ?)`,
       [regija_id, ime, tip_plesa, kratka_zgodovina, opis_tehnike], (err, res) => {
-        if (err) { return reject(err) }
+        if (err) { 
+          console.error('Database error in createDance:', err);
+          return reject(err) 
+        }
+        console.log('Successfully created dance with ID:', res.insertId);
         return resolve(res)
       })
   })

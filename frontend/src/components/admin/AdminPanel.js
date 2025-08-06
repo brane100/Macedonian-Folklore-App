@@ -83,6 +83,7 @@ const AdminPanel = () => {
 
     // Approve contribution
     const approveContribution = async (id, notes = '') => {
+        console.log('Approving contribution:', id, 'with notes:', notes);
         try {
             const response = await fetch(`http://localhost:3001/moderacija/approve/${id}`, {
                 method: 'POST',
@@ -94,6 +95,10 @@ const AdminPanel = () => {
             if (response.ok) {
                 alert('Прispevok одобрен!');
                 fetchPendingContributions(); // Refresh list
+            } else {
+                const errorData = await response.json();
+                console.error('Server error:', errorData);
+                alert('Грешка при одобрување: ' + (errorData.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error approving contribution:', error);
@@ -103,6 +108,7 @@ const AdminPanel = () => {
 
     // Reject contribution
     const rejectContribution = async (id, notes = '') => {
+        console.log('Rejecting contribution:', id, 'with notes:', notes);
         try {
             const response = await fetch(`http://localhost:3001/moderacija/reject/${id}`, {
                 method: 'POST',
@@ -114,6 +120,10 @@ const AdminPanel = () => {
             if (response.ok) {
                 alert('Прispevok отфрлен!');
                 fetchPendingContributions(); // Refresh list
+            } else {
+                const errorData = await response.json();
+                console.error('Server error:', errorData);
+                alert('Грешка при отфрлање: ' + (errorData.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error rejecting contribution:', error);
@@ -123,6 +133,7 @@ const AdminPanel = () => {
 
     // Request edits for contribution
     const requestEdits = async (id, notes = '') => {
+        console.log('Requesting edits for contribution:', id, 'with notes:', notes);
         try {
             const response = await fetch(`http://localhost:3001/moderacija/request-edit/${id}`, {
                 method: 'POST',
@@ -134,6 +145,10 @@ const AdminPanel = () => {
             if (response.ok) {
                 alert('Барање за измена испратено!');
                 fetchPendingContributions(); // Refresh list
+            } else {
+                const errorData = await response.json();
+                console.error('Server error:', errorData);
+                alert('Грешка при барање за измена: ' + (errorData.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error requesting edits:', error);
@@ -414,6 +429,8 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
     };
 
     const handleAction = (action) => {
+        console.log('ContributionCard handleAction:', action, 'for contribution:', contribution.id, 'with comment:', comment);
+        
         // Check if moderator is trying to moderate their own contribution
         if (contribution.uporabnik_id === currentUser?.id) {
             alert('⚠️ Не можете да ги модерирате своите објави!\nОбратете се до друг модератор.');

@@ -31,6 +31,18 @@ prispevki.get('/test', (req, res) => {
     res.json({ message: 'Test successful', timestamp: new Date() });
 });
 
+// Session test endpoint
+prispevki.get('/test-session', (req, res) => {
+    console.log('Session test endpoint hit');
+    console.log('Session data:', req.session);
+    res.json({ 
+        message: 'Session test', 
+        sessionExists: !!req.session,
+        sessionData: req.session || {},
+        timestamp: new Date() 
+    });
+});
+
 // Get current user's contributions (requires authentication)
 prispevki.get('/my-contributions', async (req, res) => {
     console.log('MY-CONTRIBUTIONS ENDPOINT HIT');
@@ -201,11 +213,40 @@ prispevki.post('/resubmit/:id', async (req, res) => {
     }
 });
 
-prispevki.post('/', async (req, res, next) => {
+prispevki.post('/submit', async (req, res, next) => {
     try {
+        console.log('=== SUBMIT ENDPOINT DEBUG ===');
+        console.log('Full session object:', req.session);
+        console.log('Session ID:', req.sessionID);
+        console.log('Session exists?', !!req.session);
+        console.log('user_id in session:', req.session?.user_id);
+        console.log('logged_in in session:', req.session?.logged_in);
+        console.log('Session keys:', req.session ? Object.keys(req.session) : 'no session');
+        
+        // Check authentication first
+        if (!req.session || !req.session.user_id) {
+            console.log('AUTHENTICATION FAILED:');
+            console.log('- Session exists:', !!req.session);
+            console.log('- user_id exists:', !!req.session?.user_id);
+            console.log('- user_id value:', req.session?.user_id);
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
         const { regija, ples, prispevek } = req.body;
         
         console.log('Received data:', { regija, ples, prispevek });
+        console.log('User ID from session:', req.session.user_id);
+        
+        // Validate required fields
+        if (!regija || !ples || !prispevek) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required data: regija, ples, or prispevek'
+            });
+        }
         
         // Create or get region
         const regionResult = await DB.createOrGetRegion(
@@ -224,6 +265,9 @@ prispevki.post('/', async (req, res, next) => {
             ples.opis_tehnike
         );
         console.log('Dance result:', danceResult);
+
+        // If contribution is anonymous, set user_id to null
+        const user_id = prispevek.je_anonimen ? null : req.session.user_id;
         
         // Create contribution
         const contributionResult = await DB.createPrispevek(
@@ -231,7 +275,7 @@ prispevki.post('/', async (req, res, next) => {
             prispevek.je_anonimen,
             prispevek.referenca_opis,
             prispevek.referenca_url,
-            req.session.user_id,
+            user_id,
             danceResult.insertId
         );
         console.log('Contribution result:', contributionResult);
