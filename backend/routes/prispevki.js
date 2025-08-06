@@ -49,19 +49,76 @@ prispevki.get('/my-contributions', async (req, res) => {
 
         console.log('User authenticated, user_id:', req.session.user_id);
         
-        // Use the existing function
-        console.log('Getting user contributions...');
-        const queryResult = await DB.prispevekKorisnika(req.session.user_id);
+        // Get detailed user contributions with related data
+        console.log('Getting user contributions with details...');
+        const contributionsQuery = `
+            SELECT 
+                p.id,
+                p.opis,
+                p.je_anonimen,
+                p.referenca_opis,
+                p.referenca_url,
+                p.status,
+                p.datum_ustvarjen,
+                p.uporabnik_id,
+                p.ples_id,
+                pl.ime as ples_ime,
+                pl.tip_plesa,
+                pl.kratka_zgodovina,
+                pl.opis_tehnike,
+                r.ime as regija_ime,
+                r.koordinata_x,
+                r.koordinata_y,
+                u.ime as uporabnik_ime,
+                u.priimek as uporabnik_priimek
+            FROM Prispevek p
+            LEFT JOIN Ples pl ON p.ples_id = pl.id
+            LEFT JOIN Regija r ON pl.regija_id = r.id
+            LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id
+            WHERE p.uporabnik_id = ?
+            ORDER BY p.datum_ustvarjen DESC
+        `;
+        
+        const queryResult = await DB.query(contributionsQuery, [req.session.user_id]);
         console.log('Query executed successfully');
         console.log('Query result:', queryResult);
         console.log('Number of results:', queryResult ? queryResult.length : 0);
         
+        // Transform the data to include nested objects for better frontend handling
+        const transformedData = queryResult.map(row => ({
+            id: row.id,
+            opis: row.opis,
+            je_anonimen: row.je_anonimen,
+            referenca_opis: row.referenca_opis,
+            referenca_url: row.referenca_url,
+            status: row.status,
+            datum_ustvarjen: row.datum_ustvarjen,
+            uporabnik_id: row.uporabnik_id,
+            ples_id: row.ples_id,
+            ples: {
+                id: row.ples_id,
+                ime: row.ples_ime,
+                tip_plesa: row.tip_plesa,
+                kratka_zgodovina: row.kratka_zgodovina,
+                opis_tehnike: row.opis_tehnike
+            },
+            regija: {
+                ime: row.regija_ime,
+                koordinata_x: row.koordinata_x,
+                koordinata_y: row.koordinata_y
+            },
+            uporabnik: {
+                ime: row.uporabnik_ime,
+                priimek: row.uporabnik_priimek
+            }
+        }));
+        
         const response = {
             success: true,
-            data: queryResult || []
+            data: transformedData || []
         };
         
-        console.log('Sending response:', response);
+        console.log('Sending response with', transformedData.length, 'contributions');
         res.setHeader('Content-Type', 'application/json');
         return res.status(200).json(response);
         

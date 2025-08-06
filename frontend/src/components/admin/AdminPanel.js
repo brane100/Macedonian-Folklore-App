@@ -10,6 +10,8 @@ const AdminPanel = () => {
     const [pendingContributions, setPendingContributions] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [sortBy, setSortBy] = useState('newest');
+    const [viewMode, setViewMode] = useState('all');
 
     // Fetch pending contributions
     const fetchPendingContributions = useCallback(async () => {
@@ -50,6 +52,34 @@ const AdminPanel = () => {
             setLoading(false);
         }
     }, [isSuperAdmin]);
+
+    // Sort contributions based on selected criteria
+    const getSortedContributions = () => {
+        let sorted = [...pendingContributions];
+        
+        switch (sortBy) {
+            case 'newest':
+                sorted.sort((a, b) => new Date(b.datum_ustvarjen) - new Date(a.datum_ustvarjen));
+                break;
+            case 'oldest':
+                sorted.sort((a, b) => new Date(a.datum_ustvarjen) - new Date(b.datum_ustvarjen));
+                break;
+            case 'id':
+                sorted.sort((a, b) => a.id - b.id);
+                break;
+            case 'random':
+                // Shuffle array randomly
+                for (let i = sorted.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
+                }
+                break;
+            default:
+                break;
+        }
+        
+        return sorted;
+    };
 
     // Approve contribution
     const approveContribution = async (id, notes = '') => {
@@ -232,19 +262,53 @@ const AdminPanel = () => {
                 {activeTab === 'moderation' && (
                     <div className="moderation-section">
                         <h2>📝 Модерација на содржини</h2>
+                        
+                        {/* Moderation Controls */}
+                        <div className="moderation-controls">
+                            <div className="sort-controls">
+                                <label>🔀 Сортирај по:</label>
+                                <select onChange={(e) => setSortBy(e.target.value)} value={sortBy}>
+                                    <option value="newest">📅 Најнови прво</option>
+                                    <option value="oldest">📅 Најстари прво</option>
+                                    <option value="id">🔢 По ID број</option>
+                                    <option value="random">🎲 Случаен редослед</option>
+                                </select>
+                            </div>
+                            
+                            <div className="view-controls">
+                                <label>📋 Приказ:</label>
+                                <select onChange={(e) => setViewMode(e.target.value)} value={viewMode}>
+                                    <option value="all">📄 Сите прispevки</option>
+                                    <option value="compact">📋 Компактен приказ</option>
+                                    <option value="detailed">📖 Детален приказ</option>
+                                </select>
+                            </div>
+                            
+                            <div className="quick-stats">
+                                <span className="stat-badge">
+                                    📊 Вкупно: {pendingContributions.length}
+                                </span>
+                                <span className="stat-badge">
+                                    ⏳ Чекаат: {pendingContributions.filter(c => c.status === 0).length}
+                                </span>
+                            </div>
+                        </div>
+                        
                         {loading ? (
                             <p>Се вчитува...</p>
                         ) : pendingContributions.length === 0 ? (
                             <p>🎉 Нема pending prispevки за модерација!</p>
                         ) : (
                             <div className="contributions-list">
-                                {pendingContributions.map(contribution => (
+                                {getSortedContributions().map(contribution => (
                                     <ContributionCard 
                                         key={contribution.id} 
                                         contribution={contribution}
                                         onApprove={approveContribution}
                                         onReject={rejectContribution}
                                         onRequestEdit={requestEdits}
+                                        viewMode={viewMode}
+                                        currentUser={currentUser}
                                     />
                                 ))}
                             </div>
@@ -327,9 +391,13 @@ const AdminPanel = () => {
 };
 
 // Individual Contribution Card Component
-const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit }) => {
+const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, viewMode = 'all', currentUser }) => {
     const [comment, setComment] = useState('');
-    const [showDetails, setShowDetails] = useState(false);
+    const [showDetails, setShowDetails] = useState(viewMode === 'detailed');
+
+    useEffect(() => {
+        setShowDetails(viewMode === 'detailed');
+    }, [viewMode]);
 
     const getRegionName = (regijaId) => {
         const regionMap = {
@@ -346,6 +414,12 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit }) 
     };
 
     const handleAction = (action) => {
+        // Check if moderator is trying to moderate their own contribution
+        if (contribution.uporabnik_id === currentUser?.id) {
+            alert('⚠️ Не можете да ги модерирате своите објави!\nОбратете се до друг модератор.');
+            return;
+        }
+        
         if (action === 'approve') {
             onApprove(contribution.id, comment);
         } else if (action === 'reject') {
@@ -357,50 +431,112 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit }) 
     };
 
     return (
-        <div className="contribution-card enhanced">
+        <div className={`contribution-card enhanced ${viewMode === 'compact' ? 'compact-mode' : ''}`}>
             <div className="contribution-header">
-                <h4>🎭 Prispevok #{contribution.id}</h4>
-                <span className="submission-date">
-                    📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString('mk-MK')}
-                </span>
-            </div>
-
-            {/* Basic Info */}
-            <div className="contribution-basic-info">
-                <div className="info-row">
-                    <span className="label">👤 Тип:</span>
-                    <span className="value">{contribution.je_anonimen ? '🕶️ Анонимен' : '📝 Со име'}</span>
-                </div>
-                
-                <div className="info-row">
-                    <span className="label">📝 Опис прispevok:</span>
-                    <span className="value">{contribution.opis || 'Нема опис'}</span>
-                </div>
-
-                <div className="info-row">
-                    <span className="label">📄 Референца опис:</span>
-                    <span className="value">{contribution.referenca_opis || 'Нема референца'}</span>
-                </div>
-
-                <div className="info-row">
-                    <span className="label">🔗 Референца URL:</span>
-                    <span className="value">
-                        {contribution.referenca_url ? (
-                            <a href={contribution.referenca_url} target="_blank" rel="noopener noreferrer">
-                                {contribution.referenca_url}
-                            </a>
-                        ) : 'Нема URL'}
+                <div className="header-left">
+                    <h4>🎭 Prispevok #{contribution.id}</h4>
+                    <span className="submission-date">
+                        📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString('mk-MK')}
                     </span>
                 </div>
+                {viewMode === 'compact' && (
+                    <div className="quick-actions-compact">
+                        {contribution.uporabnik_id !== currentUser?.id ? (
+                            <>
+                                <button 
+                                    className="quick-approve"
+                                    onClick={() => handleAction('approve')}
+                                    title="Брзо одобри"
+                                >
+                                    ✅
+                                </button>
+                                <button 
+                                    className="quick-edit"
+                                    onClick={() => handleAction('edit')}
+                                    title="Побарај измени"
+                                >
+                                    ✏️
+                                </button>
+                                <button 
+                                    className="quick-reject"
+                                    onClick={() => handleAction('reject')}
+                                    title="Брзо отфрли"
+                                >
+                                    ❌
+                                </button>
+                            </>
+                        ) : (
+                            <span className="self-contribution-badge" title="Вашата објава">
+                                🚫 Своја
+                            </span>
+                        )}
+                    </div>
+                )}
             </div>
 
-            {/* Toggle Details Button */}
-            <button 
-                className="toggle-details-btn"
-                onClick={() => setShowDetails(!showDetails)}
-            >
-                {showDetails ? '🔼 Сокриј детали' : '🔽 Прикажи детали'}
-            </button>
+            {/* Basic Info - Always visible but condensed in compact mode */}
+            {(viewMode !== 'compact' || showDetails) && (
+                <div className="contribution-basic-info">
+                    <div className="info-row">
+                        <span className="label">👤 Тип:</span>
+                        <span className="value">{contribution.je_anonimen ? '🕶️ Анонимен' : '📝 Со име'}</span>
+                    </div>
+                    
+                    <div className="info-row">
+                        <span className="label">📝 Опис прispevok:</span>
+                        <span className="value">{contribution.opis || 'Нема опис'}</span>
+                    </div>
+
+                    <div className="info-row">
+                        <span className="label">📄 Референца опис:</span>
+                        <span className="value">{contribution.referenca_opis || 'Нема референца'}</span>
+                    </div>
+
+                    <div className="info-row">
+                        <span className="label">🔗 Референца URL:</span>
+                        <span className="value">
+                            {contribution.referenca_url ? (
+                                <a href={contribution.referenca_url} target="_blank" rel="noopener noreferrer">
+                                    {contribution.referenca_url}
+                                </a>
+                            ) : 'Нема URL'}
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            {/* Compact info for compact mode */}
+            {viewMode === 'compact' && !showDetails && (
+                <div className="compact-info">
+                    <span className="compact-description">
+                        {contribution.opis ? contribution.opis.substring(0, 100) + '...' : 'Нема опис'}
+                    </span>
+                    <div className="compact-meta">
+                        <span>{contribution.je_anonimen ? '🕶️ Анонимен' : '📝 Со име'}</span>
+                        {contribution.referenca_url && <span>🔗 Има референца</span>}
+                    </div>
+                </div>
+            )}
+
+            {/* Toggle Details Button - Not shown in compact mode quick actions */}
+            {viewMode !== 'compact' && (
+                <button 
+                    className="toggle-details-btn"
+                    onClick={() => setShowDetails(!showDetails)}
+                >
+                    {showDetails ? '🔼 Сокриј детали' : '🔽 Прикажи детали'}
+                </button>
+            )}
+
+            {/* Show details toggle for compact mode */}
+            {viewMode === 'compact' && (
+                <button 
+                    className="compact-toggle-btn"
+                    onClick={() => setShowDetails(!showDetails)}
+                >
+                    {showDetails ? '🔼' : '🔽'}
+                </button>
+            )}
 
             {/* Detailed Dance Information */}
             {showDetails && (
@@ -436,47 +572,59 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit }) 
                 </div>
             )}
 
-            {/* Comment Section */}
-            <div className="comment-section">
-                <label htmlFor={`comment-${contribution.id}`} className="comment-label">
-                    💬 Коментар за модератор:
-                </label>
-                <textarea
-                    id={`comment-${contribution.id}`}
-                    className="comment-textarea"
-                    placeholder="Напишете коментар или причина за одлуката..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    rows="3"
-                />
-            </div>
+            {/* Comment Section - Hidden in compact mode unless expanded */}
+            {(viewMode !== 'compact' || showDetails) && (
+                <div className="comment-section">
+                    <label htmlFor={`comment-${contribution.id}`} className="comment-label">
+                        💬 Коментар за модератор:
+                    </label>
+                    <textarea
+                        id={`comment-${contribution.id}`}
+                        className="comment-textarea"
+                        placeholder="Напишете коментар или причина за одлуката..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        rows="3"
+                    />
+                </div>
+            )}
 
-            {/* Moderation Actions */}
-            <div className="moderation-actions enhanced">
-                <button 
-                    className="approve-btn"
-                    onClick={() => handleAction('approve')}
-                    title="Одобри го prispevok-от"
-                >
-                    ✅ Одобри
-                </button>
-                
-                <button 
-                    className="edit-request-btn"
-                    onClick={() => handleAction('edit')}
-                    title="Побарај измени од корисникот"
-                >
-                    ✏️ Побарај измени
-                </button>
-                
-                <button 
-                    className="reject-btn"
-                    onClick={() => handleAction('reject')}
-                    title="Отфрли го prispevok-от"
-                >
-                    ❌ Отфрли
-                </button>
-            </div>
+            {/* Moderation Actions - Different layout for compact mode */}
+            {viewMode === 'compact' && !showDetails ? (
+                // Compact mode already has quick actions in header
+                null
+            ) : contribution.uporabnik_id !== currentUser?.id ? (
+                <div className="moderation-actions enhanced">
+                    <button 
+                        className="approve-btn"
+                        onClick={() => handleAction('approve')}
+                        title="Одобри го prispevok-от"
+                    >
+                        ✅ Одобри
+                    </button>
+                    
+                    <button 
+                        className="edit-request-btn"
+                        onClick={() => handleAction('edit')}
+                        title="Побарај измени од корисникот"
+                    >
+                        ✏️ Побарај измени
+                    </button>
+                    
+                    <button 
+                        className="reject-btn"
+                        onClick={() => handleAction('reject')}
+                        title="Отфрли го prispevok-от"
+                    >
+                        ❌ Отфрли
+                    </button>
+                </div>
+            ) : (
+                <div className="self-contribution-notice">
+                    <p>🚫 Не можете да ги модерирате своите објави</p>
+                    <small>Обратете се до друг модератор за оваа објава</small>
+                </div>
+            )}
         </div>
     );
 };

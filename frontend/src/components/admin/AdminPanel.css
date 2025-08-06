@@ -461,3 +461,256 @@
     flex-direction: column;
   }
 }
+
+/* Moderation Controls */
+.moderation-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.sort-controls, .view-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sort-controls label, .view-controls label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.sort-controls select, .view-controls select {
+  padding: 0.5rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.sort-controls select:hover, .view-controls select:hover {
+  border-color: #007bff;
+}
+
+.quick-stats {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.stat-badge {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Compact Mode Styles */
+.contribution-card.compact-mode {
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.contribution-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.quick-actions-compact {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.quick-actions-compact button {
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quick-approve {
+  background: #28a745;
+  color: white;
+}
+
+.quick-approve:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.quick-edit {
+  background: #ffc107;
+  color: #212529;
+}
+
+.quick-edit:hover {
+  background: #e0a800;
+  transform: translateY(-2px);
+}
+
+.quick-reject {
+  background: #dc3545;
+  color: white;
+}
+
+.quick-reject:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+}
+
+.compact-info {
+  background: #f8f9fa;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.compact-description {
+  display: block;
+  color: #495057;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.compact-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.compact-toggle-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.compact-toggle-btn:hover {
+  background: #5a6268;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .moderation-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sort-controls, .view-controls {
+    justify-content: space-between;
+  }
+
+  .quick-stats {
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .contribution-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .quick-actions-compact {
+    justify-content: center;
+  }
+}
+
+/* Self-contribution styling */
+.self-contribution-badge {
+  background: #ffc107;
+  color: #212529;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: default;
+}
+
+.self-contribution-notice {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.self-contribution-notice p {
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+  color: #856404;
+}
+
+.self-contribution-notice small {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Enhanced quick actions for better visibility */
+.quick-actions-compact {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.quick-actions-compact button {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  min-width: 32px;
+  height: 32px;
+}
+
+.quick-approve {
+  background: #28a745;
+  color: white;
+}
+
+.quick-edit {
+  background: #ffc107;
+  color: #212529;
+}
+
+.quick-reject {
+  background: #dc3545;
+  color: white;
+}
+
+.quick-approve:hover,
+.quick-edit:hover,
+.quick-reject:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
