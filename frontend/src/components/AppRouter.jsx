@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import './AppRouter.css';
 
@@ -259,14 +259,55 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   
   const isActive = (path) => {
     return location.pathname === path;
   };
 
+  // Clear search when route changes (except to /plesi)
+  React.useEffect(() => {
+    if (location.pathname !== '/plesi') {
+      setSearchQuery('');
+      setIsSearchExpanded(false);
+      setIsSearchFocused(false);
+    }
+  }, [location.pathname, setSearchQuery]);
+
   const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      navigate('/plesi');
+    if (e.key === 'Enter') {
+      if (searchQuery.trim()) {
+        navigate('/plesi');
+      }
+      // Always collapse and clear on Enter
+      setIsSearchExpanded(false);
+      setIsSearchFocused(false);
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true);
+    setIsSearchExpanded(true);
+  };
+
+  const handleSearchBlur = () => {
+    setIsSearchFocused(false);
+    // Only collapse if no search content
+    if (!searchQuery.trim()) {
+      setIsSearchExpanded(false);
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (!isSearchFocused) {
+      setIsSearchExpanded(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    // Only collapse on mouse leave if not focused and no content
+    if (!isSearchFocused && !searchQuery.trim()) {
       setIsSearchExpanded(false);
     }
   };
@@ -365,8 +406,8 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
             {/* Compact Search with Hover Expansion */}
             <div 
               className="search-container"
-              onMouseEnter={() => setIsSearchExpanded(true)}
-              onMouseLeave={() => setIsSearchExpanded(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <button className="nav-icon-btn desktop-icon search-btn" title="Пребарај">
                 🔍
@@ -377,6 +418,8 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
+                onFocus={handleSearchFocus}
+                onBlur={handleSearchBlur}
                 className={`search-input-hover ${isSearchExpanded ? 'expanded' : ''}`}
               />
             </div>
