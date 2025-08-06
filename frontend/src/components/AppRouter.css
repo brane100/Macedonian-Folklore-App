@@ -313,7 +313,26 @@
 
 .nav-icon-btn:hover {
   background: var(--macedonia-cream);
-  transform: scale(1.1);
+  transform: scale(1.5);
+}
+
+/* Login button should have white background */
+.nav-icon-btn[title="Најави се"] {
+  background: white;
+  border: 1px solid var(--macedonia-cream);
+}
+
+.nav-icon-btn[title="Најави се"]:hover {
+  background: var(--macedonia-cream);
+}
+
+/* Favorites button should have no background */
+.nav-icon-btn[title="Фаворити"] {
+  background: none;
+}
+
+.nav-icon-btn[title="Фаворити"]:hover {
+  background: var(--macedonia-cream);
 }
 
 /* User Menu and Authentication */
