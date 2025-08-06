@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Posts.css';
 
-const Posts = ({ searchQuery = '' }) => {
+const Posts = ({ searchQuery = '', setSearchQuery }) => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -155,9 +155,12 @@ const Posts = ({ searchQuery = '' }) => {
                         <h1>🔍 Резултати од пребарување</h1>
                         <p>Резултати за: "<strong>{searchQuery}</strong>"</p>
                         <div className="search-actions">
-                            <Link to="/plesi" className="clear-search-btn">
+                            <button 
+                                onClick={() => setSearchQuery('')} 
+                                className="clear-search-btn"
+                            >
                                 ✕ Исчисти пребарување
-                            </Link>
+                            </button>
                         </div>
                     </>
                 ) : (
@@ -223,9 +226,12 @@ const Posts = ({ searchQuery = '' }) => {
                             <h3>🔍 Нема пронајдени резултати</h3>
                             <p>Не се пронајдени prispevки што содржат "{searchQuery}".</p>
                             <div className="no-posts-actions">
-                                <Link to="/plesi" className="clear-search-btn">
+                                <button 
+                                    onClick={() => setSearchQuery('')} 
+                                    className="clear-search-btn"
+                                >
                                     ✕ Исчисти пребарување
-                                </Link>
+                                </button>
                                 <Link to="/dodaj-prispevek" className="add-post-btn">
                                     ➕ Додај prispevok
                                 </Link>

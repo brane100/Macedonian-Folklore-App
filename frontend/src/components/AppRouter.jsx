@@ -279,10 +279,11 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
       if (searchQuery.trim()) {
         navigate('/plesi');
       }
-      // Always collapse and clear on Enter
-      setIsSearchExpanded(false);
-      setIsSearchFocused(false);
-      setSearchQuery('');
+      // Collapse and reset after navigation
+      setTimeout(() => {
+        setIsSearchExpanded(false);
+        setIsSearchFocused(false);
+      }, 100);
     }
   };
 
@@ -293,23 +294,23 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
 
   const handleSearchBlur = () => {
     setIsSearchFocused(false);
-    // Only collapse if no search content
-    if (!searchQuery.trim()) {
-      setIsSearchExpanded(false);
-    }
+    setIsSearchExpanded(false);
   };
 
   const handleMouseEnter = () => {
-    if (!isSearchFocused) {
-      setIsSearchExpanded(true);
-    }
+    setIsSearchExpanded(true);
   };
 
   const handleMouseLeave = () => {
-    // Only collapse on mouse leave if not focused and no content
-    if (!isSearchFocused && !searchQuery.trim()) {
+    // Only collapse on mouse leave if not focused
+    if (!isSearchFocused) {
       setIsSearchExpanded(false);
     }
+  };
+
+  const handleSearchClick = () => {
+    setIsSearchExpanded(true);
+    setIsSearchFocused(true);
   };
 
   const toggleMobileMenu = () => {
@@ -409,7 +410,11 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              <button className="nav-icon-btn desktop-icon search-btn" title="Пребарај">
+              <button 
+                className={`nav-icon-btn desktop-icon search-btn ${isSearchExpanded ? 'hidden' : ''}`}
+                title="Пребарај"
+                onClick={handleSearchClick}
+              >
                 🔍
               </button>
               <input
@@ -618,7 +623,7 @@ export default function AppRouter() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/mapa" element={<MapMKD />} />
-              <Route path="/plesi" element={<Posts searchQuery={searchQuery} />} />
+              <Route path="/plesi" element={<Posts searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
               
               {/* Public routes - redirect to home if already logged in */}
               <Route 
