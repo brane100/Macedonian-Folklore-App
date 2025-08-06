@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import './AppRouter.css';
 
 // Import existing components
@@ -251,15 +251,24 @@ function Home() {
 }
 
 // Navigation Component with Responsive Design
-function NavigationBar() {
+function NavigationBar({ searchQuery, setSearchQuery }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAuthenticated, user, logout, loading } = useAuth();
   const { isModerator } = useRole();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   
   const isActive = (path) => {
     return location.pathname === path;
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate('/plesi');
+      setIsSearchExpanded(false);
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -353,9 +362,25 @@ function NavigationBar() {
           
           {/* Navigation Icons */}
           <div className="nav-icons">
-            <button className="nav-icon-btn desktop-icon" title="Пребарај">
-              🔍
-            </button>
+            {/* Compact Search with Hover Expansion */}
+            <div 
+              className="search-container"
+              onMouseEnter={() => setIsSearchExpanded(true)}
+              onMouseLeave={() => setIsSearchExpanded(false)}
+            >
+              <button className="nav-icon-btn desktop-icon search-btn" title="Пребарај">
+                🔍
+              </button>
+              <input
+                type="text"
+                placeholder="Пребарај плесови..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                className={`search-input-hover ${isSearchExpanded ? 'expanded' : ''}`}
+              />
+            </div>
+            
             <button className="nav-icon-btn desktop-icon" title="Фаворити">
               ❤️
             </button>
@@ -538,17 +563,19 @@ function NavigationBar() {
 }
 
 export default function AppRouter() {
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
     <AuthProvider>
       <Router>
         <div className="app-router">
-          <NavigationBar />
+          <NavigationBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/mapa" element={<MapMKD />} />
-              <Route path="/plesi" element={<Posts />} />
+              <Route path="/plesi" element={<Posts searchQuery={searchQuery} />} />
               
               {/* Public routes - redirect to home if already logged in */}
               <Route 

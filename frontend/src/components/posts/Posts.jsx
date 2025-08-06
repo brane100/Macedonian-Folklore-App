@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Posts.css';
 
-const Posts = () => {
+const Posts = ({ searchQuery = '' }) => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -41,9 +41,29 @@ const Posts = () => {
     const filteredAndSortedPosts = () => {
         let filteredPosts = posts;
 
+        // Filter by search query first
+        if (searchQuery && searchQuery.trim() !== '') {
+            const query = searchQuery.toLowerCase().trim();
+            filteredPosts = filteredPosts.filter(post => {
+                const danceName = (post.ime_plesa || '').toLowerCase();
+                const danceType = (post.tip_plesa || '').toLowerCase();
+                const region = (post.regija || '').toLowerCase();
+                const description = (post.opis || '').toLowerCase();
+                const shortHistory = (post.kratka_zgodovina || '').toLowerCase();
+                const technique = (post.opis_tehnike || '').toLowerCase();
+                
+                return danceName.includes(query) ||
+                       danceType.includes(query) ||
+                       region.includes(query) ||
+                       description.includes(query) ||
+                       shortHistory.includes(query) ||
+                       technique.includes(query);
+            });
+        }
+
         // Filter by region
         if (filter !== 'all') {
-            filteredPosts = posts.filter(post => post.regija === filter);
+            filteredPosts = filteredPosts.filter(post => post.regija === filter);
         }
 
         // Sort posts
@@ -130,8 +150,22 @@ const Posts = () => {
     return (
         <div className="posts-container">
             <div className="posts-header">
-                <h1>🎭 Фолклорни прispevки</h1>
-                <p>Одобрени прispevки за македонски фолклорни плесови и традиции</p>
+                {searchQuery ? (
+                    <>
+                        <h1>🔍 Резултати од пребарување</h1>
+                        <p>Резултати за: "<strong>{searchQuery}</strong>"</p>
+                        <div className="search-actions">
+                            <Link to="/plesi" className="clear-search-btn">
+                                ✕ Исчисти пребарување
+                            </Link>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <h1>🎭 Фолклорни прispevки</h1>
+                        <p>Одобрени прispevки за македонски фолклорни плесови и традиции</p>
+                    </>
+                )}
             </div>
 
             {/* Filters and Sorting */}
@@ -173,17 +207,39 @@ const Posts = () => {
                     📝 Вкупно: {posts.length} прispevки
                 </span>
                 <span className="stats-item">
-                    🔍 Прикажани: {filteredAndSortedPosts().length} прispevки
+                    🔍 Прикажани: {filteredAndSortedPosts().length} прispевки
                 </span>
+                {searchQuery && (
+                    <span className="stats-item search-indicator">
+                        🔍 Пребарување: "{searchQuery}"
+                    </span>
+                )}
             </div>
 
             {filteredAndSortedPosts().length === 0 ? (
                 <div className="no-posts">
-                    <h3>🔍 Нема пронајдени прispevки</h3>
-                    <p>Обидете се со различен филтер или додајте нов prispevok.</p>
-                    <Link to="/dodaj-prispevek" className="add-post-btn">
-                        ➕ Додај prispevok
-                    </Link>
+                    {searchQuery ? (
+                        <>
+                            <h3>🔍 Нема пронајдени резултати</h3>
+                            <p>Не се пронајдени prispevки што содржат "{searchQuery}".</p>
+                            <div className="no-posts-actions">
+                                <Link to="/plesi" className="clear-search-btn">
+                                    ✕ Исчисти пребарување
+                                </Link>
+                                <Link to="/dodaj-prispevek" className="add-post-btn">
+                                    ➕ Додај prispevok
+                                </Link>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h3>🔍 Нема пронајдени прispevки</h3>
+                            <p>Обидете се со различен филтер или додајте нов prispevok.</p>
+                            <Link to="/dodaj-prispevek" className="add-post-btn">
+                                ➕ Додај prispevok
+                            </Link>
+                        </>
+                    )}
                 </div>
             ) : (
                 <div className="posts-grid">
