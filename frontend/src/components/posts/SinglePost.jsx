@@ -23,7 +23,7 @@ const SinglePost = () => {
             if (response.ok) {
                 const data = await response.json();
                 setPost(data);
-                console.log('Fetched ime_plesa:', data.ime);
+                console.log('Fetched ime_plesa:', data.ime_plesa);
             } else {
                 setError('Прispevокот не е пронајден');
             }
@@ -133,7 +133,7 @@ const SinglePost = () => {
                     {/* Header */}
                     <header className="single-post-header">
                         <h1 className="post-title-main">
-                            {post.ime || 'Без наслов'}
+                            {post.ime_plesa || 'Без наслов'}
                         </h1>
                         
                         <div className="post-type-region">
@@ -173,7 +173,7 @@ const SinglePost = () => {
                                 <div className="multimedia-item image-container">
                                     <img 
                                         src={post.image_url || post.media.find(m => m.type === 'image')?.url}
-                                        alt={`Слика за ${post.ime || 'плесот'}`}
+                                        alt={`Слика за ${post.ime_plesa || 'плесот'}`}
                                         className="multimedia-image"
                                     />
                                 </div>
