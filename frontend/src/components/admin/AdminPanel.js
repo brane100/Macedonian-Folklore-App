@@ -486,7 +486,7 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
         <div className={`contribution-card enhanced ${viewMode === 'compact' ? 'compact-mode' : ''}`}>
             <div className="contribution-header">
                 <div className="header-left">
-                    <h4>🎭 Prispevok #{contribution.id}</h4>
+                    <h4>🎭 Prispevok #{contribution.id}: {contribution.ime_plesa}</h4>
                     <span className="submission-date">
                         📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString('mk-MK', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </span>
@@ -537,8 +537,13 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
             {(viewMode !== 'compact' || showDetails) && (
                 <div className="contribution-basic-info">
                     <div className="info-row">
-                        <span className="label">👤 Тип:</span>
-                        <span className="value">{contribution.je_anonimen ? '🕶️ Анонимен' : '📝 Со име'}</span>
+                        <span className="label">👤 Автор:</span>
+                        <span className="value">
+                            {contribution.je_anonimen 
+                                ? '🕶️ Анонимен'
+                                : `${contribution.user_ime || ''} ${contribution.priimek || ''}`.trim() || 'Непознат'
+                            }
+                        </span>
                     </div>
                     
                     <div className="info-row">
@@ -571,7 +576,12 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
                         {contribution.opis ? contribution.opis.substring(0, 100) + '...' : 'Нема опис'}
                     </span>
                     <div className="compact-meta">
-                        <span>{contribution.je_anonimen ? '🕶️ Анонимен' : '📝 Со име'}</span>
+                        <span>
+                            {contribution.je_anonimen 
+                                ? '🕶️ Анонимен' 
+                                : `📝 ${contribution.user_ime || ''} ${contribution.priimek || ''}`.trim() || 'Непознат'
+                            }
+                        </span>
                         {contribution.referenca_url && <span>🔗 Има референца</span>}
                     </div>
                 </div>
