@@ -233,7 +233,8 @@ dataPool.deleteUser = (userId) => {
 // Get pending contributions (for moderation)
 dataPool.getPendingContributions = () => {
   return new Promise((resolve, reject) => {
-    conn.query(`SELECT p.*, 
+    conn.query(`
+      SELECT p.*, 
              u.ime AS user_ime, u.priimek, u.email, 
              pl.ime AS ime_plesa, pl.tip_plesa, 
              pl.kratka_zgodovina, pl.opis_tehnike,
@@ -242,7 +243,7 @@ dataPool.getPendingContributions = () => {
       LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
       LEFT JOIN Ples pl ON p.ples_id = pl.id
       LEFT JOIN Regija r ON pl.regija_id = r.id
-      WHERE p.status = 'odobren'`, (err, res) => {
+      WHERE p.status = 'cakajoc'`, (err, res) => {
       if (err) { return reject(err) }
       return resolve(res)
     })
@@ -310,7 +311,7 @@ dataPool.updateDance = (ples_id, regija_id, ime, tip_plesa, kratka_zgodovina, op
 // Update prispevek
 dataPool.updatePrispevek = (prispevek_id, opis, referenca_opis, referenca_url) => {
   return new Promise((resolve, reject) => {
-    conn.query(`UPDATE Prispevek SET opis = ?, referenca_opis = ?, referenca_url = ?, status = 0 WHERE id = ?`,
+    conn.query(`UPDATE Prispevek SET opis = ?, referenca_opis = ?, referenca_url = ? WHERE id = ?`,
       [opis, referenca_opis, referenca_url, prispevek_id], (err, res) => {
         if (err) { return reject(err) }
         return resolve(res)

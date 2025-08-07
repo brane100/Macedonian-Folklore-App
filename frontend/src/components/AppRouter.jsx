@@ -114,7 +114,7 @@ function FloatingChat() {
 
   return (
     <div className="floating-chat">
-      <button 
+      <button
         className={`chat-button ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -167,7 +167,7 @@ function DanceCard({ dance }) {
 function Sidebar() {
   const topDances = mockDances.slice(0, 3).sort((a, b) => b.likes - a.likes);
   const popularRegions = ["Битола", "Охрид", "Штип", "Струмица"];
-  
+
   return (
     <aside className="cultural-sidebar">
       <div className="sidebar-section">
@@ -184,7 +184,7 @@ function Sidebar() {
           ))}
         </div>
       </div>
-      
+
       <div className="sidebar-section">
         <h3>📍 Популарни региони</h3>
         <div className="popular-regions">
@@ -195,7 +195,7 @@ function Sidebar() {
           ))}
         </div>
       </div>
-      
+
       <div className="sidebar-section">
         <h3>📸 Скорешни медиуми</h3>
         <div className="recent-media">
@@ -261,7 +261,7 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  
+
   const isActive = (path) => {
     return location.pathname === path;
   };
@@ -335,7 +335,7 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
 
     const authenticatedLinks = [
       { path: '/dodaj-prispevek', label: 'Додај' },
-      { path: '/moji-prispevki', label: 'Мои Prispevki' }
+      // { path: '/moji-prispevki', label: 'Мои Prispevki' }
     ];
 
     // Only show admin link to moderators/superadmins
@@ -344,7 +344,7 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
       adminLinks.push({ path: '/admin', label: '🛡️ Админ' });
     }
 
-    return isAuthenticated 
+    return isAuthenticated
       ? [...baseNavigationLinks, ...authenticatedLinks, ...adminLinks]
       : baseNavigationLinks;
   }, [isAuthenticated, isModerator]);
@@ -376,42 +376,42 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
           <Link to="/" className="cultural-logo">
             🪗 Охрани Култура
           </Link>
-          
+
           {/* Desktop Navigation */}
           <div className="nav-center desktop-nav">
             {navigationLinks.map((link, index) => (
-              <Link 
+              <Link
                 key={index}
-                to={link.path} 
+                to={link.path}
                 className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
               >
                 {link.label}
               </Link>
             ))}
           </div>
-          
+
           {/* Compact Navigation for smaller screens */}
           <div className="nav-center compact-nav">
             {navigationLinks.map((link, index) => (
-              <Link 
+              <Link
                 key={index}
-                to={link.path} 
+                to={link.path}
                 className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
               >
                 {link.label}
               </Link>
             ))}
           </div>
-          
+
           {/* Navigation Icons */}
           <div className="nav-icons">
             {/* Compact Search with Hover Expansion */}
-            <div 
+            <div
               className="search-container"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              <button 
+              <button
                 className={`nav-icon-btn desktop-icon search-btn ${isSearchExpanded ? 'hidden' : ''}`}
                 title="Пребарај"
                 onClick={handleSearchClick}
@@ -429,11 +429,11 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
                 className={`search-input-hover ${isSearchExpanded ? 'expanded' : ''}`}
               />
             </div>
-            
+
             <button className="nav-icon-btn desktop-icon" title="Фаворити">
               ❤️
             </button>
-            
+
             {/* Authentication-based Profile/Login section */}
             {isAuthenticated ? (
               <div className="user-dropdown desktop-icon">
@@ -444,17 +444,16 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
                   <div className="dropdown-item user-info">
                     {user?.ime || 'Корисник'}
                   </div>
-                  <button 
-                    onClick={logout} 
-                    className="dropdown-item logout-action"
-                  >
-                    🚪 Одјави се
-                  </button>
-                  <button 
-                    // onClick={() => navigate('/moji-prispevki')} 
+                  <Link to="/moji-prispevki">
+                    <button className="dropdown-item">
+                      🚪 Мои објави
+                    </button>
+                  </Link>
+                  <button
+                    onClick={logout}
                     className="dropdown-item"
                   >
-                    🚪 Мои објави
+                    🚪 Одјави се
                   </button>
                 </div>
               </div>
@@ -463,9 +462,9 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
                 👤
               </Link>
             )}
-            
+
             {/* Hamburger Menu for Small Screens */}
-            <button 
+            <button
               className="hamburger-btn mobile-only"
               onClick={toggleMobileMenu}
               aria-label="Toggle mobile menu"
@@ -474,9 +473,9 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
               <span className={`hamburger-line ${isMobileMenuOpen ? 'open' : ''}`}></span>
               <span className={`hamburger-line ${isMobileMenuOpen ? 'open' : ''}`}></span>
             </button>
-            
+
             {/* Sidebar Toggle for Medium Screens */}
-            <button 
+            <button
               className="sidebar-toggle tablet-only"
               onClick={toggleSidebar}
               aria-label="Toggle sidebar"
@@ -485,14 +484,14 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
             </button>
           </div>
         </div>
-        
+
         {/* Mobile Dropdown Menu */}
         <div className={`mobile-dropdown ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="mobile-menu-content">
             {navigationLinks.map((link, index) => (
-              <Link 
+              <Link
                 key={index}
-                to={link.path} 
+                to={link.path}
                 className={`mobile-nav-link ${isActive(link.path) ? 'active' : ''}`}
                 onClick={closeMobileMenu}
               >
@@ -506,18 +505,18 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
               <button className="nav-icon-btn" title="Фаворити">
                 ❤️ Фаворити
               </button>
-              
+
               {/* Authentication-based mobile menu */}
               {isAuthenticated ? (
                 <>
                   <div className="mobile-user-info">
                     👤 {user?.ime || 'Корисник'}
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
                       logout();
                       closeMobileMenu();
-                    }} 
+                    }}
                     className="nav-icon-btn logout-mobile"
                   >
                     🚪 Одјави се
@@ -537,14 +536,14 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
           </div>
         </div>
       </nav>
-      
+
       {/* Sidebar for Medium Screens */}
       <aside className={`nav-sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <Link to="/" className="sidebar-logo" onClick={() => setIsSidebarOpen(false)}>
             🪗 Охрани Култура
           </Link>
-          <button 
+          <button
             className="sidebar-close"
             onClick={toggleSidebar}
             aria-label="Close sidebar"
@@ -555,9 +554,9 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
         <div className="sidebar-content">
           <nav className="sidebar-nav">
             {navigationLinks.map((link, index) => (
-              <Link 
+              <Link
                 key={index}
-                to={link.path} 
+                to={link.path}
                 className={`sidebar-nav-link ${isActive(link.path) ? 'active' : ''}`}
                 onClick={() => setIsSidebarOpen(false)}
               >
@@ -572,18 +571,18 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
             <button className="sidebar-icon-btn" title="Фаворити">
               ❤️ Фаворити
             </button>
-            
+
             {/* Authentication-based sidebar */}
             {isAuthenticated ? (
               <>
                 <div className="sidebar-user-info">
                   👤 {user?.ime || 'Корисник'}
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     logout();
                     setIsSidebarOpen(false);
-                  }} 
+                  }}
                   className="sidebar-icon-btn logout-sidebar"
                 >
                   🚪 Одјави се
@@ -602,7 +601,7 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
           </div>
         </div>
       </aside>
-      
+
       {/* Overlay for Sidebar */}
       {isSidebarOpen && (
         <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
@@ -619,7 +618,7 @@ export default function AppRouter() {
       <Router>
         <div className="app-router">
           <NavigationBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-          
+
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Home />} />
@@ -627,64 +626,64 @@ export default function AppRouter() {
               <Route path="/plesi" element={<Posts searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
               <Route path="/prispevci" element={<Posts searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
               <Route path="/prispevci/:id" element={<SinglePost />} />
-              
+
               {/* Public routes - redirect to home if already logged in */}
-              <Route 
-                path="/prijava" 
+              <Route
+                path="/prijava"
                 element={
                   <PublicRoute>
                     <Login />
                   </PublicRoute>
-                } 
+                }
               />
-              <Route 
-                path="/registracija" 
+              <Route
+                path="/registracija"
                 element={
                   <PublicRoute>
                     <Register />
                   </PublicRoute>
-                } 
+                }
               />
-              
+
               {/* Protected routes - require authentication */}
-              <Route 
-                path="/dodaj-prispevek" 
+              <Route
+                path="/dodaj-prispevek"
                 element={
                   <ProtectedRoute>
                     <CreateContributionWizard />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* User submissions route - requires authentication */}
-              <Route 
-                path="/moji-prispevki" 
+              <Route
+                path="/moji-prispevki"
                 element={
                   <ProtectedRoute>
                     <UserSubmissions />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Edit contribution route - requires authentication */}
-              <Route 
-                path="/prispevki/uredi/:id" 
+              <Route
+                path="/prispevki/uredi/:id"
                 element={
                   <ProtectedRoute>
                     <EditContribution />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Admin route - requires moderator role */}
-              <Route 
-                path="/admin" 
+              <Route
+                path="/admin"
                 element={
                   <ProtectedRoute>
-                    <ModeratorGuard 
+                    <ModeratorGuard
                       fallback={
-                        <div style={{ 
-                          textAlign: 'center', 
+                        <div style={{
+                          textAlign: 'center',
                           padding: '2rem',
                           background: '#fff3cd',
                           border: '1px solid #ffeaa7',
@@ -699,13 +698,13 @@ export default function AppRouter() {
                       <AdminPanel />
                     </ModeratorGuard>
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
-          
+
           {/* Enhanced Cultural Footer */}
           <footer className="cultural-footer">
             <div className="footer-content">
@@ -745,7 +744,7 @@ export default function AppRouter() {
               <p>© 2024 Охрани Култура. Сите права се заштитени.</p>
             </div>
           </footer>
-          
+
           <FloatingChat />
         </div>
       </Router>

@@ -243,7 +243,7 @@
 .nav-link {
   padding: 0.8rem 1.5rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--macedonia-yellow);
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -448,11 +448,6 @@
 
 .dropdown-item.user-info:hover {
   background: none;
-}
-
-.dropdown-item.logout-action:hover {
-  background: var(--macedonia-red);
-  color: white;
 }
 
 /* Mobile user info */

@@ -68,6 +68,32 @@ moderacija.post('/reject/:id', requireModerator, async (req, res) => {
     }
 });
 
+// Edit contribution directly (moderator action)
+moderacija.put('/edit/:id', requireModerator, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { opis, referenca_opis, referenca_url, moderatorNotes } = req.body;
+        
+        // Update the contribution
+        await DB.updatePrispevek(id, opis, referenca_opis, referenca_url);
+        
+        // Add revision record for the edit
+        await DB.addRevision(id, req.session.user_id, 'odobreno', 'Clan komisije z id ' + req.session.user_id + ' je spremenil vsebino prispevka: ' + moderatorNotes);
+        await DB.updateContributionStatus(id, 'odobren'); // Set status to approved after edit
+
+        res.json({
+            success: true,
+            message: 'Contribution updated successfully'
+        });
+    } catch (error) {
+        console.error('Error editing contribution:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error editing contribution'
+        });
+    }
+});
+
 // Request edits for contribution
 moderacija.post('/request-edit/:id', requireModerator, async (req, res) => {
     try {

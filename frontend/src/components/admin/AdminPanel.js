@@ -12,6 +12,8 @@ const AdminPanel = () => {
     const [loading, setLoading] = useState(false);
     const [sortBy, setSortBy] = useState('newest');
     const [viewMode, setViewMode] = useState('all');
+    const [editingContribution, setEditingContribution] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     // Fetch pending contributions
     const fetchPendingContributions = useCallback(async () => {
@@ -154,6 +156,43 @@ const AdminPanel = () => {
             console.error('Error requesting edits:', error);
             alert('Грешка при барање за измена');
         }
+    };
+
+    // Edit contribution directly
+    const editContribution = async (id, updatedData) => {
+        console.log('Editing contribution:', id, 'with data:', updatedData);
+        try {
+            const response = await fetch(`http://localhost:3001/moderacija/edit/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    opis: updatedData.opis,
+                    referenca_opis: updatedData.referenca_opis,
+                    referenca_url: updatedData.referenca_url
+                })
+            });
+            
+            if (response.ok) {
+                alert('Прispevok успешно изменет!');
+                setShowEditModal(false);
+                setEditingContribution(null);
+                fetchPendingContributions(); // Refresh list
+            } else {
+                const errorData = await response.json();
+                console.error('Server error:', errorData);
+                alert('Грешка при измена: ' + (errorData.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error editing contribution:', error);
+            alert('Грешка при измена');
+        }
+    };
+
+    // Open edit modal
+    const openEditModal = (contribution) => {
+        setEditingContribution(contribution);
+        setShowEditModal(true);
     };
 
     // Update user role (SuperAdmin only)
@@ -303,9 +342,6 @@ const AdminPanel = () => {
                                 <span className="stat-badge">
                                     📊 Вкупно: {pendingContributions.length}
                                 </span>
-                                <span className="stat-badge">
-                                    ⏳ Чекаат: {pendingContributions.filter(c => c.status === 0).length}
-                                </span>
                             </div>
                         </div>
                         
@@ -322,6 +358,7 @@ const AdminPanel = () => {
                                         onApprove={approveContribution}
                                         onReject={rejectContribution}
                                         onRequestEdit={requestEdits}
+                                        onEdit={openEditModal}
                                         viewMode={viewMode}
                                         currentUser={currentUser}
                                     />
@@ -401,32 +438,30 @@ const AdminPanel = () => {
                     </div>
                 )}
             </div>
+
+            {/* Edit Modal */}
+            {showEditModal && editingContribution && (
+                <EditContributionModal 
+                    contribution={editingContribution}
+                    onSave={editContribution}
+                    onCancel={() => {
+                        setShowEditModal(false);
+                        setEditingContribution(null);
+                    }}
+                />
+            )}
         </div>
     );
 };
 
 // Individual Contribution Card Component
-const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, viewMode = 'all', currentUser }) => {
+const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, onEdit, viewMode = 'all', currentUser }) => {
     const [comment, setComment] = useState('');
     const [showDetails, setShowDetails] = useState(viewMode === 'detailed');
 
     useEffect(() => {
         setShowDetails(viewMode === 'detailed');
     }, [viewMode]);
-
-    const getRegionName = (regijaId) => {
-        const regionMap = {
-            "1": "Пелагонија",
-            "2": "Скопје", 
-            "3": "Вардарска Македонија",
-            "4": "Источна Македонија",
-            "5": "Југозападен дел",
-            "6": "Југоисточен дел",
-            "7": "Полог",
-            "8": "Североисточен дел"
-        };
-        return regionMap[regijaId] || 'Непозната регија';
-    };
 
     const handleAction = (action) => {
         console.log('ContributionCard handleAction:', action, 'for contribution:', contribution.id, 'with comment:', comment);
@@ -453,7 +488,7 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
                 <div className="header-left">
                     <h4>🎭 Prispevok #{contribution.id}</h4>
                     <span className="submission-date">
-                        📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString('mk-MK')}
+                        📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString('mk-MK', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </span>
                 </div>
                 {viewMode === 'compact' && (
@@ -468,11 +503,18 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
                                     ✅
                                 </button>
                                 <button 
-                                    className="quick-edit"
+                                    className="quick-edit-request"
                                     onClick={() => handleAction('edit')}
                                     title="Побарај измени"
                                 >
                                     ✏️
+                                </button>
+                                <button 
+                                    className="quick-edit"
+                                    onClick={() => onEdit(contribution)}
+                                    title="Директно измени"
+                                >
+                                    📝
                                 </button>
                                 <button 
                                     className="quick-reject"
@@ -563,17 +605,17 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
                     <div className="detail-section">
                         <div className="info-row">
                             <span className="label">🎭 Име на плес:</span>
-                            <span className="value highlight">{contribution.ime || 'Неdefinirano'}</span>
+                            <span className="value highlight">{contribution.ime_plesa || 'Недефинирано'}</span>
                         </div>
 
                         <div className="info-row">
                             <span className="label">🎪 Тип на плес:</span>
-                            <span className="value">{contribution.tip_plesa || 'Неdefinirano'}</span>
+                            <span className="value">{contribution.tip_plesa || 'Недефинирано'}</span>
                         </div>
 
                         <div className="info-row">
                             <span className="label">🗺️ Регија:</span>
-                            <span className="value">{getRegionName(contribution.regija_id)}</span>
+                            <span className="value">{contribution.regija || 'Непозната регија'}</span>
                         </div>
 
                         <div className="info-row">
@@ -590,7 +632,7 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
             )}
 
             {/* Comment Section - Hidden in compact mode unless expanded */}
-            {(viewMode !== 'compact' || showDetails) && (
+            {(viewMode !== 'compact' || showDetails) && contribution.uporabnik_id !== currentUser?.id && (
                 <div className="comment-section">
                     <label htmlFor={`comment-${contribution.id}`} className="comment-label">
                         💬 Коментар за модератор:
@@ -629,6 +671,14 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
                     </button>
                     
                     <button 
+                        className="direct-edit-btn"
+                        onClick={() => onEdit(contribution)}
+                        title="Директно измени го prispevok-от"
+                    >
+                        📝 Измени директно
+                    </button>
+                    
+                    <button 
                         className="reject-btn"
                         onClick={() => handleAction('reject')}
                         title="Отфрли го prispevok-от"
@@ -642,6 +692,95 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, vi
                     <small>Обратете се до друг модератор за оваа објава</small>
                 </div>
             )}
+        </div>
+    );
+};
+
+// Edit Contribution Modal Component
+const EditContributionModal = ({ contribution, onSave, onCancel }) => {
+    const [formData, setFormData] = useState({
+        opis: contribution.opis || '',
+        referenca_opis: contribution.referenca_opis || '',
+        referenca_url: contribution.referenca_url || ''
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave(contribution.id, formData);
+    };
+
+    const handleChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    return (
+        <div className="modal-overlay">
+            <div className="edit-modal">
+                <div className="modal-header">
+                    <h3>📝 Измени Prispevok #{contribution.id}</h3>
+                    <button 
+                        className="close-btn"
+                        onClick={onCancel}
+                        title="Затвори"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="edit-form">
+                    <div className="form-group">
+                        <label htmlFor="opis">📝 Опис на prispevok:</label>
+                        <textarea
+                            id="opis"
+                            value={formData.opis}
+                            onChange={(e) => handleChange('opis', e.target.value)}
+                            rows="4"
+                            placeholder="Внесете опис на prispevok-от..."
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="referenca_opis">📚 Опис на референца:</label>
+                        <textarea
+                            id="referenca_opis"
+                            value={formData.referenca_opis}
+                            onChange={(e) => handleChange('referenca_opis', e.target.value)}
+                            rows="3"
+                            placeholder="Внесете опис на референца..."
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="referenca_url">🔗 URL на референца:</label>
+                        <input
+                            type="url"
+                            id="referenca_url"
+                            value={formData.referenca_url}
+                            onChange={(e) => handleChange('referenca_url', e.target.value)}
+                            placeholder="https://example.com"
+                        />
+                    </div>
+
+                    <div className="modal-actions">
+                        <button 
+                            type="button" 
+                            className="cancel-btn"
+                            onClick={onCancel}
+                        >
+                            ❌ Откажи
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="save-btn"
+                        >
+                            💾 Зачувај измени
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };
