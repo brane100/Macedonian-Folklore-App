@@ -9,6 +9,7 @@ import Register from './Register/Register';
 import CreateContributionWizard from './contribution/CreateContributionWizard';
 import AdminPanel from './admin/AdminPanel';
 import Posts from './posts/Posts';
+import SinglePost from './posts/SinglePost';
 import UserSubmissions from './user/UserSubmissions';
 import EditContribution from './user/EditContribution';
 import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
@@ -265,9 +266,9 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
     return location.pathname === path;
   };
 
-  // Clear search when route changes (except to /plesi)
+  // Clear search when route changes (except to posts pages)
   React.useEffect(() => {
-    if (location.pathname !== '/plesi') {
+    if (!location.pathname.startsWith('/plesi') && !location.pathname.startsWith('/prispevci')) {
       setSearchQuery('');
       setIsSearchExpanded(false);
       setIsSearchFocused(false);
@@ -624,6 +625,8 @@ export default function AppRouter() {
               <Route path="/" element={<Home />} />
               <Route path="/mapa" element={<MapMKD />} />
               <Route path="/plesi" element={<Posts searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
+              <Route path="/prispevci" element={<Posts searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
+              <Route path="/prispevci/:id" element={<SinglePost />} />
               
               {/* Public routes - redirect to home if already logged in */}
               <Route 

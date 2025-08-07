@@ -173,6 +173,22 @@
     border-color: var(--macedonia-yellow);
 }
 
+/* Clickable Post Card */
+.clickable-post-card {
+    cursor: pointer;
+}
+
+.clickable-post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(204, 0, 0, 0.2);
+    border-color: var(--macedonia-red);
+}
+
+.clickable-post-card:focus {
+    outline: 2px solid var(--macedonia-red);
+    outline-offset: 2px;
+}
+
 /* Post Card Header */
 .post-card-header {
     display: flex;

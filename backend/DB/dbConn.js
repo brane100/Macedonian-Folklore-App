@@ -34,7 +34,18 @@ dataPool.allPrispevki = () => {
 
 dataPool.enPrispevek = (id) => {
   return new Promise((resolve, reject) => {
-    conn.query(`SELECT * FROM Prispevek WHERE id = ?`, id, (err, res) => {
+    conn.query(`
+      SELECT p.*, 
+             u.ime AS user_ime, u.priimek, u.email, 
+             pl.ime AS ime_plesa, pl.tip_plesa, 
+             pl.kratka_zgodovina, pl.opis_tehnike,
+             r.ime AS regija
+      FROM Prispevek p 
+      LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
+      LEFT JOIN Ples pl ON p.ples_id = pl.id
+      LEFT JOIN Regija r ON pl.regija_id = r.id
+      WHERE p.id = ?
+    `, [id], (err, res) => {
       if (err) { return reject(err) }
       return resolve(res[0])
     })

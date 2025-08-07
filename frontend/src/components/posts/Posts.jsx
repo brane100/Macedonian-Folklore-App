@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Posts.css';
 
 const Posts = ({ searchQuery = '', setSearchQuery }) => {
+    const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -297,7 +298,19 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
             ) : (
                 <div className="posts-grid">
                     {filteredAndSortedPosts().map(post => (
-                        <article key={post.id} className="post-card">
+                        <article 
+                            key={post.id} 
+                            className="post-card clickable-post-card"
+                            onClick={() => navigate(`/prispevci/${post.id}`)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    navigate(`/prispevci/${post.id}`);
+                                }
+                            }}
+                        >
                             <div className="post-card-header">
                                 <div className="post-type">
                                     {getTipIcon(post.tip_plesa)} {post.tip_plesa || 'Непознат тип'}
