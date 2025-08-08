@@ -1,5 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { useRole, ModeratorGuard } from './RoleBasedAccess';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+
 import './AppRouter.css';
 
 // Import existing components
@@ -12,9 +16,7 @@ import Posts from './posts/Posts';
 import SinglePost from './posts/SinglePost';
 import UserSubmissions from './user/UserSubmissions';
 import EditContribution from './user/EditContribution';
-import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
-import { useRole, ModeratorGuard } from './RoleBasedAccess';
+import Favorites from './favorites/Favorites';
 
 // 404 Component
 function NotFound() {
@@ -430,7 +432,7 @@ function NavigationBar({ searchQuery, setSearchQuery }) {
               />
             </div>
 
-            <button className="nav-icon-btn desktop-icon" title="Фаворити">
+            <button className="nav-icon-btn desktop-icon" title="Фаворити" onClick={() => navigate('/favorites')}>
               ❤️
             </button>
 
@@ -626,6 +628,7 @@ export default function AppRouter() {
               <Route path="/plesi" element={<Posts searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
               <Route path="/prispevci" element={<Posts searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
               <Route path="/prispevci/:id" element={<SinglePost />} />
+              <Route path="/favorites" element={<Favorites />} />
 
               {/* Public routes - redirect to home if already logged in */}
               <Route

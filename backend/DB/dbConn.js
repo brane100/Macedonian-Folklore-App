@@ -230,6 +230,81 @@ dataPool.deleteUser = (userId) => {
   });
 }
 
+// Add function to add favorite
+dataPool.addFavorite = (user_id, prispevek_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      INSERT IGNORE INTO Uporabnik_vsecka_Prispevek (uporabnik_id, prispevek_id) 
+      VALUES (?, ?)
+    `, [user_id, prispevek_id], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+// Add function to remove favorite
+dataPool.removeFavorite = (user_id, prispevek_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      DELETE FROM Uporabnik_vsecka_Prispevek 
+      WHERE uporabnik_id = ? AND prispevek_id = ?
+    `, [user_id, prispevek_id], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
+// Check if user has favorited a contribution
+dataPool.isFavorite = (user_id, prispevek_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      SELECT COUNT(*) as count 
+      FROM Uporabnik_vsecka_Prispevek 
+      WHERE uporabnik_id = ? AND prispevek_id = ?
+    `, [user_id, prispevek_id], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res[0].count > 0)
+    })
+  })
+}
+
+dataPool.checkLikeCount = (prispevek_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      SELECT COUNT(*) as count 
+      FROM Uporabnik_vsecka_Prispevek 
+      WHERE prispevek_id = ?
+    `, [prispevek_id], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res[0].count)
+    })
+  })
+}
+
+dataPool.getFavoriteContributions = (user_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      SELECT p.*, 
+             u.ime AS user_ime, u.priimek, u.email, 
+             pl.ime AS ime_plesa, pl.tip_plesa, 
+             pl.kratka_zgodovina, pl.opis_tehnike,
+             r.ime AS regija
+      FROM Prispevek p 
+      LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
+      LEFT JOIN Ples pl ON p.ples_id = pl.id
+      LEFT JOIN Regija r ON pl.regija_id = r.id
+      WHERE p.status = 'odobren' AND p.id IN (
+          SELECT prispevek_id FROM Uporabnik_vsecka_Prispevek WHERE uporabnik_id = ?
+      )
+    `, [user_id], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
 // Get pending contributions (for moderation)
 dataPool.getPendingContributions = () => {
   return new Promise((resolve, reject) => {

@@ -1,6 +1,6 @@
 const express = require('express')
-const prispevki = express.Router()
 const DB = require('../DB/dbConn')
+const prispevki = express.Router()
 
 prispevki.get('/', async (req, res, next) => {
     try {

@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Posts.css';
 
-const Posts = ({ searchQuery = '', setSearchQuery }) => {
+const Posts = ({
+    searchQuery = '',
+    setSearchQuery,
+    title = '🎭 Фолклорни објави',
+    subtitle = 'Одобрени објави за македонските ора и традиции',
+    apiEndpoint = 'http://localhost:3001/prispevki/odobren',
+    }) => {
     const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,10 +22,10 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
 
     const fetchApprovedPosts = async () => {
         try {
-            const response = await fetch('http://localhost:3001/prispevki/odobren', {
+            const response = await fetch(apiEndpoint, {
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 console.log('Fetched posts data:', data); // Debug log
@@ -39,22 +45,22 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
     const getRegions = () => {
         console.log('Posts array:', posts); // Debug log
         console.log('Posts length:', posts.length); // Debug log
-        
+
         const allRegions = posts.map(post => {
             console.log('Post regija:', post.regija); // Debug each post's region
             return post.regija;
         });
         console.log('All regions (before filter):', allRegions); // Debug log
-        
+
         const filteredRegions = allRegions.filter(Boolean);
         console.log('Filtered regions (after removing empty):', filteredRegions); // Debug log
-        
+
         const uniqueRegions = [...new Set(filteredRegions)];
         console.log('Unique regions:', uniqueRegions); // Debug log
-        
+
         const sortedRegions = uniqueRegions.sort();
         console.log('Available regions (final):', sortedRegions); // Debug log
-        
+
         return sortedRegions;
     };
 
@@ -76,13 +82,13 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                 const description = (post.opis || '').toLowerCase();
                 const shortHistory = (post.kratka_zgodovina || '').toLowerCase();
                 const technique = (post.opis_tehnike || '').toLowerCase();
-                
+
                 return danceName.includes(query) ||
-                       danceType.includes(query) ||
-                       region.includes(query) ||
-                       description.includes(query) ||
-                       shortHistory.includes(query) ||
-                       technique.includes(query);
+                    danceType.includes(query) ||
+                    region.includes(query) ||
+                    description.includes(query) ||
+                    shortHistory.includes(query) ||
+                    technique.includes(query);
             });
         }
 
@@ -187,8 +193,8 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                         <h1>🔍 Резултати од пребарување</h1>
                         <p>Резултати за: "<strong>{searchQuery}</strong>"</p>
                         <div className="search-actions">
-                            <button 
-                                onClick={() => setSearchQuery('')} 
+                            <button
+                                onClick={() => setSearchQuery('')}
                                 className="clear-search-btn"
                             >
                                 ✕ Исчисти пребарување
@@ -197,8 +203,8 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                     </>
                 ) : (
                     <>
-                        <h1>🎭 Фолклорни прispevки</h1>
-                        <p>Одобрени прispevки за македонски фолклорни плесови и традиции</p>
+                        <h1>{title}</h1>
+                        <p>{subtitle}</p>
                     </>
                 )}
             </div>
@@ -208,9 +214,9 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                 <div className="filter-section">
                     <label htmlFor="region-filter">📍 Филтрирај по регион:</label>
                     <div className="filter-controls">
-                        <select 
+                        <select
                             id="region-filter"
-                            value={filter} 
+                            value={filter}
                             onChange={(e) => setFilter(e.target.value)}
                             className="filter-select"
                         >
@@ -222,8 +228,8 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                             ))}
                         </select>
                         {filter !== 'all' && (
-                            <button 
-                                onClick={() => setFilter('all')} 
+                            <button
+                                onClick={() => setFilter('all')}
                                 className="clear-filter-btn"
                                 title="Исчисти филтер"
                             >
@@ -235,9 +241,9 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
 
                 <div className="sort-section">
                     <label htmlFor="sort-select">📊 Сортирај по:</label>
-                    <select 
+                    <select
                         id="sort-select"
-                        value={sortBy} 
+                        value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
                         className="sort-select"
                     >
@@ -274,8 +280,8 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                             <h3>🔍 Нема пронајдени резултати</h3>
                             <p>Не се пронајдени prispevки што содржат "{searchQuery}".</p>
                             <div className="no-posts-actions">
-                                <button 
-                                    onClick={() => setSearchQuery('')} 
+                                <button
+                                    onClick={() => setSearchQuery('')}
                                     className="clear-search-btn"
                                 >
                                     ✕ Исчисти пребарување
@@ -298,8 +304,8 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
             ) : (
                 <div className="posts-grid">
                     {filteredAndSortedPosts().map(post => (
-                        <article 
-                            key={post.id} 
+                        <article
+                            key={post.id}
                             className="post-card clickable-post-card"
                             onClick={() => navigate(`/prispevci/${post.id}`)}
                             role="button"
@@ -351,9 +357,9 @@ const Posts = ({ searchQuery = '', setSearchQuery }) => {
                                         <h4>📚 Референца:</h4>
                                         <p>{post.referenca_opis}</p>
                                         {post.referenca_url && (
-                                            <a 
-                                                href={post.referenca_url} 
-                                                target="_blank" 
+                                            <a
+                                                href={post.referenca_url}
+                                                target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="reference-link"
                                             >

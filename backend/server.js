@@ -1,15 +1,16 @@
 require('dotenv').config();
 
 const express = require('express');
-const posts = require('./routes/prispevki'); // Importing the posts route
-const uporabnik = require('./routes/uporabnik'); // Importing the uporabnik route
-const moderacija = require('./routes/moderacija'); // Importing the moderation route
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 
+const posts = require('./routes/prispevki'); // Importing the posts route
+const uporabnik = require('./routes/uporabnik'); // Importing the uporabnik route
+const moderacija = require('./routes/moderacija'); // Importing the moderation route
+const vsecki = require('./routes/vsecki.js'); // Importing the favorites route
 
 const DB = require('./DB/dbConn.js'); // Importing the database connection
 // console.log('Ovdje load');
@@ -19,7 +20,7 @@ const DB = require('./DB/dbConn.js'); // Importing the database connection
 const app = express();
 const PORT = process.env.PORT || 4445;
 
-const users = [{name: 'stanko'}]
+// const users = [{name: 'stanko'}]
 
 // Middleware - CORS configuration for authentication
 app.use(cors({
@@ -51,6 +52,7 @@ app.use(session({
 app.use('/prispevki', posts); // Use the posts route
 app.use('/uporabnik', uporabnik); // Use the uporabnik route
 app.use('/moderacija', moderacija); // Use the moderation route
+app.use('/vsecki', vsecki); // Use the favorites route
 
 // Routes
 app.get('/', (req, res) => {
