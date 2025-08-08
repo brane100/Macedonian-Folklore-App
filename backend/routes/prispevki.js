@@ -17,7 +17,7 @@ prispevki.get('/', async (req, res, next) => {
 prispevki.get('/odobren', async (req, res, next) => {
     try {
         var queryResult = await DB.getApprovedContributions();
-        res.json(queryResult)
+        res.json(queryResult);
     }
     catch (err) {
         console.log(err)

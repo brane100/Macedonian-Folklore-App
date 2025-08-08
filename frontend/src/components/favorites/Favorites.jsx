@@ -9,7 +9,7 @@ const Favorites = ({ searchQuery, setSearchQuery }) => {
             setSearchQuery={setSearchQuery}
             title="❤️ Фаворити"
             subtitle="Вашите допаднати македонски ора и традиции"
-            apiEndpoint="http://localhost:3001/favorites" // Your favorites API endpoint
+            apiEndpoint="http://localhost:3001/vsecki" // Your favorites API endpoint
             searchPlaceholder="Резултати во фаворити за"
             isFavoritesPage={true}
         />

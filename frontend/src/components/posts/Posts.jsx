@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import './Posts.css';
 
 const Posts = ({
@@ -8,18 +9,21 @@ const Posts = ({
     title = '🎭 Фолклорни објави',
     subtitle = 'Одобрени објави за македонските ора и традиции',
     apiEndpoint = 'http://localhost:3001/prispevki/odobren',
-    }) => {
+}) => {
     const navigate = useNavigate();
+    const { user, isAuthenticated } = useAuth();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
 
-    useEffect(() => {
-        fetchApprovedPosts();
-    }, []);
+    // State for likes and user favorites
+    const [likesData, setLikesData] = useState({});
+    const [userLikes, setUserLikes] = useState(new Set());
+    const [likingInProgress, setLikingInProgress] = useState(new Set());
 
+    // Functions defined as regular functions (not useCallback for now)
     const fetchApprovedPosts = async () => {
         try {
             const response = await fetch(apiEndpoint, {
@@ -27,50 +31,135 @@ const Posts = ({
             });
 
             if (response.ok) {
-                const data = await response.json();
-                console.log('Fetched posts data:', data); // Debug log
-                console.log('First post structure:', data[0]); // Debug log
-                setPosts(data);
+                const postsArray = await response.json();
+                console.log('Fetched posts data:', postsArray);
+                
+                setPosts(postsArray);
+                
+                // Initialize likes data from the like_count field in each post
+                const initialLikesData = {};
+                postsArray.forEach(post => {
+                    initialLikesData[post.id] = post.like_count || 0;
+                });
+                setLikesData(initialLikesData);
             } else {
-                setError('Грешка при вчитување на присpevки');
+                setError('Грешка при вчитување на објави');
+                setPosts([]);
             }
         } catch (err) {
             console.error('Error fetching approved posts:', err);
             setError('Грешка при поврзување со серверот');
+            setPosts([]);
         } finally {
             setLoading(false);
         }
     };
 
-    const getRegions = () => {
-        console.log('Posts array:', posts); // Debug log
-        console.log('Posts length:', posts.length); // Debug log
+    const fetchUserLikes = async () => {
+        if (!user?.id) return;
 
-        const allRegions = posts.map(post => {
-            console.log('Post regija:', post.regija); // Debug each post's region
-            return post.regija;
-        });
-        console.log('All regions (before filter):', allRegions); // Debug log
+        try {
+            const response = await fetch('http://localhost:3001/vsecki/liked-ids', {
+                credentials: 'include'
+            });
 
-        const filteredRegions = allRegions.filter(Boolean);
-        console.log('Filtered regions (after removing empty):', filteredRegions); // Debug log
-
-        const uniqueRegions = [...new Set(filteredRegions)];
-        console.log('Unique regions:', uniqueRegions); // Debug log
-
-        const sortedRegions = uniqueRegions.sort();
-        console.log('Available regions (final):', sortedRegions); // Debug log
-
-        return sortedRegions;
+            if (response.ok) {
+                const likedPostIds = await response.json();
+                setUserLikes(new Set(likedPostIds));
+            }
+        } catch (error) {
+            console.error('Error fetching user likes:', error);
+        }
     };
 
-    const filteredAndSortedPosts = () => {
-        let filteredPosts = posts;
+    // Define handleLike as a regular function
+    const handleLike = async (postId, event) => {
+        console.log('handleLike called with postId:', postId);
+        
+        // Prevent event bubbling to avoid navigating to post detail
+        event.stopPropagation();
 
-        // Debug logs
-        console.log('Total posts:', posts.length);
-        console.log('Current filter:', filter);
-        console.log('Search query:', searchQuery);
+        if (!isAuthenticated) {
+            navigate('/prijava');
+            return;
+        }
+
+        if (likingInProgress.has(postId)) {
+            return; // Prevent multiple clicks
+        }
+
+        setLikingInProgress(prev => new Set([...prev, postId]));
+
+        try {
+            const isCurrentlyLiked = userLikes.has(postId);
+            const method = isCurrentlyLiked ? 'DELETE' : 'POST';
+
+            console.log('Sending request:', method, `http://localhost:3001/vsecki/${postId}`);
+
+            const response = await fetch(`http://localhost:3001/vsecki/${postId}`, {
+                method: method,
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Like response:', result);
+
+                // Update user likes state
+                setUserLikes(prev => {
+                    const newSet = new Set(prev);
+                    if (isCurrentlyLiked) {
+                        newSet.delete(postId);
+                    } else {
+                        newSet.add(postId);
+                    }
+                    return newSet;
+                });
+
+                // Update likes count
+                setLikesData(prev => ({
+                    ...prev,
+                    [postId]: result.likeCount || 0
+                }));
+            } else {
+                console.error('Error toggling like, response:', response.status);
+                alert('Грешка при лајкување. Обидете се повторно.');
+            }
+        } catch (error) {
+            console.error('Error handling like:', error);
+            alert('Грешка при поврзување со серверот.');
+        } finally {
+            setLikingInProgress(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(postId);
+                return newSet;
+            });
+        }
+    };
+
+    // useEffect hooks
+    useEffect(() => {
+        fetchApprovedPosts();
+    }, [apiEndpoint]);
+
+    useEffect(() => {
+        if (isAuthenticated && user?.id) {
+            fetchUserLikes();
+        }
+    }, [isAuthenticated, user?.id]);
+
+    // Memoized filtered and sorted posts
+    const filteredAndSortedPosts = useMemo(() => {
+        // Ensure posts is always an array
+        if (!Array.isArray(posts)) {
+            console.warn('Posts is not an array:', posts);
+            return [];
+        }
+
+        let filteredPosts = [...posts]; // Create a copy to avoid mutating original
 
         // Filter by search query first
         if (searchQuery && searchQuery.trim() !== '') {
@@ -92,16 +181,9 @@ const Posts = ({
             });
         }
 
-        console.log('After search filter:', filteredPosts.length);
-
         // Filter by region
         if (filter !== 'all') {
-            const beforeRegionFilter = filteredPosts.length;
-            filteredPosts = filteredPosts.filter(post => {
-                console.log(`Comparing post region "${post.regija}" with filter "${filter}"`);
-                return post.regija === filter;
-            });
-            console.log(`Region filter: ${beforeRegionFilter} -> ${filteredPosts.length}`);
+            filteredPosts = filteredPosts.filter(post => post.regija === filter);
         }
 
         // Sort posts
@@ -115,6 +197,13 @@ const Posts = ({
             default:
                 return filteredPosts;
         }
+    }, [posts, searchQuery, filter, sortBy]);
+
+    // Helper functions
+    const getRegions = () => {
+        const allRegions = posts.map(post => post.regija).filter(Boolean);
+        const uniqueRegions = [...new Set(allRegions)];
+        return uniqueRegions.sort();
     };
 
     const formatDate = (dateString) => {
@@ -146,6 +235,7 @@ const Posts = ({
         }
     };
 
+
     const getRegijaIcon = (regija) => {
         const regionIcons = {
             'Скопски регион': '🏛️',
@@ -165,7 +255,7 @@ const Posts = ({
             <div className="posts-container">
                 <div className="loading-spinner">
                     <div className="spinner"></div>
-                    <p>Се вчитуваат прispevки...</p>
+                    <p>Се вчитуваат присpevки...</p>
                 </div>
             </div>
         );
@@ -256,10 +346,10 @@ const Posts = ({
 
             <div className="posts-stats">
                 <span className="stats-item">
-                    📝 Вкупно: {posts.length} прispevки
+                    📝 Вкупно: {posts.length} присpевки
                 </span>
                 <span className="stats-item">
-                    🔍 Прикажани: {filteredAndSortedPosts().length} прispевки
+                    🔍 Прикажани: {filteredAndSortedPosts.length} присpевки
                 </span>
                 {searchQuery && (
                     <span className="stats-item search-indicator">
@@ -273,12 +363,12 @@ const Posts = ({
                 )}
             </div>
 
-            {filteredAndSortedPosts().length === 0 ? (
+            {filteredAndSortedPosts.length === 0 ? (
                 <div className="no-posts">
                     {searchQuery ? (
                         <>
                             <h3>🔍 Нема пронајдени резултати</h3>
-                            <p>Не се пронајдени prispevки што содржат "{searchQuery}".</p>
+                            <p>Не се пронајдени присpевки што содржат "{searchQuery}".</p>
                             <div className="no-posts-actions">
                                 <button
                                     onClick={() => setSearchQuery('')}
@@ -287,109 +377,138 @@ const Posts = ({
                                     ✕ Исчисти пребарување
                                 </button>
                                 <Link to="/dodaj-prispevek" className="add-post-btn">
-                                    ➕ Додај prispevok
+                                    ➕ Додај присpевок
                                 </Link>
                             </div>
                         </>
                     ) : (
                         <>
-                            <h3>🔍 Нема пронајдени прispevки</h3>
-                            <p>Обидете се со различен филтер или додајте нов prispevok.</p>
+                            <h3>🔍 Нема пронајдени присpевки</h3>
+                            <p>Обидете се со различен филтер или додајте нов присpевок.</p>
                             <Link to="/dodaj-prispevek" className="add-post-btn">
-                                ➕ Додај prispevok
+                                ➕ Додај присpевок
                             </Link>
                         </>
                     )}
                 </div>
             ) : (
                 <div className="posts-grid">
-                    {filteredAndSortedPosts().map(post => (
-                        <article
-                            key={post.id}
-                            className="post-card clickable-post-card"
-                            onClick={() => navigate(`/prispevci/${post.id}`)}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    navigate(`/prispevci/${post.id}`);
-                                }
-                            }}
-                        >
-                            <div className="post-card-header">
-                                <div className="post-type">
-                                    {getTipIcon(post.tip_plesa)} {post.tip_plesa || 'Непознат тип'}
-                                </div>
-                                <div className="post-region">
-                                    {getRegijaIcon(post.regija)} {post.regija || 'Непознат регион'}
-                                </div>
-                            </div>
+                    {filteredAndSortedPosts.map(post => {
+                        const isLiked = userLikes.has(post.id);
+                        const isLiking = likingInProgress.has(post.id);
 
-                            <div className="post-card-content">
-                                <h3 className="post-title">
-                                    {post.ime_plesa || 'Без наслов'}
-                                </h3>
-
-                                {post.kratka_zgodovina && (
-                                    <div className="post-history">
-                                        <h4>📜 Историја:</h4>
-                                        <p>{post.kratka_zgodovina}</p>
+                        return (
+                            <article
+                                key={post.id}
+                                className="post-card clickable-post-card"
+                                onClick={() => navigate(`/prispevci/${post.id}`)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        navigate(`/prispevci/${post.id}`);
+                                    }
+                                }}
+                            >
+                                <div className="post-card-header">
+                                    <div className="post-type">
+                                        {getTipIcon(post.tip_plesa)} {post.tip_plesa || 'Непознат тип'}
                                     </div>
-                                )}
-
-                                {post.opis_tehnike && (
-                                    <div className="post-technique">
-                                        <h4>🎯 Техника:</h4>
-                                        <p>{post.opis_tehnike}</p>
+                                    <div className="post-region">
+                                        {getRegijaIcon(post.regija)} {post.regija || 'Непознат регион'}
                                     </div>
-                                )}
-
-                                {post.besedilo_opis && (
-                                    <div className="post-description">
-                                        <h4>📝 Опис:</h4>
-                                        <p>{post.besedilo_opis}</p>
-                                    </div>
-                                )}
-
-                                {post.referenca_opis && (
-                                    <div className="post-reference">
-                                        <h4>📚 Референца:</h4>
-                                        <p>{post.referenca_opis}</p>
-                                        {post.referenca_url && (
-                                            <a
-                                                href={post.referenca_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="reference-link"
-                                            >
-                                                🔗 Посети референца
-                                            </a>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="post-card-footer">
-                                <div className="post-meta">
-                                    <span className="post-author">
-                                        👤 {getAuthorName(post)}
-                                    </span>
-                                    <span className="post-date">
-                                        📅 {formatDate(post.datum_ustvarjen)}
-                                    </span>
                                 </div>
-                                <div className="post-actions">
-                                    <button className="action-btn like-btn" title="Допадна ми се">
-                                        ❤️ <span className="action-count">0</span>
-                                    </button>
-                                    <button className="action-btn share-btn" title="Сподели">
-                                        📤
-                                    </button>
+
+                                <div className="post-card-content">
+                                    <h3 className="post-title">
+                                        {post.ime_plesa || 'Без наслов'}
+                                    </h3>
+
+                                    {post.kratka_zgodovina && (
+                                        <div className="post-history">
+                                            <h4>📜 Историја:</h4>
+                                            <p>{post.kratka_zgodovina}</p>
+                                        </div>
+                                    )}
+
+                                    {post.opis_tehnike && (
+                                        <div className="post-technique">
+                                            <h4>🎯 Техника:</h4>
+                                            <p>{post.opis_tehnike}</p>
+                                        </div>
+                                    )}
+
+                                    {post.opis && (
+                                        <div className="post-description">
+                                            <h4>📝 Опис:</h4>
+                                            <p>{post.opis}</p>
+                                        </div>
+                                    )}
+
+                                    {post.referenca_opis && (
+                                        <div className="post-reference">
+                                            <h4>📚 Референца:</h4>
+                                            <p>{post.referenca_opis}</p>
+                                            {post.referenca_url && (
+                                                <a
+                                                    href={post.referenca_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="reference-link"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    🔗 Посети референца
+                                                </a>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        </article>
-                    ))}
+
+                                <div className="post-card-footer">
+                                    <div className="post-meta">
+                                        <span className="post-author">
+                                            👤 {getAuthorName(post)}
+                                        </span>
+                                        <span className="post-date">
+                                            📅 {formatDate(post.datum_ustvarjen)}
+                                        </span>
+                                    </div>
+                                    <div className="post-actions">
+                                        <button 
+                                            className={`action-btn like-btn ${isLiked ? 'liked' : ''} ${isLiking ? 'loading' : ''} ${!isAuthenticated ? 'guest' : ''}`}
+                                            title={isLiked ? 'Отстрани од допаднати' : 'Допадна ми се'}
+                                            onClick={(event) => {
+                                                console.log('Like button clicked for post:', post.id);
+                                                handleLike(post.id, event);
+                                            }}
+                                            disabled={isLiking}
+                                        >
+                                            {isLiking ? (
+                                                '⏳'
+                                            ) : (
+                                                <>
+                                                    {isLiked ? '❤️' : '🤍'} 
+                                                    <span className="action-count">{likesData[post.id] || 0}</span>
+                                                </>
+                                            )}
+                                        </button>
+                                        <button 
+                                            className="action-btn share-btn" 
+                                            title="Сподели"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                // Add share functionality here
+                                                console.log('Share clicked for post:', post.id);
+                                            }}
+                                        >
+                                            📤
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        );
+                    })}
                 </div>
             )}
         </div>

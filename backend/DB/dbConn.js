@@ -305,6 +305,20 @@ dataPool.getFavoriteContributions = (user_id) => {
   })
 }
 
+// Get user's liked post IDs only (for frontend like state)
+dataPool.getUserLikedPostIds = (user_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      SELECT prispevek_id FROM Uporabnik_vsecka_Prispevek WHERE uporabnik_id = ?
+    `, [user_id], (err, res) => {
+      if (err) { return reject(err) }
+      // Return just the array of post IDs
+      const postIds = res.map(row => row.prispevek_id);
+      return resolve(postIds)
+    })
+  })
+}
+
 // Get pending contributions (for moderation)
 dataPool.getPendingContributions = () => {
   return new Promise((resolve, reject) => {
@@ -333,11 +347,17 @@ dataPool.getApprovedContributions = () => {
              u.ime AS user_ime, u.priimek, u.email, 
              pl.ime AS ime_plesa, pl.tip_plesa, 
              pl.kratka_zgodovina, pl.opis_tehnike,
-             r.ime AS regija
+             r.ime AS regija,
+             COALESCE(like_counts.like_count, 0) AS like_count
       FROM Prispevek p 
       LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
       LEFT JOIN Ples pl ON p.ples_id = pl.id
       LEFT JOIN Regija r ON pl.regija_id = r.id
+      LEFT JOIN (
+        SELECT prispevek_id, COUNT(*) as like_count
+        FROM Uporabnik_vsecka_Prispevek 
+        GROUP BY prispevek_id
+      ) like_counts ON p.id = like_counts.prispevek_id
       WHERE p.status = 'odobren'
     `, (err, res) => {
       if (err) { return reject(err) }
