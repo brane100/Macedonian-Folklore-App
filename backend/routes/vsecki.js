@@ -8,9 +8,20 @@ vsecki.get('/', async (req, res) => {
         const userId = req.session.user_id; // Assuming user ID is stored in session
         const favoritesList = await DB.getFavoriteContributions(userId);
         
+        // Add like count for each post using the existing checkLikeCount query
+        const favoritesWithLikeCounts = await Promise.all(
+            favoritesList.map(async (post) => {
+                const likeCount = await DB.checkLikeCount(post.id);
+                return {
+                    ...post,
+                    like_count: likeCount
+                };
+            })
+        );
+        
         res.json({
             success: true,
-            data: favoritesList
+            data: favoritesWithLikeCounts
         });
     } catch (error) {
         console.error('Error fetching favorites:', error);
