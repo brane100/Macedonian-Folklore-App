@@ -175,5 +175,13 @@
     "privacy": "Privacy",
     "followUs": "Follow us",
     "copyright": "© 2025 Preserve Culture. All rights reserved."
+  },
+  "favorites": {
+    "subtitle": "Your liked Macedonian folk dances and traditions",
+    "total": "Total:",
+    "likedPosts": "liked posts",
+    "noFavorites": "No favorites yet",
+    "noFavoritesText": "You haven't liked any posts yet. Browse posts and start building your collection of favorite Macedonian folklore!",
+    "browsePosts": "Browse Posts"
   }
 }

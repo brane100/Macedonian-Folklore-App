@@ -175,5 +175,13 @@
     "privacy": "Zasebnost",
     "followUs": "Sledite nam",
     "copyright": "© 2025 Ohrani kulturo. Vse pravice pridržane."
+  },
+  "favorites": {
+    "subtitle": "Vaši priljubljeni makedonski ljudski plesi in tradicije",
+    "total": "Skupaj:",
+    "likedPosts": "priljubljenih objav",
+    "noFavorites": "Še ni priljubljenih",
+    "noFavoritesText": "Še niste označili nobene objave kot priljubljeno. Preglejte objave in začnite graditi svojo zbirko priljubljenega makedonskega folklora!",
+    "browsePosts": "Preglej objave"
   }
 }

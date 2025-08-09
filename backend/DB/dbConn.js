@@ -295,7 +295,7 @@ dataPool.getFavoriteContributions = (user_id) => {
       LEFT JOIN Uporabnik u ON p.uporabnik_id = u.id 
       LEFT JOIN Ples pl ON p.ples_id = pl.id
       LEFT JOIN Regija r ON pl.regija_id = r.id
-      WHERE p.status = 'odobren' AND p.id IN (
+      WHERE p.id IN (
           SELECT prispevek_id FROM Uporabnik_vsecka_Prispevek WHERE uporabnik_id = ?
       )
     `, [user_id], (err, res) => {
