@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from 'react-i18next';
 import './MapMKD.css';
 
 // Мапирање на општини по региони
@@ -25,10 +26,10 @@ import './MapMKD.css';
 // };
 
 // Функција за определување на стил на општини според регион
-const getMunicipalityStyle = (municipalityId) => {
+//const getMunicipalityStyle = (municipalityId) => {
   // Се потпираме на CSS за стиловите, враќаме празен објект
-  return {};
-};
+//  return {};
+//};
 
 // Функција за определување дали општината е на граница меѓу регионите
 // const isBorderMunicipality = (municipalityId) => {
@@ -54,7 +55,7 @@ const getBorderMunicipalityStyle = (municipalityId) => {
 };
 
 // Компонента за генерирање на path елементи со автоматски стилови
-const MunicipalityPath = ({ id, d, onMouseEnter, onMouseMove, onMouseLeave, ...props }) => {
+const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMouseLeave, ...props }) => {
   const handleTouchStart = (e) => {
     e.preventDefault();
     if (onMouseEnter) {
@@ -65,7 +66,7 @@ const MunicipalityPath = ({ id, d, onMouseEnter, onMouseMove, onMouseLeave, ...p
         clientY: touch.clientY,
         currentTarget: e.currentTarget
       };
-      onMouseEnter(syntheticEvent, id);
+      onMouseEnter(syntheticEvent, id, regionName);
     }
   };
 
@@ -76,37 +77,16 @@ const MunicipalityPath = ({ id, d, onMouseEnter, onMouseMove, onMouseLeave, ...p
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (onMouseEnter) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const syntheticEvent = {
-          ...e,
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2,
-          currentTarget: e.currentTarget
-        };
-        onMouseEnter(syntheticEvent, id);
-      }
-    } else if (e.key === 'Escape') {
-      if (onMouseLeave) {
-        onMouseLeave(e);
-      }
-    }
-  };
-
   return (
     <path
       id={id}
       style={getBorderMunicipalityStyle(id)}
       d={d}
-      onMouseEnter={(e) => onMouseEnter && onMouseEnter(e, id)}
+      onMouseEnter={(e) => onMouseEnter && onMouseEnter(e, id, regionName)}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      onKeyDown={handleKeyDown}
       tabIndex="0"
       role="button"
       aria-label={`Municipality ${id}`}
@@ -119,13 +99,14 @@ const MunicipalityPath = ({ id, d, onMouseEnter, onMouseMove, onMouseLeave, ...p
 const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, children, ...props }) => (
   <g className={`region-group region-${regionName}`} {...props}>
     {React.Children.map(children, child =>
-      React.cloneElement(child, { onMouseEnter, onMouseMove, onMouseLeave })
+      React.cloneElement(child, { regionName, onMouseEnter, onMouseMove, onMouseLeave })
     )}
   </g>
 );
 
 const MapMKD = (props) => {
-  const [tooltip, setTooltip] = React.useState({ show: false, id: '', x: 0, y: 0 });
+  const { t } = useTranslation();
+  const [tooltip, setTooltip] = React.useState({ show: false, name: '', id: '', x: 0, y: 0 });
   const [screenSize, setScreenSize] = React.useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1000,
     height: typeof window !== 'undefined' ? window.innerHeight : 800
@@ -154,8 +135,33 @@ const MapMKD = (props) => {
   //   return municipalityNames[municipalityId] || municipalityId;
   // };
   
-  const handleMouseEnter = (e, municipalityId, regionId) => {
+  // Функција за мапирање на регионски имиња
+  const getRegionDisplayName = (regionName) => {
+    switch (regionName) {
+      case 'skopjeRegion':
+        return t('regions.skopje');
+      case 'polishRegion':
+        return t('regions.polog');
+      case 'pelagonianRegion':
+        return t('regions.pelagonia');
+      case 'vardarRegion':
+        return t('regions.vardar');
+      case 'eastRegion':
+        return t('regions.east');
+      case 'southwestRegion':
+        return t('regions.southwest');
+      case 'southeastRegion':
+        return t('regions.southeast');
+      case 'northeastRegion':
+        return t('regions.northeast');
+      default:
+        return regionName; // Fallback to original name if not found
+    }
+  };
+  
+  const handleMouseEnter = (e, municipalityId, regionName) => {
     //const municipalityName = getMunicipalityName(municipalityId);
+    const displayRegionName = getRegionDisplayName(regionName);
     const tooltipOffset = screenSize.width < 768 ? 40 : 30;
     let x = e.clientX;
     let y = e.clientY - tooltipOffset;
@@ -169,6 +175,7 @@ const MapMKD = (props) => {
     
     setTooltip({
       show: true,
+      name: displayRegionName,
       id: municipalityId,
       x: x,
       y: y
@@ -195,7 +202,7 @@ const MapMKD = (props) => {
   };
 
   const handleMouseLeave = () => {
-    setTooltip({ show: false, id: '', x: 0, y: 0 });
+    setTooltip({ show: false, name: '', id: '', x: 0, y: 0 });
   };
 
   return (
@@ -823,7 +830,7 @@ const MapMKD = (props) => {
           }}
         >
           <div className="tooltip-content">
-            {tooltip.id}
+            {tooltip.name}
           </div>
         </div>
       )}

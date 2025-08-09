@@ -1,30 +1,39 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Posts.css';
 
 const Posts = ({
-    searchQuery = '',
-    setSearchQuery,
     title = '🎭 Фолклорни објави',
     subtitle = 'Одобрени објави за македонските ора и традиции',
     apiEndpoint = 'http://localhost:3001/prispevki/odobren',
 }) => {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
 
+    // Get search query from URL parameters
+    const searchQuery = searchParams.get('search') || '';
+
+    // Function to clear search
+    const clearSearch = () => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('search');
+        setSearchParams(newSearchParams);
+    };
+
     // State for likes and user favorites
     const [likesData, setLikesData] = useState({});
     const [userLikes, setUserLikes] = useState(new Set());
     const [likingInProgress, setLikingInProgress] = useState(new Set());
 
-    // Functions defined as regular functions (not useCallback for now)
-    const fetchApprovedPosts = async () => {
+    // Functions defined with useCallback to prevent unnecessary re-renders
+    const fetchApprovedPosts = useCallback(async () => {
         try {
             const response = await fetch(apiEndpoint, {
                 credentials: 'include'
@@ -53,11 +62,9 @@ const Posts = ({
         } finally {
             setLoading(false);
         }
-    };
+    }, [apiEndpoint]);
 
     const fetchUserLikes = async () => {
-        if (!user?.id) return;
-
         try {
             const response = await fetch('http://localhost:3001/vsecki/liked-ids', {
                 credentials: 'include'
@@ -143,7 +150,7 @@ const Posts = ({
     // useEffect hooks
     useEffect(() => {
         fetchApprovedPosts();
-    }, [apiEndpoint]);
+    }, [fetchApprovedPosts]);
 
     useEffect(() => {
         if (isAuthenticated && user?.id) {
@@ -284,7 +291,7 @@ const Posts = ({
                         <p>Резултати за: "<strong>{searchQuery}</strong>"</p>
                         <div className="search-actions">
                             <button
-                                onClick={() => setSearchQuery('')}
+                                onClick={clearSearch}
                                 className="clear-search-btn"
                             >
                                 ✕ Исчисти пребарување
@@ -371,7 +378,7 @@ const Posts = ({
                             <p>Не се пронајдени присpевки што содржат "{searchQuery}".</p>
                             <div className="no-posts-actions">
                                 <button
-                                    onClick={() => setSearchQuery('')}
+                                    onClick={clearSearch}
                                     className="clear-search-btn"
                                 >
                                     ✕ Исчисти пребарување

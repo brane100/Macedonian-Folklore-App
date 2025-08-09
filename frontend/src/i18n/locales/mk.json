@@ -1,0 +1,61 @@
+{
+  "regions": {
+    "skopje": "Скопје",
+    "polog": "Полог", 
+    "pelagonia": "Пелагонија",
+    "vardar": "Вардар",
+    "east": "Источен",
+    "southwest": "Југозападен", 
+    "southeast": "Југоисточен",
+    "northeast": "Североисточен"
+  },
+  "navigation": {
+    "home": "Дома",
+    "map": "Мапа",
+    "posts": "Објави",
+    "about": "За нас",
+    "login": "Најави се",
+    "logout": "Одјави се",
+    "profile": "Профил"
+  },
+  "common": {
+    "loading": "Се вчитува...",
+    "error": "Грешка",
+    "submit": "Поднеси",
+    "cancel": "Откажи",
+    "save": "Зачувај",
+    "delete": "Избриши",
+    "edit": "Уреди",
+    "close": "Затвори",
+    "search": "Барај",
+    "language": "Јазик"
+  },
+  "auth": {
+    "username": "Корисничко име",
+    "password": "Лозинка",
+    "email": "Е-пошта",
+    "loginTitle": "Најави се",
+    "registerTitle": "Регистрирај се",
+    "loginButton": "Најави се",
+    "registerButton": "Регистрирај се",
+    "forgotPassword": "Заборави лозинка?",
+    "noAccount": "Немаш профил?",
+    "hasAccount": "Веќе имаш профил?"
+  },
+  "posts": {
+    "title": "Фолклорни објави",
+    "noPostsFound": "Нема пронајдени објави",
+    "loadMore": "Вчитај повеќе",
+    "like": "Допаѓа ми",
+    "unlike": "Не ми допаѓа",
+    "comments": "Коментари",
+    "share": "Сподели",
+    "loginToLike": "Најави се за да лајкуваш објави",
+    "approvedPosts": "Одобрени објави за македонските ора и традиции"
+  },
+  "map": {
+    "title": "Мапа на Македонија",
+    "selectRegion": "Избери регион за да видиш фолклорни објави",
+    "municipality": "Општина"
+  }
+}

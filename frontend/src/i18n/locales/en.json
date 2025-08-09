@@ -1,0 +1,61 @@
+{
+  "regions": {
+    "skopje": "Skopje",
+    "polog": "Polog", 
+    "pelagonia": "Pelagonia",
+    "vardar": "Vardar",
+    "east": "Eastern",
+    "southwest": "Southwestern", 
+    "southeast": "Southeastern",
+    "northeast": "Northeastern"
+  },
+  "navigation": {
+    "home": "Home",
+    "map": "Map",
+    "posts": "Posts",
+    "about": "About",
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "language": "Language"
+  },
+  "auth": {
+    "username": "Username",
+    "password": "Password",
+    "email": "Email",
+    "loginTitle": "Login",
+    "registerTitle": "Register",
+    "loginButton": "Log In",
+    "registerButton": "Register",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "posts": {
+    "title": "Folklore Posts",
+    "noPostsFound": "No posts found",
+    "loadMore": "Load More",
+    "like": "Like",
+    "unlike": "Unlike",
+    "comments": "Comments",
+    "share": "Share",
+    "loginToLike": "Please login to like posts",
+    "approvedPosts": "Approved posts for Macedonian folk dances and traditions"
+  },
+  "map": {
+    "title": "Macedonia Map",
+    "selectRegion": "Select a region to view folklore posts",
+    "municipality": "Municipality"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "regions": {
+    "skopje": "Skopje",
+    "polog": "Polog", 
+    "pelagonia": "Pelagonija",
+    "vardar": "Vardar",
+    "east": "Vzhodni",
+    "southwest": "Jugozahodni", 
+    "southeast": "Jugovzhodni",
+    "northeast": "Severovzhodni"
+  },
+  "navigation": {
+    "home": "Domov",
+    "map": "Zemljevid",
+    "posts": "Objave",
+    "about": "O nas",
+    "login": "Prijava",
+    "logout": "Odjava",
+    "profile": "Profil"
+  },
+  "common": {
+    "loading": "Nalaganje...",
+    "error": "Napaka",
+    "submit": "Pošlji",
+    "cancel": "Prekliči",
+    "save": "Shrani",
+    "delete": "Izbriši",
+    "edit": "Uredi",
+    "close": "Zapri",
+    "search": "Iskanje",
+    "language": "Jezik"
+  },
+  "auth": {
+    "username": "Uporabniško ime",
+    "password": "Geslo",
+    "email": "E-pošta",
+    "loginTitle": "Prijava",
+    "registerTitle": "Registracija",
+    "loginButton": "Prijavi se",
+    "registerButton": "Registriraj se",
+    "forgotPassword": "Pozabljeno geslo?",
+    "noAccount": "Nimate računa?",
+    "hasAccount": "Že imate račun?"
+  },
+  "posts": {
+    "title": "Folklorne objave",
+    "noPostsFound": "Ni najdenih objav",
+    "loadMore": "Naloži več",
+    "like": "Všeč mi je",
+    "unlike": "Ni mi všeč",
+    "comments": "Komentarji",
+    "share": "Deli",
+    "loginToLike": "Prijavite se za všečkanje objav",
+    "approvedPosts": "Odobrene objave za makedonske ljudske plese in tradicije"
+  },
+  "map": {
+    "title": "Zemljevid Makedonije",
+    "selectRegion": "Izberite regijo za ogled folklornih objav",
+    "municipality": "Občina"
+  }
+}
