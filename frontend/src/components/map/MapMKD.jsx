@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from "react-router-dom";
 import './MapMKD.css';
 
 // Мапирање на општини по региони
@@ -27,7 +28,7 @@ import './MapMKD.css';
 
 // Функција за определување на стил на општини според регион
 //const getMunicipalityStyle = (municipalityId) => {
-  // Се потпираме на CSS за стиловите, враќаме празен објект
+// Се потпираме на CSS за стиловите, враќаме празен објект
 //  return {};
 //};
 
@@ -47,6 +48,8 @@ import './MapMKD.css';
 
 //   return borderMunicipalities.includes(municipalityId);
 // };
+
+
 
 // Функција за стил на граничните општини
 const getBorderMunicipalityStyle = (municipalityId) => {
@@ -96,15 +99,16 @@ const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMous
 };
 
 // Компонента за групирање општини по региони
-const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, children, ...props }) => (
+const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, onClick, children, ...props }) => (
   <g className={`region-group region-${regionName}`} {...props}>
     {React.Children.map(children, child =>
-      React.cloneElement(child, { regionName, onMouseEnter, onMouseMove, onMouseLeave })
+      React.cloneElement(child, { regionName, onMouseEnter, onMouseMove, onMouseLeave, onClick })
     )}
   </g>
 );
 
-const MapMKD = (props) => {
+const MapMKD = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [tooltip, setTooltip] = React.useState({ show: false, name: '', id: '', x: 0, y: 0 });
   const [screenSize, setScreenSize] = React.useState({
@@ -134,7 +138,7 @@ const MapMKD = (props) => {
   // const getMunicipalityName = (municipalityId) => {
   //   return municipalityNames[municipalityId] || municipalityId;
   // };
-  
+
   // Функција за мапирање на регионски имиња
   const getRegionDisplayName = (regionName) => {
     switch (regionName) {
@@ -158,21 +162,21 @@ const MapMKD = (props) => {
         return regionName; // Fallback to original name if not found
     }
   };
-  
+
   const handleMouseEnter = (e, municipalityId, regionName) => {
     //const municipalityName = getMunicipalityName(municipalityId);
     const displayRegionName = getRegionDisplayName(regionName);
     const tooltipOffset = screenSize.width < 768 ? 40 : 30;
     let x = e.clientX;
     let y = e.clientY - tooltipOffset;
-    
+
     // Adjust for screen edges
     const tooltipWidth = 100; // Approximate tooltip width
     if (x < tooltipWidth / 2) x = tooltipWidth / 2;
     if (x > screenSize.width - tooltipWidth / 2) x = screenSize.width - tooltipWidth / 2;
     if (y < 50) y = e.clientY + tooltipOffset;
     if (y > screenSize.height - 50) y = screenSize.height - 50;
-    
+
     setTooltip({
       show: true,
       name: displayRegionName,
@@ -186,14 +190,14 @@ const MapMKD = (props) => {
     const tooltipOffset = screenSize.width < 768 ? 40 : 30;
     let x = e.clientX;
     let y = e.clientY - tooltipOffset;
-    
+
     // Adjust for screen edges
     const tooltipWidth = 100; // Approximate tooltip width
     if (x < tooltipWidth / 2) x = tooltipWidth / 2;
     if (x > screenSize.width - tooltipWidth / 2) x = screenSize.width - tooltipWidth / 2;
     if (y < 50) y = e.clientY + tooltipOffset;
     if (y > screenSize.height - 50) y = screenSize.height - 50;
-    
+
     setTooltip(prev => ({
       ...prev,
       x: x,
@@ -205,6 +209,10 @@ const MapMKD = (props) => {
     setTooltip({ show: false, name: '', id: '', x: 0, y: 0 });
   };
 
+  const handleClick = (regionName) => {
+    navigate(`/plesi`);
+  }
+
   return (
     <div className="map-container" style={{ position: 'relative' }}>
       <svg
@@ -213,8 +221,8 @@ const MapMKD = (props) => {
         strokeLinejoin="round"
         strokeWidth="0.5"
         version="1.2"
-        style={{ 
-          width: '100%', 
+        style={{
+          width: '100%',
           height: 'auto',
           display: 'block'
         }}
@@ -228,6 +236,7 @@ const MapMKD = (props) => {
               onMouseEnter={handleMouseEnter}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
+              onClick={handleClick}
             >
               <MunicipalityPath
                 id="MK501"
@@ -268,10 +277,11 @@ const MapMKD = (props) => {
             </RegionGroup>
 
             {/* Источен регион */}
-            <RegionGroup regionName="eastRegion" 
-            onMouseEnter={handleMouseEnter}
-            onMouseMove={handleMouseMove} 
-            onMouseLeave={handleMouseLeave}>
+            <RegionGroup regionName="eastRegion"
+              onMouseEnter={handleMouseEnter}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}>
               <MunicipalityPath
                 id="MK201"
                 d="m946 366.7-3.1 5-2.3 6.9-1.1 2.4-2 1.2-5.6 1.6-1.7 1.7-1.7 5.4-1.1 6.5-.3 6.9.6 6.3 1.1 2.7 3.4 5.3.8 3.2-.3 2.7-1.7 7.9.2 7.3h-.2l-3.2.7-3 1.3-12.5.9h-13.1l-3.3-4.5-3.1-2.3-6.9-.4-5.2-.2-6.2-.9-4.2-.9-5.3-3.6-3-3.7-1-4.2-2.5-3.6-3.7-.5-1.4-.2-9.2-2.3-5.4.3h-2.4l-.3-2.3.1-1.8 2.2-1.1 2.2-.7.9-2.2.1-3.6v-3.6l-1.1-3-1.7-1.5-4.2-1.2-5.1-5.4-2.4-.6-1.7 1.4-1.9 4.5-1.7.9h-1l-1.1-3.4.4-4-.3-.9-1.4-3.3-.6-3.9.2-3.1 2.1-2.9 3-5.6 1.9-2.5.2-2.6-1.7-1.9-2.7-1.4-2.6-2.3-1.3-6.2-.2-4.9.1-3.5v-.1l2.9-2.5 3.8-.7h4.9l3.4-4 2.4-5.7 1.3-5.6.5-7.9-.5-5-1.2-2.5.7-3.8.8-.2.9 2.4 3.5-.2 6.1.7 7.2.9 5.1 1.6 5.9 3.4h.8l.5 3.8 2.9 6.8 2 6.3 2.5 1.4.7 2.7.2 4.5 1.3 3.1 2.9.7 1-.7.3-2.5 2.1-1.5 4.8-.3 15.5 3 4.1 1.8 1.8 3.4v3.3h1.9l3-.2 5.6.5 5.4 3.4 6.7 5.6 4.9 1.6 4.7 1.6 4 2.9 1.7 1.5z"
@@ -323,10 +333,11 @@ const MapMKD = (props) => {
             </RegionGroup>
 
             {/* Југозападен регион */}
-            <RegionGroup regionName="southwestRegion" 
-            onMouseEnter={handleMouseEnter}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}>
+            <RegionGroup regionName="southwestRegion"
+              onMouseEnter={handleMouseEnter}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}>
               <MunicipalityPath
                 id="MK312"
                 d="m79.1 496.5 5.1-.7 11 .3H107l10.2.6 4.9-2.9 4.1-5.3 2.2-2.6 1.1-1.2 1.2 1.5.9 1 .3.3 3.1 6.7 3.7 7.2 4.1 7.3 3.5 7.6 1.4 11.6V539l2.2 3.8 2.4 3.1 2.1 2.9 2.6 4.4.5 4.1-1.2 10.4-2.6 8.5-3.4 4.4-2.1 2.5-1.1 3.5v3.1l.6 3.5 1.2 1.6 1.9 1.8v1.9l-.7 2.5-.2 2.9.8 2.1-1.2 2.1-29.7 42.8-3.9-2.9-3.1-.5-.9-.1-4.5.2-4.8-.5-2.8-1.3-7.3-3.4L90 636l.2-8.4-1.7-10.6-5.7-10.9-13.1-18.6 29.2-5.2 9.1-4.2 2.1-4.1-1.5-3.4-8.6-2.3-10.6-1.3-25.8 1.6-4.3-18.5-1.9-14.2.1-1 1.2-9.2 5.1 1.6 5.1-3.1 4.6-5.9 3.4-6.4 2.5-7.9.1-6.4z"
@@ -366,10 +377,11 @@ const MapMKD = (props) => {
             </RegionGroup>
 
             {/* Југоисточен регион */}
-            <RegionGroup regionName="southeastRegion" 
-            onMouseEnter={handleMouseEnter}
-            onMouseMove={handleMouseMove} 
-            onMouseLeave={handleMouseLeave}>
+            <RegionGroup regionName="southeastRegion"
+              onMouseEnter={handleMouseEnter}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}>
               <MunicipalityPath
                 id="MK401"
                 d="m829.7 603.1-.4-.5-4.1-1-5.4 1.5-1.2 3.4.3 4.2-.8 3.9-6.1 7.8-6.1 5.1-1.2.5-.1-.1-1.1-2.5-5.3-3.6-5.8-3-3.3-1.8-3.8-.4h-2.6l-1.7-.2-.8-.9.2-2.1.1-2.4.7-2.6 1.2-3.5.6-3.8v-2.3l-.4-2.4-1.8-2.7-1.7-2.8-2.2-2.4-1.3-2.4h.4l1.6-1.3 2.2-1.6 2.3-1.7.3-2.6.6-5.6.1-3.1 1.6-2.7 6.2-.2.9 1.5.6 1.6 3.4 2.2 1.7.1.7 2.6 2 2.2 2.5 1.2 1.5 1.8 1.9 3.1 2 .4h4.5l1.6-.5 1.3-.8h2.1l2.8.2 2.6 1 2.6 1.9 3.4 2.4h1.7l.8 1.2.2 3.9-.1 3.5-.1 2.5.4.1z"
@@ -412,11 +424,12 @@ const MapMKD = (props) => {
               />
             </RegionGroup>
 
-            
-            <RegionGroup regionName="polishRegion" 
-            onMouseEnter={handleMouseEnter} 
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}>
+
+            <RegionGroup regionName="polishRegion"
+              onMouseEnter={handleMouseEnter}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}>
               <MunicipalityPath
                 id="MK601"
                 d="m227.5 235.8.1 2.1.2 7 1.4 2.2h4.8l4 .3-.2 3.5-1.2 2.6-1.4 4.4-2.4 3.5-2.6 1.9-3.8.7-1.7 2.5.3 2.2 1.2 2.6.4 2.2h-4l-2.4-2.2-4.7-1-9-5.4-10.2-5.4-11.6-3.8-11.1-2.2-10.9-1.6-4.1 1.2-.7.4-1.5-13.7.5-.2.5-.4 3.5-1.7 4-4.1 5.5-2.9 6.1-2.2 4.3-3.2 3.5-3.5 4.1-2.5 5.4-.4 9.5 2.6 10.9 2.2 3.3 1.9 3.8 4.5 4.7 5.7z"
@@ -455,10 +468,11 @@ const MapMKD = (props) => {
               />
             </RegionGroup>
 
-            <RegionGroup regionName="skopjeRegion" 
-            onMouseEnter={handleMouseEnter} 
-            onMouseMove={handleMouseMove} 
-            onMouseLeave={handleMouseLeave}>
+            <RegionGroup regionName="skopjeRegion"
+              onMouseEnter={handleMouseEnter}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}>
               <MunicipalityPath
                 id="MK801"
                 d="m397.7 221.4 1.4-.5.8.5 2.3 1.3 1.7 1.2 3.5.6 5.3 2.9 7.4 5.9 9.7 4.7 6.1 4.7 2.9 4.8-2.4 1.5-2.4 2.2-1.6.7-3-4.5-5.3-4.1-4.9-1.2-7.4-2.9-3.9-3-4-5.3-4.4-.6-3.1-3.7-.8-1 1.7-4.1z"
@@ -529,10 +543,11 @@ const MapMKD = (props) => {
               />
             </RegionGroup>
 
-            <RegionGroup regionName="northeastRegion" 
-            onMouseEnter={handleMouseEnter} 
-            onMouseMove={handleMouseMove} 
-            onMouseLeave={handleMouseLeave}>
+            <RegionGroup regionName="northeastRegion"
+              onMouseEnter={handleMouseEnter}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}>
               <MunicipalityPath
                 id="MK701"
                 d="m668.9 155.7-.3 1.8 1.8 2.2h3.8l5.3.3 5.4-.3 6.8-1.4 3-1 2.2-2.2 2.6.8 3.7 3.8 6.2 1.6 5.6 3.5 4.6 3.3v.9l.5 3.3 1.6 3.7.6 3.6-.4 3.9-2.5 4.4-1 4.7-2.3 8.1-2.9-4.7-5.2-4.6-4.3-2.5-6.4-.5h-5.8l-4.2.3h-2.2l-1.4 1v14.4l-2.4 3.5h-1.7l-2.8-1.1-2-3.2-1.8-2.2-1.8-.3-1.8.8-1.8 1.9-2 .6h-4.2l-1.9-1.4-1.5-3.5-3.5-2.4-3.8 1.6-8.6 3.2-3.3 1.9-4.7.9h-4.4l-3-.3-2 1.1-2.4 3.2-1.4 3.8-.8 3.5-.8 1.9-1.6.3-1.6-.6-2.5-1.9-3.4-1.9-2.2-1h-1.2l-1.2.6-.1-.4-2.1-.4-2.8.6-2.2.4h-6.7l-.9-3.6-4.2-4.1-2.6-1.5-1.6-1.7-.9-4.8-.5-3.9-1.2-2.6-3.2-.2h-3l-2.8-.4-1.4-2.2-.3-3.2 2.2-4.6 4-5.2 1-6.9 1.3-1.7.4-.5 4.5-.2 4.2-1.5 3.5-5.4 3.4-6.8.3-4.9v-3.3l-.3-5.6v-2.6l1.7-1.3h3.6l4 .2 2.3.3 2.4 2.9 3.1 2.9h3.5l1 1v2l.5 5.6 1.3 2.2h4.2l3.8.4 5.8 3.1 4 5.2 5.9 4.5 3.6 3.5 2.7 2.1h2.9l3.1-.2 3.5-1.7 4.5-1.1 3.2-1.5.7-1.5-.2-3.3.5-4.1 2.7-1.3z"
@@ -561,7 +576,8 @@ const MapMKD = (props) => {
 
             <RegionGroup regionName="vardarRegion" onMouseEnter={handleMouseEnter}
               onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}>
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}>
               <MunicipalityPath
                 id="MK101"
                 d="m516.5 402.4-3.5-.4-8.1-2.1-3.1-3.5-.6-3.9-.1-5-.2-3.1-1.2-1.9-1.8.4-1 1.3-2.2 2-1.1.9-1.8.8-1.9-.2-1.9-2.9-.6-2.7.1-2.7-.9-4-2.9-4.5-1.3-7.9-2.1-5.2-3.8-1.9-3.9-.2-4.3-.9-2.9-1.2-2.7-1.5-2-.4h-1.9l-1.2 1.3-1.5 1H454l-1.8-1.4-2.5-5.4-3.1-6.3-2.2-3.1.3-1.1.1-.4 6.4-.6 5.6-2.1 2.2-1.4 1.8-3.6 3.2-5.2 2.1-3.1v-8.5l-1.7-1.1-1.4-2v-9.2l1.7-.6.1 1.2 3.6 1.6 3.8.6 2.7.2 1.7-1.6 1.4-.7.9.9.2 3.5-.8 1.7.3 1h2l1.3-2.5 2-1.8 1.5-1.9.2-1.7h2.5l2.1 2.7 1.7 2.9 4.2 1.5 1.9-.6.9-1.9 1.1-4.8 1.2-5 1.7-4.8.8-4.5.5-4v-4.6l-.5-3.5-.4-4 .3-1.6 2-1.1 4.5.2 4.8-1.8 5.2-4 3-2.3 4-2.9-.1.9v5.2l2.3 9.2 1.6 5.6 4.6 5.9 4.6 6 3.2 3.7.1 2.3-1.3 2-1.8 1.9-3.3 3.9-2.2 1.9-2.1 2.3-1.1 1.9.6 1.9 1.2 1.6 2.3 3.1 1.8 1.9 1.8 2.7v3.4l-.7 2.4-2.2 4.6-1.6 3.3-.4 1.3-.5 2.7 1.1 1.6h4l2.8 1.1 1.6 2.7 2.6 5.4 1.7 2.5v6.2l-1.4 6.9-3.1 3.9-5.9 6-2.3 4.8-1.7 4.6-1.9 4.5-3.4 5.4-3.9.6h-2.9l-2.5.3-1.1 1.6-.5 2.9z"

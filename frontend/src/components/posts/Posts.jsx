@@ -1,13 +1,16 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import './Posts.css';
+import './Posts.css';    
 
 const Posts = ({
-    title = '🎭 Фолклорни објави',
-    subtitle = 'Одобрени објави за македонските ора и традиции',
+    title,
+    subtitle,
     apiEndpoint = 'http://localhost:3001/prispevki/odobren',
 }) => {
+    // console.log('Posts component is rendering!');
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +19,10 @@ const Posts = ({
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
+
+    // Use translations as default values
+    const displayTitle = title || `🎭 ${t('posts.title')}`;
+    const displaySubtitle = subtitle || t('posts.approvedPosts');
 
     // Get search query from URL parameters
     const searchQuery = searchParams.get('search') || '';
@@ -52,17 +59,17 @@ const Posts = ({
                 });
                 setLikesData(initialLikesData);
             } else {
-                setError('Грешка при вчитување на објави');
+                setError(t('posts.errorLoading'));
                 setPosts([]);
             }
         } catch (err) {
             console.error('Error fetching approved posts:', err);
-            setError('Грешка при поврзување со серверот');
+            setError(t('posts.errorServer'));
             setPosts([]);
         } finally {
             setLoading(false);
         }
-    }, [apiEndpoint]);
+    }, [apiEndpoint, t]);
 
     const fetchUserLikes = async () => {
         try {
@@ -133,11 +140,11 @@ const Posts = ({
                 }));
             } else {
                 console.error('Error toggling like, response:', response.status);
-                alert('Грешка при лајкување. Обидете се повторно.');
+                alert(t('posts.errorLiking'));
             }
         } catch (error) {
             console.error('Error handling like:', error);
-            alert('Грешка при поврзување со серверот.');
+            alert(t('posts.errorConnecting'));
         } finally {
             setLikingInProgress(prev => {
                 const newSet = new Set(prev);
@@ -214,7 +221,7 @@ const Posts = ({
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'Непознато';
+        if (!dateString) return t('posts.unknownDate');
         const date = new Date(dateString);
         return date.toLocaleDateString('mk-MK', {
             year: 'numeric',
@@ -222,12 +229,12 @@ const Posts = ({
             day: 'numeric'
         });
     };
-
+    
     const getAuthorName = (post) => {
         if (post.je_anonimen) {
-            return 'Анонимен';
+            return t('posts.anonymous');
         }
-        return post.user_ime && post.priimek ? `${post.user_ime} ${post.priimek}` : 'Непознат автор';
+        return post.user_ime && post.priimek ? `${post.user_ime} ${post.priimek}` : t('posts.unknownAuthor');
     };
 
     const getTipIcon = (tip) => {
@@ -262,7 +269,7 @@ const Posts = ({
             <div className="posts-container">
                 <div className="loading-spinner">
                     <div className="spinner"></div>
-                    <p>Се вчитуваат присpevки...</p>
+                    <p>{t('posts.loading')}</p>
                 </div>
             </div>
         );
@@ -272,10 +279,10 @@ const Posts = ({
         return (
             <div className="posts-container">
                 <div className="error-message">
-                    <h3>❌ Грешка</h3>
+                    <h3>❌ {t('common.error')}</h3>
                     <p>{error}</p>
                     <button onClick={fetchApprovedPosts} className="retry-btn">
-                        🔄 Обиди се повторно
+                        🔄 {t('posts.retryButton')}
                     </button>
                 </div>
             </div>
@@ -287,21 +294,21 @@ const Posts = ({
             <div className="posts-header">
                 {searchQuery ? (
                     <>
-                        <h1>🔍 Резултати од пребарување</h1>
-                        <p>Резултати за: "<strong>{searchQuery}</strong>"</p>
+                        <h1>🔍 {t('posts.searchResults')}</h1>
+                        <p>{t('posts.searchResultsFor')} "<strong>{searchQuery}</strong>"</p>
                         <div className="search-actions">
                             <button
                                 onClick={clearSearch}
                                 className="clear-search-btn"
                             >
-                                ✕ Исчисти пребарување
+                                ✕ {t('posts.clearSearch')}
                             </button>
                         </div>
                     </>
                 ) : (
                     <>
-                        <h1>{title}</h1>
-                        <p>{subtitle}</p>
+                        <h1>{displayTitle}</h1>
+                        <p>{displaySubtitle}</p>
                     </>
                 )}
             </div>
@@ -309,7 +316,8 @@ const Posts = ({
             {/* Filters and Sorting */}
             <div className="posts-controls">
                 <div className="filter-section">
-                    <label htmlFor="region-filter">📍 Филтрирај по регион:</label>
+                    {/* {console.log('Translation for filterByRegion:', t('posts.filterByRegion'))} */}
+                    <label htmlFor="region-filter">📍 {t('posts.filterByRegion')}</label>
                     <div className="filter-controls">
                         <select
                             id="region-filter"
@@ -317,7 +325,7 @@ const Posts = ({
                             onChange={(e) => setFilter(e.target.value)}
                             className="filter-select"
                         >
-                            <option value="all">Сите региони</option>
+                            <option value="all">{t('posts.allRegions')}</option>
                             {getRegions().map(region => (
                                 <option key={region} value={region}>
                                     {getRegijaIcon(region)} {region}
@@ -328,7 +336,7 @@ const Posts = ({
                             <button
                                 onClick={() => setFilter('all')}
                                 className="clear-filter-btn"
-                                title="Исчисти филтер"
+                                title={t('posts.clearFilter')}
                             >
                                 ✕
                             </button>
@@ -337,35 +345,35 @@ const Posts = ({
                 </div>
 
                 <div className="sort-section">
-                    <label htmlFor="sort-select">📊 Сортирај по:</label>
+                    <label htmlFor="sort-select">📊 {t('posts.sortBy')}</label>
                     <select
                         id="sort-select"
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
                         className="sort-select"
                     >
-                        <option value="newest">Најнови</option>
-                        <option value="oldest">Најстари</option>
-                        <option value="alphabetical">Алфабетски</option>
+                        <option value="newest">{t('posts.newest')}</option>
+                        <option value="oldest">{t('posts.oldest')}</option>
+                        <option value="alphabetical">{t('posts.alphabetical')}</option>
                     </select>
                 </div>
             </div>
 
             <div className="posts-stats">
                 <span className="stats-item">
-                    📝 Вкупно: {posts.length} присpевки
+                    📝 {t('posts.total')} {posts.length} {t('posts.postsCount')}
                 </span>
                 <span className="stats-item">
-                    🔍 Прикажани: {filteredAndSortedPosts.length} присpевки
+                    🔍 {t('posts.displayed')} {filteredAndSortedPosts.length} {t('posts.postsCount')}
                 </span>
                 {searchQuery && (
                     <span className="stats-item search-indicator">
-                        🔍 Пребарување: "{searchQuery}"
+                        🔍 {t('posts.searchIndicator')} "{searchQuery}"
                     </span>
                 )}
                 {filter !== 'all' && (
                     <span className="stats-item filter-indicator">
-                        📍 Филтер: {filter}
+                        📍 {t('posts.filterIndicator')} {filter}
                     </span>
                 )}
             </div>
@@ -374,26 +382,26 @@ const Posts = ({
                 <div className="no-posts">
                     {searchQuery ? (
                         <>
-                            <h3>🔍 Нема пронајдени резултати</h3>
-                            <p>Не се пронајдени присpевки што содржат "{searchQuery}".</p>
+                            <h3>🔍 {t('posts.noPostsFound')}</h3>
+                            <p>{t('posts.noPostsSearchText')} "{searchQuery}".</p>
                             <div className="no-posts-actions">
                                 <button
                                     onClick={clearSearch}
                                     className="clear-search-btn"
                                 >
-                                    ✕ Исчисти пребарување
+                                    ✕ {t('posts.clearSearch')}
                                 </button>
                                 <Link to="/dodaj-prispevek" className="add-post-btn">
-                                    ➕ Додај присpевок
+                                    ➕ {t('posts.addPost')}
                                 </Link>
                             </div>
                         </>
                     ) : (
                         <>
-                            <h3>🔍 Нема пронајдени присpевки</h3>
-                            <p>Обидете се со различен филтер или додајте нов присpевок.</p>
+                            <h3>🔍 {t('posts.noPostsFound')}</h3>
+                            <p>{t('posts.noPostsFilterText')}</p>
                             <Link to="/dodaj-prispevek" className="add-post-btn">
-                                ➕ Додај присpевок
+                                ➕ {t('posts.addPost')}
                             </Link>
                         </>
                     )}
@@ -420,42 +428,42 @@ const Posts = ({
                             >
                                 <div className="post-card-header">
                                     <div className="post-type">
-                                        {getTipIcon(post.tip_plesa)} {post.tip_plesa || 'Непознат тип'}
+                                        {getTipIcon(post.tip_plesa)} {post.tip_plesa || t('posts.unknownType')}
                                     </div>
                                     <div className="post-region">
-                                        {getRegijaIcon(post.regija)} {post.regija || 'Непознат регион'}
+                                        {getRegijaIcon(post.regija)} {post.regija || t('posts.unknownRegion')}
                                     </div>
                                 </div>
 
                                 <div className="post-card-content">
                                     <h3 className="post-title">
-                                        {post.ime_plesa || 'Без наслов'}
+                                        {post.ime_plesa || t('posts.noTitle')}
                                     </h3>
 
                                     {post.kratka_zgodovina && (
                                         <div className="post-history">
-                                            <h4>📜 Историја:</h4>
+                                            <h4>📜 {t('posts.history')}</h4>
                                             <p>{post.kratka_zgodovina}</p>
                                         </div>
                                     )}
 
                                     {post.opis_tehnike && (
                                         <div className="post-technique">
-                                            <h4>🎯 Техника:</h4>
+                                            <h4>🎯 {t('posts.technique')}</h4>
                                             <p>{post.opis_tehnike}</p>
                                         </div>
                                     )}
 
                                     {post.opis && (
                                         <div className="post-description">
-                                            <h4>📝 Опис:</h4>
+                                            <h4>📝 {t('posts.description')}</h4>
                                             <p>{post.opis}</p>
                                         </div>
                                     )}
 
                                     {post.referenca_opis && (
                                         <div className="post-reference">
-                                            <h4>📚 Референца:</h4>
+                                            <h4>📚 {t('posts.reference')}</h4>
                                             <p>{post.referenca_opis}</p>
                                             {post.referenca_url && (
                                                 <a
@@ -465,7 +473,7 @@ const Posts = ({
                                                     className="reference-link"
                                                     onClick={(e) => e.stopPropagation()}
                                                 >
-                                                    🔗 Посети референца
+                                                    🔗 {t('posts.visitReference')}
                                                 </a>
                                             )}
                                         </div>
@@ -484,7 +492,7 @@ const Posts = ({
                                     <div className="post-actions">
                                         <button 
                                             className={`action-btn like-btn ${isLiked ? 'liked' : ''} ${isLiking ? 'loading' : ''} ${!isAuthenticated ? 'guest' : ''}`}
-                                            title={isLiked ? 'Отстрани од допаднати' : 'Допадна ми се'}
+                                            title={isLiked ? t('posts.removeFromLiked') : t('posts.likePost')}
                                             onClick={(event) => {
                                                 console.log('Like button clicked for post:', post.id);
                                                 handleLike(post.id, event);
@@ -502,7 +510,7 @@ const Posts = ({
                                         </button>
                                         <button 
                                             className="action-btn share-btn" 
-                                            title="Сподели"
+                                            title={t('posts.share')}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 // Add share functionality here

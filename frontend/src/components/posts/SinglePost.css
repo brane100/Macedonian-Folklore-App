@@ -419,6 +419,26 @@
   transform: scale(1.05);
 }
 
+.like-button.liked {
+  background: var(--macedonia-red);
+  color: var(--macedonia-white);
+}
+
+.like-button.liked:hover {
+  background: var(--macedonia-dark-red);
+}
+
+.like-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.like-count {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
 .share-button {
   background: var(--macedonia-yellow);
   color: var(--text-primary);

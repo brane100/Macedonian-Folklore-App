@@ -1,19 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
 import './SinglePost.css';
 
 const SinglePost = () => {
+    const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth();
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+    // Like-related state
+    const [likeCount, setLikeCount] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+    const [likingInProgress, setLikingInProgress] = useState(false);
 
-    useEffect(() => {
-        fetchPost();
-    }, [id]);
-
-    const fetchPost = async () => {
+    const fetchPost = useCallback(async () => {
         try {
             setLoading(true);
             const response = await fetch(`http://localhost:3001/prispevki/${id}`, {
@@ -23,20 +28,88 @@ const SinglePost = () => {
             if (response.ok) {
                 const data = await response.json();
                 setPost(data);
+                setLikeCount(data.like_count || 0);
                 console.log('Fetched ime_plesa:', data.ime_plesa);
             } else {
-                setError('Прispevокот не е пронајден');
+                setError(t('singlePost.notFound'));
             }
         } catch (err) {
             console.error('Error fetching post:', err);
-            setError('Грешка при вчитување на prispevокот');
+            setError(t('singlePost.loadingError'));
         } finally {
             setLoading(false);
+        }
+    }, [id]);
+
+    useEffect(() => {
+        fetchPost();
+    }, [fetchPost]);
+
+    // Fetch user like status for this post
+    const fetchUserLikeStatus = useCallback(async () => {
+        if (!isAuthenticated || !user?.id || !id) return;
+        
+        try {
+            const response = await fetch('http://localhost:3001/vsecki/liked-ids', {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const likedPostIds = await response.json();
+                setIsLiked(likedPostIds.includes(parseInt(id)));
+            }
+        } catch (error) {
+            console.error('Error fetching user like status:', error);
+        }
+    }, [isAuthenticated, user?.id, id]);
+
+    useEffect(() => {
+        if (isAuthenticated && user?.id) {
+            fetchUserLikeStatus();
+        }
+    }, [fetchUserLikeStatus]);
+
+    // Handle like/unlike
+    const handleLike = async () => {
+        if (!isAuthenticated) {
+            navigate('/prijava');
+            return;
+        }
+
+        if (likingInProgress) {
+            return; // Prevent multiple clicks
+        }
+
+        setLikingInProgress(true);
+
+        try {
+            const method = isLiked ? 'DELETE' : 'POST';
+            const response = await fetch(`http://localhost:3001/vsecki/${id}`, {
+                method: method,
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setIsLiked(!isLiked);
+                setLikeCount(result.likeCount || 0);
+            } else {
+                console.error('Error toggling like, response:', response.status);
+                alert(t('posts.errorLiking'));
+            }
+        } catch (error) {
+            console.error('Error handling like:', error);
+            alert(t('posts.errorConnecting'));
+        } finally {
+            setLikingInProgress(false);
         }
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'Непознато';
+        if (!dateString) return t('singlePost.unknownDate');
         const date = new Date(dateString);
         return date.toLocaleDateString('mk-MK', {
             year: 'numeric',
@@ -47,9 +120,9 @@ const SinglePost = () => {
 
     const getAuthorName = (post) => {
         if (post.je_anonimen) {
-            return 'Анонимен автор';
+            return t('singlePost.anonymousAuthor');
         }
-        return post.user_ime && post.priimek ? `${post.user_ime} ${post.priimek}` : 'Непознат автор';
+        return post.user_ime && post.priimek ? `${post.user_ime} ${post.priimek}` : t('singlePost.unknownAuthor');
     };
 
     const getAuthorInitials = (post) => {
@@ -93,7 +166,7 @@ const SinglePost = () => {
             <div className="single-post-container">
                 <div className="loading-container">
                     <div className="loading-spinner"></div>
-                    <p className="loading-text">Се вчитува prispevокот...</p>
+                    <p className="loading-text">{t('singlePost.loading')}</p>
                 </div>
             </div>
         );
@@ -104,10 +177,10 @@ const SinglePost = () => {
             <div className="single-post-container">
                 <div className="error-container">
                     <div className="error-message">
-                        <h2 className="error-title">❌ Грешка</h2>
+                        <h2 className="error-title">❌ {t('singlePost.error')}</h2>
                         <p className="error-text">{error}</p>
                         <button onClick={() => navigate(-1)} className="retry-button">
-                            ← Назад
+                            ← {t('singlePost.goBack')}
                         </button>
                     </div>
                 </div>
@@ -121,7 +194,7 @@ const SinglePost = () => {
                 {/* Navigation */}
                 <nav className="post-navigation">
                     <button onClick={() => navigate(-1)} className="back-button">
-                        ← Назад кон прispevци
+                        ← {t('singlePost.backToPosts')}
                     </button>
                     <div className="post-meta-info">
                         <span>{formatDate(post.datum_ustvarjen)}</span>
@@ -133,17 +206,17 @@ const SinglePost = () => {
                     {/* Header */}
                     <header className="single-post-header">
                         <h1 className="post-title-main">
-                            {post.ime_plesa || 'Без наслов'}
+                            {post.ime_plesa || t('singlePost.noTitle')}
                         </h1>
                         
                         <div className="post-type-region">
                             <div className="post-type">
                                 {getTipIcon(post.tip_plesa)}
-                                <span>{post.tip_plesa || 'Непознат тип'}</span>
+                                <span>{post.tip_plesa || t('singlePost.unknownType')}</span>
                             </div>
                             <div className="post-region">
                                 {getRegijaIcon(post.regija)}
-                                <span>{post.regija || 'Непознат регион'}</span>
+                                <span>{post.regija || t('singlePost.unknownRegion')}</span>
                             </div>
                         </div>
                     </header>
@@ -163,7 +236,7 @@ const SinglePost = () => {
                                             src={post.video_url || post.media.find(m => m.type === 'video')?.url} 
                                             type="video/mp4" 
                                         />
-                                        Вашиот прегледувач не поддржува видео елемент.
+                                        {t('singlePost.videoNotSupported')}
                                     </video>
                                 </div>
                             )}
@@ -173,7 +246,7 @@ const SinglePost = () => {
                                 <div className="multimedia-item image-container">
                                     <img 
                                         src={post.image_url || post.media.find(m => m.type === 'image')?.url}
-                                        alt={`Слика за ${post.ime_plesa || 'плесот'}`}
+                                        alt={`${t('singlePost.imageAlt')} ${post.ime_plesa || t('singlePost.theDance')}`}
                                         className="multimedia-image"
                                     />
                                 </div>
@@ -183,7 +256,7 @@ const SinglePost = () => {
                             {(post.audio_url || (post.media && post.media.find(m => m.type === 'audio'))) && (
                                 <div className="multimedia-item audio-container">
                                     <div className="audio-header">
-                                        🎵 Аудио запис на плесот
+                                        🎵 {t('singlePost.audioRecording')}
                                     </div>
                                     <audio 
                                         controls 
@@ -193,7 +266,7 @@ const SinglePost = () => {
                                             src={post.audio_url || post.media.find(m => m.type === 'audio')?.url} 
                                             type="audio/mpeg" 
                                         />
-                                        Вашиот прегледувач не поддржува аудио елемент.
+                                        {t('singlePost.audioNotSupported')}
                                     </audio>
                                 </div>
                             )}
@@ -202,7 +275,7 @@ const SinglePost = () => {
                             {post.media && post.media.length > 1 && (
                                 <div className="multimedia-gallery">
                                     <div className="gallery-header">
-                                        📸 Медиумска галерија
+                                        📸 {t('singlePost.mediaGallery')}
                                     </div>
                                     <div className="media-grid">
                                         {post.media.map((mediaItem, index) => (
@@ -210,7 +283,7 @@ const SinglePost = () => {
                                                 {mediaItem.type === 'image' && (
                                                     <img 
                                                         src={mediaItem.url} 
-                                                        alt={`Медиум ${index + 1}`}
+                                                        alt={`${t('singlePost.media')} ${index + 1}`}
                                                         className="gallery-image"
                                                     />
                                                 )}
@@ -244,7 +317,7 @@ const SinglePost = () => {
                         {post.kratka_zgodovina && (
                             <section className="content-section">
                                 <h2 className="section-title">
-                                    📜 Историја на плесот
+                                    📜 {t('singlePost.danceHistory')}
                                 </h2>
                                 <div className="section-content">
                                     <p>{post.kratka_zgodovina}</p>
@@ -256,7 +329,7 @@ const SinglePost = () => {
                         {post.opis_tehnike && (
                             <section className="content-section">
                                 <h2 className="section-title">
-                                    🎯 Техника на извведување
+                                    🎯 {t('singlePost.technique')}
                                 </h2>
                                 <div className="section-content">
                                     <p>{post.opis_tehnike}</p>
@@ -268,7 +341,7 @@ const SinglePost = () => {
                         {post.opis && (
                             <section className="content-section">
                                 <h2 className="section-title">
-                                    📝 Опис на прispevокот
+                                    📝 {t('singlePost.postDescription')}
                                 </h2>
                                 <div className="section-content">
                                     <p>{post.opis}</p>
@@ -280,7 +353,7 @@ const SinglePost = () => {
                         {(post.referenca_opis || post.referenca_url) && (
                             <section className="content-section reference-section">
                                 <h2 className="section-title">
-                                    📚 Референци и извори
+                                    📚 {t('singlePost.references')}
                                 </h2>
                                 <div className="section-content">
                                     {post.referenca_opis && <p>{post.referenca_opis}</p>}
@@ -291,7 +364,7 @@ const SinglePost = () => {
                                             rel="noopener noreferrer"
                                             className="reference-link"
                                         >
-                                            🔗 Посети извор
+                                            🔗 {t('singlePost.visitSource')}
                                         </a>
                                     )}
                                 </div>
@@ -311,20 +384,32 @@ const SinglePost = () => {
                                         {getAuthorName(post)}
                                     </div>
                                     <div className="post-date">
-                                        Објавено на {formatDate(post.datum_ustvarjen)}
+                                        {t('singlePost.publishedOn')} {formatDate(post.datum_ustvarjen)}
                                     </div>
                                 </div>
                             </div>
 
                             <div className="post-actions">
-                                <button className="action-button like-button">
-                                    ❤️ Допадна ми се
+                                <button 
+                                    className={`action-button like-button ${isLiked ? 'liked' : ''}`}
+                                    onClick={handleLike}
+                                    disabled={likingInProgress}
+                                    title={isLiked ? t('posts.removeFromLiked') : t('posts.likePost')}
+                                >
+                                    {likingInProgress ? (
+                                        <>🔄 {t('singlePost.like')}</>
+                                    ) : (
+                                        <>
+                                            {isLiked ? '❤️' : '🤍'} {t('singlePost.like')}
+                                            {likeCount > 0 && <span className="like-count"> ({likeCount})</span>}
+                                        </>
+                                    )}
                                 </button>
                                 <button className="action-button share-button">
-                                    📤 Сподели
+                                    📤 {t('singlePost.share')}
                                 </button>
                                 <Link to="/prispevci" className="action-button edit-button">
-                                    📋 Сите прispevци
+                                    📋 {t('singlePost.allPosts')}
                                 </Link>
                             </div>
                         </div>
@@ -334,14 +419,14 @@ const SinglePost = () => {
                 {/* Related Posts Placeholder */}
                 <section className="related-posts">
                     <h2 className="related-posts-title">
-                        🔗 Поврзани прispevци
+                        🔗 {t('singlePost.relatedPosts')}
                     </h2>
                     <div className="related-posts-grid">
                         <div className="related-post-card">
-                            <h3 className="related-post-title">Исто така може да ве интересира...</h3>
-                            <p className="related-post-region">Прегледајте други прispevци за македонски фолклор</p>
+                            <h3 className="related-post-title">{t('singlePost.youMightLike')}</h3>
+                            <p className="related-post-region">{t('singlePost.browseOtherPosts')}</p>
                             <Link to="/prispevci" className="action-button share-button">
-                                Прегледај сите
+                                {t('singlePost.browseAll')}
                             </Link>
                         </div>
                     </div>

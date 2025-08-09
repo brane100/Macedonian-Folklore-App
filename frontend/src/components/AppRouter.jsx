@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
-import { useRole, ModeratorGuard } from './RoleBasedAccess';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { AuthProvider } from '../contexts/AuthContext';
+import { ModeratorGuard } from './RoleBasedAccess';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import './AppRouter.css';

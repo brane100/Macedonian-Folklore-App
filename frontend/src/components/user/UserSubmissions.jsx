@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserGuard } from '../RoleBasedAccess';
 import SubmissionCard from './SubmissionCard';
 import './UserSubmissions.css';
 
 const UserSubmissions = () => {
+    const { t } = useTranslation();
+    const { user } = useAuth();
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('all'); // all, pending, approved, rejected, needs_editing
-    const { user } = useAuth();
 
     const statusLabels = {
-        0: 'Во чекање',
-        1: 'Одобрено',
-        2: 'Одбиено',
-        3: 'Потребни измени'
+        0: t('userSubmissions.pending'),
+        1: t('userSubmissions.approved'),
+        2: t('userSubmissions.rejected'),
+        3: t('userSubmissions.needsEditing')
     };
 
     const statusColors = {
@@ -25,11 +27,7 @@ const UserSubmissions = () => {
         3: '#9b59b6'  // purple
     };
 
-    useEffect(() => {
-        fetchSubmissions();
-    }, [filter]);
-
-    const fetchSubmissions = async () => {
+    const fetchSubmissions = useCallback(async () => {
         try {
             setLoading(true);
             const filterParam = filter !== 'all' ? `?status=${filter}` : '';
@@ -79,7 +77,11 @@ const UserSubmissions = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filter]);
+
+    useEffect(() => {
+        fetchSubmissions();
+    }, [fetchSubmissions]);
 
     const handleEdit = (submissionId) => {
         // Navigate to edit form - you'll implement this based on your routing structure
@@ -127,7 +129,7 @@ const UserSubmissions = () => {
         return (
             <div className="user-submissions-loading">
                 <div className="loading-spinner"></div>
-                <p>Вчитување на ваши prispevki...</p>
+                <p>{t('userSubmissions.loadingSubmissions')}</p>
             </div>
         );
     }
@@ -138,7 +140,7 @@ const UserSubmissions = () => {
                 <h3>Грешка</h3>
                 <p>{error}</p>
                 <button onClick={() => fetchSubmissions()} className="retry-btn">
-                    Обиди се повторно
+                    {t('userSubmissions.tryAgain')}
                 </button>
             </div>
         );

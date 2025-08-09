@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserGuard } from '../RoleBasedAccess';
@@ -24,11 +24,7 @@ const EditContribution = () => {
         referencaUrl: ''       // Reference URL
     });
 
-    useEffect(() => {
-        fetchContribution();
-    }, [id]);
-
-    const fetchContribution = async () => {
+    const fetchContribution = useCallback(async () => {
         try {
             setLoading(true);
             const response = await fetch(`/api/prispevki/my-contributions`, {
@@ -67,7 +63,11 @@ const EditContribution = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        fetchContribution();
+    }, [fetchContribution]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
