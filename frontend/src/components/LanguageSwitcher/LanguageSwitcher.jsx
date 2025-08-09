@@ -1,9 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './LanguageSwitcher.css';
 
 const LanguageSwitcher = () => {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -11,25 +10,25 @@ const LanguageSwitcher = () => {
     { code: 'sl', name: 'Slovenščina', flag: '🇸🇮' }
   ];
 
-  const changeLanguage = (langCode) => {
-    i18n.changeLanguage(langCode);
+  const getCurrentLanguage = () => {
+    return languages.find(lang => lang.code === i18n.language) || languages[0];
+  };
+
+  const cycleLanguage = () => {
+    const currentIndex = languages.findIndex(lang => lang.code === i18n.language);
+    const nextIndex = (currentIndex + 1) % languages.length;
+    i18n.changeLanguage(languages[nextIndex].code);
   };
 
   return (
-    <div className="language-switcher">
-      <label className="language-label">{t('common.language')}:</label>
-      <select 
-        value={i18n.language} 
-        onChange={(e) => changeLanguage(e.target.value)}
-        className="language-select"
-      >
-        {languages.map((lang) => (
-          <option key={lang.code} value={lang.code}>
-            {lang.flag} {lang.name}
-          </option>
-        ))}
-      </select>
-    </div>
+    <button
+      onClick={cycleLanguage}
+      style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit' }}
+      title={getCurrentLanguage().name}
+      aria-label={`Current language: ${getCurrentLanguage().name}. Click to cycle languages.`}
+    >
+      {getCurrentLanguage().flag}
+    </button>
   );
 };
 

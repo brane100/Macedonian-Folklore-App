@@ -16,7 +16,11 @@
     "about": "O nas",
     "login": "Prijava",
     "logout": "Odjava",
-    "profile": "Profil"
+    "profile": "Profil",
+    "addContribution": "Dodaj",
+    "mySubmissions": "Moje objave",
+    "admin": "Admin",
+    "favorites": "Priljubljene"
   },
   "common": {
     "loading": "Nalaganje...",
@@ -28,7 +32,9 @@
     "edit": "Uredi",
     "close": "Zapri",
     "search": "Iskanje",
-    "language": "Jezik"
+    "language": "Jezik",
+    "searchPlaceholder": "Iskanje plesov...",
+    "clearSearch": "Počisti iskanje"
   },
   "auth": {
     "username": "Uporabniško ime",
@@ -57,5 +63,43 @@
     "title": "Zemljevid Makedonije",
     "selectRegion": "Izberite regijo za ogled folklornih objav",
     "municipality": "Občina"
+  },
+  "errors": {
+    "pageNotFound": "Stran ni najdena",
+    "pageNotFoundMessage": "Oprostite, zahtevana stran ne obstaja.",
+    "insufficientPermissions": "Nezadostne pravice",
+    "insufficientPermissionsMessage": "Za dostop do admin panela je potrebna vloga Commission ali Superadmin."
+  },
+  "buttons": {
+    "homePage": "Domača stran",
+    "toMap": "Na zemljevid"
+  },
+  "hero": {
+    "title": "Ohranite kulturo, ki živi skozi gibanje",
+    "subtitle": "Raziščite regije, odkrijte plese, ohranite dediščino"
+  },
+  "sections": {
+    "exploreMacedonia": "Raziščite Makedonijo",
+    "folkloreAndTraditions": "Folklorni plesi in tradicije",
+    "topDances": "Top plesi",
+    "popularRegions": "Priljubljene regije",
+    "recentMedia": "Nedavni mediji"
+  },
+  "chat": {
+    "needHelp": "Potrebujete pomoč?",
+    "contactMessage": "Kontaktirajte nas za vsa vprašanja o makedonski folklorni tradiciji.",
+    "close": "Zapri"
+  },
+  "footer": {
+    "preserveCulture": "Ohrani kulturo",
+    "preserveDescription": "Ohranjanje makedonske folklorne tradicije za prihodnje generacije.",
+    "regions": "Regije",
+    "resources": "Viri",
+    "aboutUs": "O nas",
+    "contact": "Kontakt",
+    "terms": "Pogoji",
+    "privacy": "Zasebnost",
+    "followUs": "Sledite nam",
+    "copyright": "© 2025 Ohrani kulturo. Vse pravice pridržane."
   }
 }

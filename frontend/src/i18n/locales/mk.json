@@ -16,7 +16,11 @@
     "about": "За нас",
     "login": "Најави се",
     "logout": "Одјави се",
-    "profile": "Профил"
+    "profile": "Профил",
+    "addContribution": "Додај",
+    "mySubmissions": "Мои објави",
+    "admin": "Админ",
+    "favorites": "Фаворити"
   },
   "common": {
     "loading": "Се вчитува...",
@@ -28,7 +32,9 @@
     "edit": "Уреди",
     "close": "Затвори",
     "search": "Барај",
-    "language": "Јазик"
+    "language": "Јазик",
+    "searchPlaceholder": "Пребарај плесови...",
+    "clearSearch": "Исчисти пребарување"
   },
   "auth": {
     "username": "Корисничко име",
@@ -57,5 +63,43 @@
     "title": "Мапа на Македонија",
     "selectRegion": "Избери регион за да видиш фолклорни објави",
     "municipality": "Општина"
+  },
+  "errors": {
+    "pageNotFound": "Страницата не е најдена",
+    "pageNotFoundMessage": "Извините, бараната страница не постои.",
+    "insufficientPermissions": "Недостатни дозволи",
+    "insufficientPermissionsMessage": "Потребна е улога Komisija или Superadmin за пристап до админ панелот."
+  },
+  "buttons": {
+    "homePage": "Почетна страница",
+    "toMap": "Кон мапата"
+  },
+  "hero": {
+    "title": "Охрани културата што живее преку движење",
+    "subtitle": "Истражи региони, откриј ора, зачувај наследство"
+  },
+  "sections": {
+    "exploreMacedonia": "Истражи ја Македонија",
+    "folkloreAndTraditions": "Фолклорни ора и традиции",
+    "topDances": "Топ ора",
+    "popularRegions": "Популарни региони",
+    "recentMedia": "Скорешни медиуми"
+  },
+  "chat": {
+    "needHelp": "Потреба од помош?",
+    "contactMessage": "Контактирајте не за било какви прашања околу македонската фолклорна традиција.",
+    "close": "Затвори"
+  },
+  "footer": {
+    "preserveCulture": "Охрани Култура",
+    "preserveDescription": "Зачувување на македонската фолклорна традиција за идните генерации.",
+    "regions": "Региони",
+    "resources": "Ресурси",
+    "aboutUs": "За нас",
+    "contact": "Контакт",
+    "terms": "Услови",
+    "privacy": "Приватност",
+    "followUs": "Следи не",
+    "copyright": "© 2025 Охрани Култура. Сите права се заштитени."
   }
 }

@@ -120,13 +120,13 @@ export default function Navigation() {
     ];
 
     const authenticatedLinks = [
-      { path: '/dodaj-prispevek', label: 'Додај' },
+      { path: '/dodaj-prispevek', label: t('navigation.addContribution') },
     ];
 
     // Only show admin link to moderators/superadmins
     const adminLinks = [];
     if (isAuthenticated && isModerator) {
-      adminLinks.push({ path: '/admin', label: '🛡️ Админ' });
+      adminLinks.push({ path: '/admin', label: `🛡️ ${t('navigation.admin')}` });
     }
 
     return isAuthenticated
@@ -201,14 +201,14 @@ export default function Navigation() {
             >
               <button
                 className={`nav-icon-btn desktop-icon search-btn ${isSearchExpanded ? 'hidden' : ''}`}
-                title="Пребарај"
+                title={t('common.search')}
                 onClick={handleSearchClick}
               >
                 🔍
               </button>
               <input
                 type="text"
-                placeholder="Пребарај плесови..."
+                placeholder={t('common.searchPlaceholder')}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onKeyDown={handleSearchKeyDown}
@@ -218,7 +218,7 @@ export default function Navigation() {
               />
             </div>
 
-            <button className="nav-icon-btn desktop-icon" title="Фаворити" onClick={() => navigate('/favorites')}>
+            <button className="nav-icon-btn desktop-icon" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
               ❤️
             </button>
 
@@ -234,7 +234,7 @@ export default function Navigation() {
                   </div>
                   <Link to="/moji-prispevki">
                     <button className="dropdown-item">
-                      🚪 Мои објави
+                      🚪 {t('navigation.mySubmissions')}
                     </button>
                   </Link>
                   <button
@@ -290,7 +290,7 @@ export default function Navigation() {
               <div className="mobile-search">
                 <input
                   type="text"
-                  placeholder="Пребарај плесови..."
+                  placeholder={t('common.searchPlaceholder')}
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onKeyDown={handleSearchKeyDown}
@@ -308,8 +308,8 @@ export default function Navigation() {
                   🔍
                 </button>
               </div>
-              <button className="nav-icon-btn" title="Фаворити" onClick={() => navigate('/favorites')}>
-                ❤️ Фаворити
+              <button className="nav-icon-btn" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
+                ❤️ {t('navigation.favorites')}
               </button>
 
               {/* Authentication-based mobile menu */}
@@ -334,7 +334,7 @@ export default function Navigation() {
                     👤 {t('navigation.login')}
                   </Link>
                   <Link to="/registracija" className="nav-icon-btn" onClick={closeMobileMenu}>
-                    ✏️ Регистрирај се
+                    ✏️ {t('auth.registerButton')}
                   </Link>
                 </>
               )}
@@ -374,7 +374,7 @@ export default function Navigation() {
             <div className="sidebar-search">
               <input
                 type="text"
-                placeholder="Пребарај плесови..."
+                placeholder={t('common.searchPlaceholder')}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onKeyDown={handleSearchKeyDown}
@@ -392,8 +392,8 @@ export default function Navigation() {
                 🔍
               </button>
             </div>
-            <button className="sidebar-icon-btn" title="Фаворити" onClick={() => navigate('/favorites')}>
-              ❤️ Фаворити
+            <button className="sidebar-icon-btn" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
+              ❤️ {t('navigation.favorites')}
             </button>
 
             {/* Authentication-based sidebar */}
@@ -418,7 +418,7 @@ export default function Navigation() {
                   👤 {t('navigation.login')}
                 </Link>
                 <Link to="/registracija" className="sidebar-icon-btn" onClick={() => setIsSidebarOpen(false)}>
-                  ✏️ Регистрирај се
+                  ✏️ {t('auth.registerButton')}
                 </Link>
               </>
             )}

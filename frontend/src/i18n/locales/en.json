@@ -16,7 +16,11 @@
     "about": "About",
     "login": "Login",
     "logout": "Logout",
-    "profile": "Profile"
+    "profile": "Profile",
+    "addContribution": "Add",
+    "mySubmissions": "My Posts",
+    "admin": "Admin",
+    "favorites": "Favorites"
   },
   "common": {
     "loading": "Loading...",
@@ -28,7 +32,9 @@
     "edit": "Edit",
     "close": "Close",
     "search": "Search",
-    "language": "Language"
+    "language": "Language",
+    "searchPlaceholder": "Search dances...",
+    "clearSearch": "Clear search"
   },
   "auth": {
     "username": "Username",
@@ -57,5 +63,43 @@
     "title": "Macedonia Map",
     "selectRegion": "Select a region to view folklore posts",
     "municipality": "Municipality"
+  },
+  "errors": {
+    "pageNotFound": "Page not found",
+    "pageNotFoundMessage": "Sorry, the requested page does not exist.",
+    "insufficientPermissions": "Insufficient permissions",
+    "insufficientPermissionsMessage": "Commission or Superadmin role required for admin panel access."
+  },
+  "buttons": {
+    "homePage": "Home Page",
+    "toMap": "To Map"
+  },
+  "hero": {
+    "title": "Preserve the culture that lives through movement",
+    "subtitle": "Explore regions, discover dances, preserve heritage"
+  },
+  "sections": {
+    "exploreMacedonia": "Explore Macedonia",
+    "folkloreAndTraditions": "Folklore dances and traditions",
+    "topDances": "Top dances",
+    "popularRegions": "Popular regions",
+    "recentMedia": "Recent media"
+  },
+  "chat": {
+    "needHelp": "Need help?",
+    "contactMessage": "Contact us for any questions about Macedonian folklore tradition.",
+    "close": "Close"
+  },
+  "footer": {
+    "preserveCulture": "Preserve Culture",
+    "preserveDescription": "Preserving Macedonian folklore tradition for future generations.",
+    "regions": "Regions",
+    "resources": "Resources",
+    "aboutUs": "About us",
+    "contact": "Contact",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "followUs": "Follow us",
+    "copyright": "© 2025 Preserve Culture. All rights reserved."
   }
 }

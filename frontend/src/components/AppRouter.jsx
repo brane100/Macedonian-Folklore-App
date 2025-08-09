@@ -3,6 +3,7 @@ import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { useRole, ModeratorGuard } from './RoleBasedAccess';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import './AppRouter.css';
 
@@ -21,14 +22,16 @@ import Navigation from './navigation/Navigation';
 
 // 404 Component
 function NotFound() {
+  const { t } = useTranslation();
+  
   return (
     <div className="not-found">
       <div className="not-found-content">
-        <h1>Страницата не е најдена</h1>
-        <p>Извините, бараната страница не постои.</p>
+        <h1>{t('errors.pageNotFound')}</h1>
+        <p>{t('errors.pageNotFoundMessage')}</p>
         <div className="not-found-actions">
-          <Link to="/" className="btn btn-primary">Почетна страница</Link>
-          <Link to="/mapa" className="btn btn-secondary">Кон мапата</Link>
+          <Link to="/" className="btn btn-primary">{t('buttons.homePage')}</Link>
+          <Link to="/mapa" className="btn btn-secondary">{t('buttons.toMap')}</Link>
         </div>
       </div>
     </div>
@@ -113,6 +116,7 @@ const mockDances = [
 
 // Floating Chat Component
 function FloatingChat() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -125,9 +129,9 @@ function FloatingChat() {
       </button>
       {isOpen && (
         <div className="chat-modal">
-          <h3>Потреба од помош?</h3>
-          <p>Контактирајте не за било какви прашања околу македонската фолклорна традиција.</p>
-          <button onClick={() => setIsOpen(false)}>Затвори</button>
+          <h3>{t('chat.needHelp')}</h3>
+          <p>{t('chat.contactMessage')}</p>
+          <button onClick={() => setIsOpen(false)}>{t('chat.close')}</button>
         </div>
       )}
     </div>
@@ -168,13 +172,14 @@ function DanceCard({ dance }) {
 
 // Sidebar Component
 function Sidebar() {
+  const { t } = useTranslation();
   const topDances = mockDances.slice(0, 3).sort((a, b) => b.likes - a.likes);
   const popularRegions = ["Битола", "Охрид", "Штип", "Струмица"];
 
   return (
     <aside className="cultural-sidebar">
       <div className="sidebar-section">
-        <h3>🎵 Топ ора</h3>
+        <h3>🎵 {t('sections.topDances')}</h3>
         <div className="top-dances">
           {topDances.map(dance => (
             <div key={dance.id} className="top-dance-item">
@@ -189,7 +194,7 @@ function Sidebar() {
       </div>
 
       <div className="sidebar-section">
-        <h3>📍 Популарни региони</h3>
+        <h3>📍 {t('sections.popularRegions')}</h3>
         <div className="popular-regions">
           {popularRegions.map((region, index) => (
             <Link key={index} to={`/region/${region}`} className="region-link">
@@ -200,7 +205,7 @@ function Sidebar() {
       </div>
 
       <div className="sidebar-section">
-        <h3>📸 Скорешни медиуми</h3>
+        <h3>📸 {t('sections.recentMedia')}</h3>
         <div className="recent-media">
           <div className="media-preview">🎥 Тешкото - видео</div>
           <div className="media-preview">🎵 Калајџиското - аудио</div>
@@ -213,21 +218,23 @@ function Sidebar() {
 
 // Enhanced Home Component with Hero Section and Masonry Grid
 function Home() {
+  const { t } = useTranslation();
+  
   return (
     <>
       {/* Hero Section with Cultural Background */}
       <section className="cultural-hero">
         <div className="hero-overlay"></div>
         <div className="hero-content">
-          <h1 className="hero-title">Охрани културата што живее преку движење</h1>
-          <p className="hero-subtitle">Истражи региони, откриј ора, зачувај наследство</p>
+          <h1 className="hero-title">{t('hero.title')}</h1>
+          <p className="hero-subtitle">{t('hero.subtitle')}</p>
         </div>
       </section>
 
       {/* Regional Map Section */}
       <section className="regional-map-section">
         <div className="container">
-          <h2>Истражи ја Македонија</h2>
+          <h2>{t('sections.exploreMacedonia')}</h2>
           <div className="map-container">
             <MapMKD />
           </div>
@@ -239,7 +246,7 @@ function Home() {
         <div className="container">
           <div className="content-layout">
             <div className="content-main">
-              <h2>Фолклорни ора и традиции</h2>
+              <h2>{t('sections.folkloreAndTraditions')}</h2>
               <div className="masonry-grid">
                 {mockDances.map(dance => (
                   <DanceCard key={dance.id} dance={dance} />
@@ -614,6 +621,8 @@ function Home() {
 // }
 
 export default function AppRouter() {
+  const { t } = useTranslation();
+  
   return (
     <AuthProvider>
       <Router>
@@ -692,8 +701,8 @@ export default function AppRouter() {
                           borderRadius: '8px',
                           margin: '2rem'
                         }}>
-                          <h3>🚫 Недостатни дозволи</h3>
-                          <p>Потребна е улога Komisija или Superadmin за пристап до админ панелот.</p>
+                          <h3>🚫 {t('errors.insufficientPermissions')}</h3>
+                          <p>{t('errors.insufficientPermissionsMessage')}</p>
                         </div>
                       }
                     >
@@ -711,11 +720,11 @@ export default function AppRouter() {
           <footer className="cultural-footer">
             <div className="footer-content">
               <div className="footer-section">
-                <h4>Охрани Култура</h4>
-                <p>Зачувување на македонската фолклорна традиција за идните генерации.</p>
+                <h4>{t('footer.preserveCulture')}</h4>
+                <p>{t('footer.preserveDescription')}</p>
               </div>
               <div className="footer-section">
-                <h4>Региони</h4>
+                <h4>{t('footer.regions')}</h4>
                 <ul>
                   <li><Link to="/region/skopski">Скопски</Link></li>
                   <li><Link to="/region/bitola">Битола</Link></li>
@@ -724,16 +733,16 @@ export default function AppRouter() {
                 </ul>
               </div>
               <div className="footer-section">
-                <h4>Ресурси</h4>
+                <h4>{t('footer.resources')}</h4>
                 <ul>
-                  <li><Link to="/za-nas">За нас</Link></li>
-                  <li><Link to="/kontakt">Контакт</Link></li>
-                  <li><Link to="/uslovni">Услови</Link></li>
-                  <li><Link to="/privatnost">Приватност</Link></li>
+                  <li><Link to="/za-nas">{t('footer.aboutUs')}</Link></li>
+                  <li><Link to="/kontakt">{t('footer.contact')}</Link></li>
+                  <li><Link to="/uslovni">{t('footer.terms')}</Link></li>
+                  <li><Link to="/privatnost">{t('footer.privacy')}</Link></li>
                 </ul>
               </div>
               <div className="footer-section">
-                <h4>Следи не</h4>
+                <h4>{t('footer.followUs')}</h4>
                 <div className="social-links">
                   <a href="https://facebook.com" aria-label="Facebook" target="_blank" rel="noopener noreferrer">📘</a>
                   <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener noreferrer">📷</a>
@@ -743,7 +752,7 @@ export default function AppRouter() {
               </div>
             </div>
             <div className="footer-bottom">
-              <p>© 2024 Охрани Култура. Сите права се заштитени.</p>
+              <p>{t('footer.copyright')}</p>
             </div>
           </footer>
 
