@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './Step4ReviewSubmit.css';
 
 export default function Step4ReviewSubmit({ formData, prevStep }) {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -14,26 +16,28 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
     // Map region ID to region data
     const getRegionData = (regijaId) => {
       const regionMap = {
-        "1": { ime: "Пелагонија", koordinata_x: 21.4, koordinata_y: 41.0 },
-        "2": { ime: "Скопје", koordinata_x: 21.4, koordinata_y: 42.0 },
-        "3": { ime: "Вардарска Македонија", koordinata_x: 21.6, koordinata_y: 41.6 },
-        "4": { ime: "Источна Македонија", koordinata_x: 22.4, koordinata_y: 41.8 },
-        "5": { ime: "Югозападен дел", koordinata_x: 20.8, koordinata_y: 41.2 },
-        "6": { ime: "Югоисточен дел", koordinata_x: 22.0, koordinata_y: 41.2 },
-        "7": { ime: "Полог", koordinata_x: 20.9, koordinata_y: 42.0 },
-        "8": { ime: "Североисточен дел", koordinata_x: 22.2, koordinata_y: 42.2 }
+        "1": { ime: t('regions.pelagonia'), koordinata_x: 21.4, koordinata_y: 41.0 },
+        "2": { ime: t('regions.skopje'), koordinata_x: 21.4, koordinata_y: 42.0 },
+        "3": { ime: t('regions.vardar'), koordinata_x: 21.6, koordinata_y: 41.6 },
+        "4": { ime: t('regions.eastern'), koordinata_x: 22.4, koordinata_y: 41.8 },
+        "5": { ime: t('regions.southwestern'), koordinata_x: 20.8, koordinata_y: 41.2 },
+        "6": { ime: t('regions.southeastern'), koordinata_x: 22.0, koordinata_y: 41.2 },
+        "7": { ime: t('regions.polog'), koordinata_x: 20.9, koordinata_y: 42.0 },
+        "8": { ime: t('regions.northeastern'), koordinata_x: 22.2, koordinata_y: 42.2 }
       };
-      return regionMap[regijaId] || { ime: "Непозната регија", koordinata_x: 0, koordinata_y: 0 };
+      return regionMap[regijaId] || { ime: t('regions.unknown'), koordinata_x: 0, koordinata_y: 0 };
     };
+    setIsSubmitting(true);
+    console.log('Submitting:', formData);
 
     // Validate required fields from Step 1
     const requiredFields = {
-      'Име на плес': formData.novPlesIme,
-      'Тип на плес': formData.tipPlesa,
-      'Регија': formData.regijaId,
-      'Опис': formData.opis,
-      'Кратка историја': formData.kratkaZgodovina,
-      'Опис на техниката': formData.opisTehnike
+      [t('contribution.step4.validation.danceName')]: formData.novPlesIme,
+      [t('contribution.step4.validation.danceType')]: formData.tipPlesa,
+      [t('contribution.step4.validation.region')]: formData.regijaId,
+      [t('contribution.step4.validation.description')]: formData.opis,
+      [t('contribution.step4.validation.shortHistory')]: formData.kratkaZgodovina,
+      [t('contribution.step4.validation.techniqueDescription')]: formData.opisTehnike
     };
 
     const missingFields = Object.entries(requiredFields)
@@ -41,7 +45,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
       .map(([key]) => key);
 
     if (missingFields.length > 0) {
-      alert(`❌ Ве молиме пополнете ги следните задолжителни полиња:\n• ${missingFields.join('\n• ')}`);
+      alert(`❌ ${t('contribution.step4.validation.missingFields')}:\n• ${missingFields.join('\n• ')}`);
       setIsSubmitting(false);
       return;
     }
@@ -101,12 +105,12 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
           navigate('/');
         }, 500);
       } else {
-        throw new Error(result.msg || 'Грешка при праќање на објава');
+        throw new Error(result.msg || t('contribution.step4.errors.submitError'));
       }
 
     } catch (error) {
       console.error('Error submitting contribution:', error);
-      alert("❌ Грешка при праќање: " + error.message);
+      alert("❌ " + t('contribution.step4.errors.submitError') + ": " + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -124,29 +128,29 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
 
   const getRegionName = (regijaId) => {
     const regionMap = {
-      "1": "Пелагонија",
-      "2": "Скопје",
-      "3": "Вардарска Македонија",
-      "4": "Источна Македонија",
-      "5": "Југозападен дел",
-      "6": "Југоисточен дел",
-      "7": "Полог",
-      "8": "Североисточен дел"
+      "1": t('regions.pelagonia'),
+      "2": t('regions.skopje'),
+      "3": t('regions.vardar'),
+      "4": t('regions.eastern'),
+      "5": t('regions.southwestern'),
+      "6": t('regions.southeastern'),
+      "7": t('regions.polog'),
+      "8": t('regions.northeastern')
     };
-    return regionMap[regijaId] || 'Непозната регија';
+    return regionMap[regijaId] || t('regions.unknown');
   };
 
   return (
     <div className={`step4-container ${isSubmitting ? 'submitting' : ''}`}>
       <div className="step4-header">
-        <h2>📋 Корак 4: Преглед и потврдување</h2>
-        <p className="subtitle">Проверете ги вашите податоци пред да ги испратите</p>
+        <h2>📋 {t('contribution.step4.title')}</h2>
+        <p className="subtitle">{t('contribution.step4.subtitle')}</p>
       </div>
 
       {isSubmitted && (
         <div className="success-message">
           <span className="success-icon">🎉</span>
-          Вашиот прispevok е успешно додаден во базата на македонски фолклор!
+          {t('contribution.step4.successMessage')}
         </div>
       )}
 
@@ -154,48 +158,48 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         {/* Basic Information */}
         <div className="review-card">
           <div className="review-item">
-            <span className="review-label">📖 Име на плес:</span>
-            <span className="review-value highlight">{formData.novPlesIme || 'Не е наведено'}</span>
+            <span className="review-label">📖 {t('contribution.step4.review.danceName')}:</span>
+            <span className="review-value highlight">{formData.novPlesIme || t('contribution.step4.review.notSpecified')}</span>
           </div>
 
           <div className="review-item">
-            <span className="review-label">🎪 Тип на плес:</span>
-            <span className="review-value">{formData.tipPlesa || 'Не е избран'}</span>
+            <span className="review-label">🎪 {t('contribution.step4.review.danceType')}:</span>
+            <span className="review-value">{formData.tipPlesa || t('contribution.step4.review.notSelected')}</span>
           </div>
 
           <div className="review-item">
-            <span className="review-label">📜 Кратка историја:</span>
-            <span className="review-value long-text">{formData.kratkaZgodovina || 'Нема опис'}</span>
+            <span className="review-label">📜 {t('contribution.step4.review.shortHistory')}:</span>
+            <span className="review-value long-text">{formData.kratkaZgodovina || t('contribution.step4.review.noDescription')}</span>
           </div>
 
           <div className="review-item">
-            <span className="review-label">🎯 Опис на техника:</span>
-            <span className="review-value long-text">{formData.opisTehnike || 'Нема опис'}</span>
+            <span className="review-label">🎯 {t('contribution.step4.review.techniqueDescription')}:</span>
+            <span className="review-value long-text">{formData.opisTehnike || t('contribution.step4.review.noDescription')}</span>
           </div>
 
           <div className="review-item">
-            <span className="review-label">📝 Опис:</span>
-            <span className="review-value long-text">{formData.opis || 'Нема опис'}</span>
+            <span className="review-label">📝 {t('contribution.step4.review.description')}:</span>
+            <span className="review-value long-text">{formData.opis || t('contribution.step4.review.noDescription')}</span>
           </div>
 
           <div className="review-item">
-            <span className="review-label">🕶️ Анонимност:</span>
+            <span className="review-label">🕶️ {t('contribution.step4.review.anonymity')}:</span>
             <span className={`review-value ${formData.jeAnonimen ? 'highlight' : ''}`}>
-              {formData.jeAnonimen ? "✅ Да, анонимен прispevok" : "❌ Не, со мое име"}
+              {formData.jeAnonimen ? `✅ ${t('contribution.step4.review.anonymous')}` : `❌ ${t('contribution.step4.review.withName')}`}
             </span>
           </div>
 
           <div className="review-item">
-            <span className="review-label">🗺️ Регија:</span>
+            <span className="review-label">🗺️ {t('contribution.step4.review.region')}:</span>
             <span className="review-value highlight">
               {getRegionName(formData.regijaId)}
             </span>
           </div>
 
           <div className="review-item">
-            <span className="review-label">🎭 Плес/Традиција:</span>
+            <span className="review-label">🎭 {t('contribution.step4.review.danceOrTradition')}:</span>
             <span className="review-value highlight">
-              {formData.plesId || `🆕 Нов: ${formData.novPlesIme || 'Не е наведено'}`}
+              {formData.plesId || `🆕 ${t('contribution.step4.review.new')}: ${formData.novPlesIme || t('contribution.step4.review.notSpecified')}`}
             </span>
           </div>
         </div>
@@ -204,21 +208,21 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         <div className="summary-stats">
           <div className="stat-item">
             <span className="stat-number">{formData.media?.length || 0}</span>
-            <span className="stat-label">Медиуми</span>
+            <span className="stat-label">{t('contribution.step4.stats.media')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">{formData.opis?.length || 0}</span>
-            <span className="stat-label">Карактери</span>
+            <span className="stat-label">{t('contribution.step4.stats.characters')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">{formData.jeAnonimen ? '🕶️' : '👤'}</span>
-            <span className="stat-label">Режим</span>
+            <span className="stat-label">{t('contribution.step4.stats.mode')}</span>
           </div>
         </div>
 
         {/* Media Section */}
         <div className="media-section">
-          <h4>📎 Додадени медиуми ({formData.media?.length || 0})</h4>
+          <h4>📎 {t('contribution.step4.media.title')} ({formData.media?.length || 0})</h4>
           {formData.media && formData.media.length > 0 ? (
             <div className="media-list">
               {formData.media.map((m, index) => (
@@ -233,7 +237,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
             </div>
           ) : (
             <div className="empty-media">
-              📭 Нема додадени медиуми
+              📭 {t('contribution.step4.media.noMedia')}
             </div>
           )}
         </div>
@@ -241,9 +245,9 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         {/* References */}
         <div className="review-card">
           <div className="review-item">
-            <span className="review-label">📄 Референца:</span>
+            <span className="review-label">📄 {t('contribution.step4.references.reference')}:</span>
             <span className="review-value long-text">
-              {formData.referencaOpis || 'Нема опис на референца'}
+              {formData.referencaOpis || t('contribution.step4.references.noReference')}
             </span>
           </div>
 
@@ -255,7 +259,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
                   {formData.referencaUrl}
                 </a>
               ) : (
-                'Нема URL'
+                t('contribution.step4.references.noUrl')
               )}
             </span>
           </div>
@@ -265,7 +269,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
       {/* Warning Notice */}
       <div className="warning-notice">
         <span className="warning-icon">⚠️</span>
-        <p>Ве молиме проверете ги сите податоци пред да ги испратите. По испраќањето нема да можете да ги менувате.</p>
+        <p>{t('contribution.step4.warning')}</p>
       </div>
 
       {/* Action Buttons */}
@@ -275,7 +279,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
           className="btn btn-back"
           disabled={isSubmitting}
         >
-          ⬅️ Назад
+          ⬅️ {t('contribution.navigation.back')}
         </button>
 
         <button
@@ -290,15 +294,15 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
           {isSubmitting ? (
             <>
               <span className="loading-spinner"></span>
-              Се испраќа...
+              {t('contribution.step4.submitting')}
             </>
           ) : isSubmitted ? (
             <>
-              ✅ Испратено
+              ✅ {t('contribution.step4.submitted')}
             </>
           ) : (
             <>
-              🚀 Испрати прispevok
+              🚀 {t('contribution.step4.submitContribution')}
             </>
           )}
         </button>

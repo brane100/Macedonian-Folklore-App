@@ -339,6 +339,19 @@ dataPool.getPendingContributions = () => {
   })
 }
 
+dataPool.getPendingCount = () => {
+  return new Promise((resolve, reject) => {
+    conn.query(`
+      SELECT COUNT(*) as count
+      FROM Prispevek
+      WHERE status = 'cakajoc'
+    `, (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res[0].count)
+    })
+  })
+}
+
 // Get approved contributions (for public display)
 dataPool.getApprovedContributions = () => {
   return new Promise((resolve, reject) => {

@@ -36,8 +36,8 @@ app.use(express.urlencoded({ extended: false }));
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
   secret: 'eeeee tooo',
-  resave: true,
-  saveUninitialized: true,
+  resave: false, // Don't save session if unmodified (better performance)
+  saveUninitialized: false, // Don't create session until something stored (better security)
   cookie: { 
     secure: false, // false for development (http), true for production (https)
     httpOnly: true, // Prevent XSS attacks

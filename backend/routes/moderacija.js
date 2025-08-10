@@ -20,6 +20,22 @@ moderacija.get('/pending', requireModerator, async (req, res) => {
     }
 });
 
+moderacija.get('/pending/count', requireModerator, async (req, res) => {
+    try {
+        const count = await DB.getPendingCount();
+        res.json({
+            success: true,
+            count
+        });
+    } catch (error) {
+        console.error('Error fetching pending count:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching pending count'
+        });
+    }
+});
+
 // 1 - odobren
 // 2 - zavrnjen
 // 3 - zahteva spremembe / arhiviran

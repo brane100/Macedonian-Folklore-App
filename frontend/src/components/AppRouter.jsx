@@ -636,7 +636,16 @@ export default function AppRouter() {
               <Route path="/plesi" element={<Posts />} />
               <Route path="/prispevci" element={<Posts />} />
               <Route path="/prispevci/:id" element={<SinglePost />} />
-              <Route path="/favorites" element={<Favorites />} />
+              
+              {/* Protected Favorites route - require authentication */}
+              <Route 
+                path="/favorites" 
+                element={
+                  <ProtectedRoute>
+                    <Favorites />
+                  </ProtectedRoute>
+                } 
+              />
 
               {/* Public routes - redirect to home if already logged in */}
               <Route

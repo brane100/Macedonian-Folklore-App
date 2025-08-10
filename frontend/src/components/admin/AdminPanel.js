@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n/i18n';
 import { useRole, USER_ROLES } from '../RoleBasedAccess';
 import { useAuth } from '../../contexts/AuthContext';
 import './AdminPanel.css';
 
 const AdminPanel = () => {
+    const { t } = useTranslation();
     const { userRole, isModerator, isSuperAdmin } = useRole();
     const { user: currentUser } = useAuth(); // Get current logged-in user
     const [activeTab, setActiveTab] = useState('overview');
     const [pendingContributions, setPendingContributions] = useState([]);
     const [users, setUsers] = useState([]);
+    const [pendingCount, setPendingCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [sortBy, setSortBy] = useState('newest');
     const [viewMode, setViewMode] = useState('all');
@@ -22,7 +26,7 @@ const AdminPanel = () => {
             const response = await fetch('http://localhost:3001/moderacija/pending', {
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 setPendingContributions(data.data || []);
@@ -37,13 +41,13 @@ const AdminPanel = () => {
     // Fetch users (SuperAdmin only)
     const fetchUsers = useCallback(async () => {
         if (!isSuperAdmin) return;
-        
+
         setLoading(true);
         try {
             const response = await fetch('http://localhost:3001/moderacija/users', {
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 setUsers(data.data || []);
@@ -55,10 +59,26 @@ const AdminPanel = () => {
         }
     }, [isSuperAdmin]);
 
+    const fetchPendingCount = useCallback(async () => {
+        try {
+            const response = await fetch('http://localhost:3001/moderacija/pending/count', {
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setPendingCount(data.count || 0);
+                return data.count || 0;
+            }
+        } catch (error) {
+            console.error('Error fetching pending count:', error);
+        }
+        return 0;
+    }, []);
+
     // Sort contributions based on selected criteria
     const getSortedContributions = () => {
         let sorted = [...pendingContributions];
-        
+
         switch (sortBy) {
             case 'newest':
                 sorted.sort((a, b) => new Date(b.datum_ustvarjen) - new Date(a.datum_ustvarjen));
@@ -79,7 +99,7 @@ const AdminPanel = () => {
             default:
                 break;
         }
-        
+
         return sorted;
     };
 
@@ -93,18 +113,19 @@ const AdminPanel = () => {
                 credentials: 'include',
                 body: JSON.stringify({ moderatorNotes: notes })
             });
-            
+
             if (response.ok) {
-                alert('Прispevok одобрен!');
+                alert(t('admin.approveSuccess'));
                 fetchPendingContributions(); // Refresh list
+                fetchPendingCount(); // Update count
             } else {
                 const errorData = await response.json();
                 console.error('Server error:', errorData);
-                alert('Грешка при одобрување: ' + (errorData.message || 'Unknown error'));
+                alert(t('admin.moderationError') + ': ' + (errorData.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error approving contribution:', error);
-            alert('Грешка при одобрување');
+            alert(t('admin.moderationError'));
         }
     };
 
@@ -118,18 +139,19 @@ const AdminPanel = () => {
                 credentials: 'include',
                 body: JSON.stringify({ moderatorNotes: notes })
             });
-            
+
             if (response.ok) {
-                alert('Прispevok отфрлен!');
+                alert(t('admin.rejectSuccess'));
                 fetchPendingContributions(); // Refresh list
+                fetchPendingCount(); // Update count
             } else {
                 const errorData = await response.json();
                 console.error('Server error:', errorData);
-                alert('Грешка при отфрлање: ' + (errorData.message || 'Unknown error'));
+                alert(t('admin.moderationError') + ': ' + (errorData.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error rejecting contribution:', error);
-            alert('Грешка при отфрлање');
+            alert(t('admin.moderationError'));
         }
     };
 
@@ -143,18 +165,19 @@ const AdminPanel = () => {
                 credentials: 'include',
                 body: JSON.stringify({ moderatorNotes: notes })
             });
-            
+
             if (response.ok) {
-                alert('Барање за измена испратено!');
+                alert(t('admin.requestChangesSent'));
                 fetchPendingContributions(); // Refresh list
+                fetchPendingCount(); // Update count
             } else {
                 const errorData = await response.json();
                 console.error('Server error:', errorData);
-                alert('Грешка при барање за измена: ' + (errorData.message || 'Unknown error'));
+                alert(t('admin.requestEditError') + ': ' + (errorData.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error requesting edits:', error);
-            alert('Грешка при барање за измена');
+            alert(t('admin.requestEditError'));
         }
     };
 
@@ -172,20 +195,20 @@ const AdminPanel = () => {
                     referenca_url: updatedData.referenca_url
                 })
             });
-            
+
             if (response.ok) {
-                alert('Прispevok успешно изменет!');
+                alert(t('admin.updateSuccess'));
                 setShowEditModal(false);
                 setEditingContribution(null);
                 fetchPendingContributions(); // Refresh list
             } else {
                 const errorData = await response.json();
                 console.error('Server error:', errorData);
-                alert('Грешка при измена: ' + (errorData.message || 'Unknown error'));
+                alert(t('admin.updateError') + ': ' + (errorData.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error editing contribution:', error);
-            alert('Грешка при измена');
+            alert(t('admin.updateError'));
         }
     };
 
@@ -198,7 +221,7 @@ const AdminPanel = () => {
     // Update user role (SuperAdmin only)
     const updateUserRole = async (userId, newRole) => {
         if (!isSuperAdmin) return;
-        
+
         try {
             const response = await fetch(`http://localhost:3001/moderacija/users/${userId}/role`, {
                 method: 'PUT',
@@ -206,60 +229,61 @@ const AdminPanel = () => {
                 credentials: 'include',
                 body: JSON.stringify({ newRole })
             });
-            
+
             if (response.ok) {
-                alert('Улогата е ажурирана!');
+                alert(t('admin.roleUpdateSuccess'));
                 fetchUsers(); // Refresh list
             }
         } catch (error) {
             console.error('Error updating user role:', error);
-            alert('Грешка при ажурирање на улогата');
+            alert(t('admin.roleUpdateError'));
         }
     };
 
     // Delete user (SuperAdmin only)
     const deleteUser = async (userId, userName) => {
         if (!isSuperAdmin) return;
-        
+
         const confirmDelete = window.confirm(
-            `Дали сте сигурни дека сакате да го избришете корисникот "${userName}"?\n\nОваа акција не може да се отповика!`
+            t('admin.deleteUserConfirm', { userName })
         );
-        
+
         if (!confirmDelete) return;
-        
+
         try {
             const response = await fetch(`http://localhost:3001/moderacija/users/${userId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
-                alert('Корисникот е успешно избришан!');
+                alert(t('admin.deleteUserSuccess'));
                 fetchUsers(); // Refresh list
             } else {
                 const errorData = await response.json();
-                alert(errorData.message || 'Грешка при бришење на корисникот');
+                alert(errorData.message || t('admin.deleteUserError'));
             }
         } catch (error) {
             console.error('Error deleting user:', error);
-            alert('Грешка при бришење на корисникот');
+            alert(t('admin.deleteUserError'));
         }
     };
 
     useEffect(() => {
+        fetchPendingCount();
         if (activeTab === 'moderation') {
             fetchPendingContributions();
         } else if (activeTab === 'users' && isSuperAdmin) {
             fetchUsers();
         }
-    }, [activeTab, isSuperAdmin, fetchPendingContributions, fetchUsers]);
+    }, [activeTab, isSuperAdmin, fetchPendingContributions, fetchUsers, fetchPendingCount]);
 
     if (!isModerator) {
         return (
             <div className="admin-panel">
-                <h2>🚫 Недостатни дозволи</h2>
-                <p>Потребна е улога Komisija или Superadmin за пристап до админ панелот.</p>
+                <h2>🚫 {t('errors.insufficientPermissions')}</h2>
+                <p>{t('errors.insufficientPermissionsMessage')}</p>
             </div>
         );
     }
@@ -267,31 +291,31 @@ const AdminPanel = () => {
     return (
         <div className="admin-panel">
             <div className="admin-header">
-                <h1>🛡️ Админ Панел</h1>
+                <h1>🛡️ {t('admin.title')}</h1>
                 <div className="user-role-badge">
-                    {userRole === USER_ROLES.SUPERADMIN ? '👑 Superadmin' : '⚖️ Komisija'}
+                    {userRole === USER_ROLES.SUPERADMIN ? '👑 Superadmin' : '⚖️ ' + t('admin.roles.komisija')}
                 </div>
             </div>
 
             <div className="admin-tabs">
-                <button 
+                <button
                     className={activeTab === 'overview' ? 'active' : ''}
                     onClick={() => setActiveTab('overview')}
                 >
-                    📊 Преглед
+                    📊 {t('admin.overview')}
                 </button>
-                <button 
+                <button
                     className={activeTab === 'moderation' ? 'active' : ''}
                     onClick={() => setActiveTab('moderation')}
                 >
-                    📝 Модерација
+                    📝 {t('admin.pendingContributions')}
                 </button>
                 {isSuperAdmin && (
-                    <button 
+                    <button
                         className={activeTab === 'users' ? 'active' : ''}
                         onClick={() => setActiveTab('users')}
                     >
-                        👥 Корисници
+                        👥 {t('admin.userManagement')}
                     </button>
                 )}
             </div>
@@ -299,14 +323,14 @@ const AdminPanel = () => {
             <div className="admin-content">
                 {activeTab === 'overview' && (
                     <div className="overview-section">
-                        <h2>📊 Преглед на системот</h2>
+                        <h2>📊 {t('admin.systemOverview')}</h2>
                         <div className="stats-grid">
                             <div className="stat-card">
-                                <h3>📄 Pending Prispevki</h3>
-                                <p className="stat-number">{pendingContributions.length}</p>
+                                <h3>📄 {t('admin.pendingContributions')}</h3>
+                                <p className="stat-number">{pendingCount}</p>
                             </div>
                             <div className="stat-card">
-                                <h3>👥 Вкупно корисници</h3>
+                                <h3>👥 {t('admin.totalUsers')}</h3>
                                 <p className="stat-number">{users.length}</p>
                             </div>
                         </div>
@@ -315,45 +339,45 @@ const AdminPanel = () => {
 
                 {activeTab === 'moderation' && (
                     <div className="moderation-section">
-                        <h2>📝 Модерација на содржини</h2>
-                        
+                        <h2>📝 {t('admin.moderation')}</h2>
+
                         {/* Moderation Controls */}
                         <div className="moderation-controls">
                             <div className="sort-controls">
-                                <label>🔀 Сортирај по:</label>
+                                <label>🔀 {t('admin.sortByLabel')}</label>
                                 <select onChange={(e) => setSortBy(e.target.value)} value={sortBy}>
-                                    <option value="newest">📅 Најнови прво</option>
-                                    <option value="oldest">📅 Најстари прво</option>
-                                    <option value="id">🔢 По ID број</option>
-                                    <option value="random">🎲 Случаен редослед</option>
+                                    <option value="newest">📅 {t('admin.newest')} {t('admin.first')}</option>
+                                    <option value="oldest">📅 {t('admin.oldest')} {t('admin.first')}</option>
+                                    <option value="id">🔢 {t('admin.byIdNumber')}</option>
+                                    <option value="random">🎲 {t('admin.randomOrder')}</option>
                                 </select>
                             </div>
-                            
+
                             <div className="view-controls">
-                                <label>📋 Приказ:</label>
+                                <label>📋 {t('admin.viewLabel')}</label>
                                 <select onChange={(e) => setViewMode(e.target.value)} value={viewMode}>
-                                    <option value="all">📄 Сите прispevки</option>
-                                    <option value="compact">📋 Компактен приказ</option>
-                                    <option value="detailed">📖 Детален приказ</option>
+                                    <option value="all">📄 {t('admin.allContributions')}</option>
+                                    <option value="compact">📋 {t('admin.compactView')}</option>
+                                    <option value="detailed">📖 {t('admin.detailedView')}</option>
                                 </select>
                             </div>
-                            
+
                             <div className="quick-stats">
                                 <span className="stat-badge">
-                                    📊 Вкупно: {pendingContributions.length}
+                                    📊 {t('admin.total')}: {pendingContributions.length}
                                 </span>
                             </div>
                         </div>
-                        
+
                         {loading ? (
-                            <p>Се вчитува...</p>
+                            <p>{t('admin.loading')}</p>
                         ) : pendingContributions.length === 0 ? (
-                            <p>🎉 Нема pending prispevки за модерација!</p>
+                            <p>🎉 {t('admin.noPendingContributions')}</p>
                         ) : (
                             <div className="contributions-list">
                                 {getSortedContributions().map(contribution => (
-                                    <ContributionCard 
-                                        key={contribution.id} 
+                                    <ContributionCard
+                                        key={contribution.id}
                                         contribution={contribution}
                                         onApprove={approveContribution}
                                         onReject={rejectContribution}
@@ -370,19 +394,19 @@ const AdminPanel = () => {
 
                 {activeTab === 'users' && isSuperAdmin && (
                     <div className="users-section">
-                        <h2>👥 Управување со корисници</h2>
+                        <h2>👥 {t('admin.userManagement')}</h2>
                         {loading ? (
-                            <p>Се вчитува...</p>
+                            <p>{t('admin.loading')}</p>
                         ) : (
                             <div className="users-table">
                                 <table>
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Име</th>
-                                            <th>Email</th>
-                                            <th>Улога</th>
-                                            <th>Акции</th>
+                                            <th>{t('admin.name')}</th>
+                                            <th>{t('admin.email')}</th>
+                                            <th>{t('admin.role')}</th>
+                                            <th>{t('admin.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -393,21 +417,21 @@ const AdminPanel = () => {
                                                 <td>{user.email}</td>
                                                 <td>
                                                     {currentUser?.id !== user.id ? (
-                                                        <select 
+                                                        <select
                                                             value={user.vloga}
                                                             onChange={(e) => updateUserRole(user.id, e.target.value)}
                                                         >
-                                                            <option value={USER_ROLES.USER}>Navaden</option>
-                                                        <option value={USER_ROLES.MODERATOR}>Komisija</option>
-                                                        <option value={USER_ROLES.SUPERADMIN}>Superadmin</option>
-                                                    </select>
+                                                            <option value={USER_ROLES.USER}>{t('admin.roles.navaden')}</option>
+                                                            <option value={USER_ROLES.MODERATOR}>{t('admin.roles.komisija')}</option>
+                                                            <option value={USER_ROLES.SUPERADMIN}>{t('admin.roles.superadmin')}</option>
+                                                        </select>
                                                     ) : (
                                                         <span>{user.vloga}</span>
                                                     )}
                                                 </td>
                                                 <td>
                                                     {currentUser?.id !== user.id ? (
-                                                        <button 
+                                                        <button
                                                             className="delete-user-btn"
                                                             onClick={() => deleteUser(user.id, `${user.ime} ${user.priimek}`)}
                                                             style={{
@@ -421,11 +445,11 @@ const AdminPanel = () => {
                                                                 fontWeight: 'bold'
                                                             }}
                                                         >
-                                                            🗑️ Избриши
+                                                            🗑️ {t('admin.deleteUser')}
                                                         </button>
                                                     ) : (
                                                         <span style={{ color: '#666', fontStyle: 'italic' }}>
-                                                            Тековен корисник
+                                                            {t('admin.currentUser')}
                                                         </span>
                                                     )}
                                                 </td>
@@ -441,7 +465,7 @@ const AdminPanel = () => {
 
             {/* Edit Modal */}
             {showEditModal && editingContribution && (
-                <EditContributionModal 
+                <EditContributionModal
                     contribution={editingContribution}
                     onSave={editContribution}
                     onCancel={() => {
@@ -456,6 +480,7 @@ const AdminPanel = () => {
 
 // Individual Contribution Card Component
 const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, onEdit, viewMode = 'all', currentUser }) => {
+    const { t } = useTranslation();
     const [comment, setComment] = useState('');
     const [showDetails, setShowDetails] = useState(viewMode === 'detailed');
 
@@ -465,13 +490,13 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
 
     const handleAction = (action) => {
         console.log('ContributionCard handleAction:', action, 'for contribution:', contribution.id, 'with comment:', comment);
-        
+
         // Check if moderator is trying to moderate their own contribution
         if (contribution.uporabnik_id === currentUser?.id) {
-            alert('⚠️ Не можете да ги модерирате своите објави!\nОбратете се до друг модератор.');
+            alert(t('admin.cannotModerateSelf'));
             return;
         }
-        
+
         if (action === 'approve') {
             onApprove(contribution.id, comment);
         } else if (action === 'reject') {
@@ -486,47 +511,47 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
         <div className={`contribution-card enhanced ${viewMode === 'compact' ? 'compact-mode' : ''}`}>
             <div className="contribution-header">
                 <div className="header-left">
-                    <h4>🎭 Prispevok #{contribution.id}: {contribution.ime_plesa}</h4>
+                    <h4>🎭 {t('admin.contributionId')} #{contribution.id}: {contribution.ime_plesa}</h4>
                     <span className="submission-date">
-                        📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString('mk-MK', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        📅 {new Date(contribution.datum_ustvarjen).toLocaleDateString(i18n.language, { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </span>
                 </div>
                 {viewMode === 'compact' && (
                     <div className="quick-actions-compact">
                         {contribution.uporabnik_id !== currentUser?.id ? (
                             <>
-                                <button 
+                                <button
                                     className="quick-approve"
                                     onClick={() => handleAction('approve')}
-                                    title="Брзо одобри"
+                                    title={t('admin.quickApprove')}
                                 >
                                     ✅
                                 </button>
-                                <button 
+                                <button
                                     className="quick-edit-request"
                                     onClick={() => handleAction('edit')}
-                                    title="Побарај измени"
+                                    title={t('admin.requestChanges')}
                                 >
                                     ✏️
                                 </button>
-                                <button 
+                                <button
                                     className="quick-edit"
                                     onClick={() => onEdit(contribution)}
-                                    title="Директно измени"
+                                    title={t('admin.directEdit')}
                                 >
                                     📝
                                 </button>
-                                <button 
+                                <button
                                     className="quick-reject"
                                     onClick={() => handleAction('reject')}
-                                    title="Брзо отфрли"
+                                    title={t('admin.quickReject')}
                                 >
                                     ❌
                                 </button>
                             </>
                         ) : (
-                            <span className="self-contribution-badge" title="Вашата објава">
-                                🚫 Своја
+                            <span className="self-contribution-badge" title={t('admin.cannotModerateOwn')}>
+                                🚫 {t('admin.ownContribution')}
                             </span>
                         )}
                     </div>
@@ -537,33 +562,33 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
             {(viewMode !== 'compact' || showDetails) && (
                 <div className="contribution-basic-info">
                     <div className="info-row">
-                        <span className="label">👤 Автор:</span>
+                        <span className="label">👤 {t('admin.author')}:</span>
                         <span className="value">
-                            {contribution.je_anonimen 
-                                ? '🕶️ Анонимен'
-                                : `${contribution.user_ime || ''} ${contribution.priimek || ''}`.trim() || 'Непознат'
+                            {contribution.je_anonimen
+                                ? '🕶️ ' + t('admin.anonymous')
+                                : `${contribution.user_ime || ''} ${contribution.priimek || ''}`.trim() || t('admin.unknown')
                             }
                         </span>
                     </div>
-                    
+
                     <div className="info-row">
-                        <span className="label">📝 Опис прispevok:</span>
-                        <span className="value">{contribution.opis || 'Нема опис'}</span>
+                        <span className="label">📝 {t('admin.contributionDescription')}:</span>
+                        <span className="value">{contribution.opis || t('admin.noDescription')}</span>
                     </div>
 
                     <div className="info-row">
-                        <span className="label">📄 Референца опис:</span>
-                        <span className="value">{contribution.referenca_opis || 'Нема референца'}</span>
+                        <span className="label">📄 {t('admin.referenceDescription')}:</span>
+                        <span className="value">{contribution.referenca_opis || t('admin.noReference')}</span>
                     </div>
 
                     <div className="info-row">
-                        <span className="label">🔗 Референца URL:</span>
+                        <span className="label">🔗 {t('admin.referenceUrl')}:</span>
                         <span className="value">
                             {contribution.referenca_url ? (
                                 <a href={contribution.referenca_url} target="_blank" rel="noopener noreferrer">
                                     {contribution.referenca_url}
                                 </a>
-                            ) : 'Нема URL'}
+                            ) : t('admin.noUrl')}
                         </span>
                     </div>
                 </div>
@@ -573,33 +598,33 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
             {viewMode === 'compact' && !showDetails && (
                 <div className="compact-info">
                     <span className="compact-description">
-                        {contribution.opis ? contribution.opis.substring(0, 100) + '...' : 'Нема опис'}
+                        {contribution.opis ? contribution.opis.substring(0, 100) + '...' : t('admin.noDescription')}
                     </span>
                     <div className="compact-meta">
                         <span>
-                            {contribution.je_anonimen 
-                                ? '🕶️ Анонимен' 
-                                : `📝 ${contribution.user_ime || ''} ${contribution.priimek || ''}`.trim() || 'Непознат'
+                            {contribution.je_anonimen
+                                ? '🕶️ ' + t('admin.anonymous')
+                                : `📝 ${contribution.user_ime || ''} ${contribution.priimek || ''}`.trim() || t('admin.unknown')
                             }
                         </span>
-                        {contribution.referenca_url && <span>🔗 Има референца</span>}
+                        {contribution.referenca_url && <span>🔗 {t('admin.hasReference')}</span>}
                     </div>
                 </div>
             )}
 
             {/* Toggle Details Button - Not shown in compact mode quick actions */}
             {viewMode !== 'compact' && (
-                <button 
+                <button
                     className="toggle-details-btn"
                     onClick={() => setShowDetails(!showDetails)}
                 >
-                    {showDetails ? '🔼 Сокриј детали' : '🔽 Прикажи детали'}
+                    {showDetails ? '🔼 ' + t('admin.hideDetails') : '🔽 ' + t('admin.showDetails')}
                 </button>
             )}
 
             {/* Show details toggle for compact mode */}
             {viewMode === 'compact' && (
-                <button 
+                <button
                     className="compact-toggle-btn"
                     onClick={() => setShowDetails(!showDetails)}
                 >
@@ -610,32 +635,32 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
             {/* Detailed Dance Information */}
             {showDetails && (
                 <div className="contribution-details">
-                    <h5>🎪 Детали за плесот</h5>
-                    
+                    <h5>🎪 {t('admin.danceDetails')}</h5>
+
                     <div className="detail-section">
                         <div className="info-row">
-                            <span className="label">🎭 Име на плес:</span>
-                            <span className="value highlight">{contribution.ime_plesa || 'Недефинирано'}</span>
+                            <span className="label">🎭 {t('admin.danceName')}:</span>
+                            <span className="value highlight">{contribution.ime_plesa || t('admin.undefined')}</span>
                         </div>
 
                         <div className="info-row">
-                            <span className="label">🎪 Тип на плес:</span>
-                            <span className="value">{contribution.tip_plesa || 'Недефинирано'}</span>
+                            <span className="label">🎪 {t('admin.danceType')}:</span>
+                            <span className="value">{contribution.tip_plesa || t('admin.undefined')}</span>
                         </div>
 
                         <div className="info-row">
-                            <span className="label">🗺️ Регија:</span>
-                            <span className="value">{contribution.regija || 'Непозната регија'}</span>
+                            <span className="label">🗺️ {t('admin.region')}:</span>
+                            <span className="value">{contribution.regija || t('admin.unknownRegion')}</span>
                         </div>
 
                         <div className="info-row">
-                            <span className="label">📜 Кратка историја:</span>
-                            <span className="value">{contribution.kratka_zgodovina || 'Нема историја'}</span>
+                            <span className="label">📜 {t('admin.shortHistory')}</span>
+                            <span className="value">{contribution.kratka_zgodovina || t('admin.noHistory')}</span>
                         </div>
 
                         <div className="info-row">
-                            <span className="label">🎯 Опис на техника:</span>
-                            <span className="value">{contribution.opis_tehnike || 'Нема опис на техника'}</span>
+                            <span className="label">🎯 {t('admin.techniqueDescription')}</span>
+                            <span className="value">{contribution.opis_tehnike || t('admin.noTechniqueDescription')}</span>
                         </div>
                     </div>
                 </div>
@@ -645,12 +670,12 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
             {(viewMode !== 'compact' || showDetails) && contribution.uporabnik_id !== currentUser?.id && (
                 <div className="comment-section">
                     <label htmlFor={`comment-${contribution.id}`} className="comment-label">
-                        💬 Коментар за модератор:
+                        💬 {t('admin.moderatorComment')}
                     </label>
                     <textarea
                         id={`comment-${contribution.id}`}
                         className="comment-textarea"
-                        placeholder="Напишете коментар или причина за одлуката..."
+                        placeholder={t('admin.commentPlaceholder')}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         rows="3"
@@ -664,42 +689,42 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
                 null
             ) : contribution.uporabnik_id !== currentUser?.id ? (
                 <div className="moderation-actions enhanced">
-                    <button 
+                    <button
                         className="approve-btn"
                         onClick={() => handleAction('approve')}
-                        title="Одобри го prispevok-от"
+                        title={t('admin.approveContribution')}
                     >
-                        ✅ Одобри
+                        ✅ {t('admin.approve')}
                     </button>
-                    
-                    <button 
+
+                    <button
                         className="edit-request-btn"
                         onClick={() => handleAction('edit')}
-                        title="Побарај измени од корисникот"
+                        title={t('admin.requestChanges')}
                     >
-                        ✏️ Побарај измени
+                        ✏️ {t('admin.requestChanges')}
                     </button>
-                    
-                    <button 
+
+                    <button
                         className="direct-edit-btn"
                         onClick={() => onEdit(contribution)}
-                        title="Директно измени го prispevok-от"
+                        title={t('admin.directEditContribution')}
                     >
-                        📝 Измени директно
+                        📝 {t('admin.editDirectly')}
                     </button>
-                    
-                    <button 
+
+                    <button
                         className="reject-btn"
                         onClick={() => handleAction('reject')}
-                        title="Отфрли го prispevok-от"
+                        title={t('admin.rejectContribution')}
                     >
-                        ❌ Отфрли
+                        ❌ {t('admin.reject')}
                     </button>
                 </div>
             ) : (
                 <div className="self-contribution-notice">
-                    <p>🚫 Не можете да ги модерирате своите објави</p>
-                    <small>Обратете се до друг модератор за оваа објава</small>
+                    <p>🚫 {t('admin.cannotModerateOwn')}</p>
+                    <small>{t('admin.contactOtherModerator')}</small>
                 </div>
             )}
         </div>
@@ -708,6 +733,7 @@ const ContributionCard = ({ contribution, onApprove, onReject, onRequestEdit, on
 
 // Edit Contribution Modal Component
 const EditContributionModal = ({ contribution, onSave, onCancel }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         opis: contribution.opis || '',
         referenca_opis: contribution.referenca_opis || '',
@@ -730,11 +756,11 @@ const EditContributionModal = ({ contribution, onSave, onCancel }) => {
         <div className="modal-overlay">
             <div className="edit-modal">
                 <div className="modal-header">
-                    <h3>📝 Измени Prispevok #{contribution.id}</h3>
-                    <button 
+                    <h3>📝 {t('admin.editContribution')} #{contribution.id}</h3>
+                    <button
                         className="close-btn"
                         onClick={onCancel}
-                        title="Затвори"
+                        title={t('admin.close')}
                     >
                         ✕
                     </button>
@@ -742,51 +768,51 @@ const EditContributionModal = ({ contribution, onSave, onCancel }) => {
 
                 <form onSubmit={handleSubmit} className="edit-form">
                     <div className="form-group">
-                        <label htmlFor="opis">📝 Опис на prispevok:</label>
+                        <label htmlFor="opis">📝 {t('admin.contributionDescriptionLabel')}</label>
                         <textarea
                             id="opis"
                             value={formData.opis}
                             onChange={(e) => handleChange('opis', e.target.value)}
                             rows="4"
-                            placeholder="Внесете опис на prispevok-от..."
+                            placeholder={t('admin.enterContributionDescription')}
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="referenca_opis">📚 Опис на референца:</label>
+                        <label htmlFor="referenca_opis">📚 {t('admin.referenceDescriptionLabel')}</label>
                         <textarea
                             id="referenca_opis"
                             value={formData.referenca_opis}
                             onChange={(e) => handleChange('referenca_opis', e.target.value)}
                             rows="3"
-                            placeholder="Внесете опис на референца..."
+                            placeholder={t('admin.enterReferenceDescription')}
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="referenca_url">🔗 URL на референца:</label>
+                        <label htmlFor="referenca_url">🔗 {t('admin.referenceUrlLabel')}</label>
                         <input
                             type="url"
                             id="referenca_url"
                             value={formData.referenca_url}
                             onChange={(e) => handleChange('referenca_url', e.target.value)}
-                            placeholder="https://example.com"
+                            placeholder={t('admin.urlPlaceholder')}
                         />
                     </div>
 
                     <div className="modal-actions">
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="cancel-btn"
                             onClick={onCancel}
                         >
-                            ❌ Откажи
+                            ❌ {t('admin.cancelEdit')}
                         </button>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="save-btn"
                         >
-                            💾 Зачувај измени
+                            💾 {t('admin.saveChanges')}
                         </button>
                     </div>
                 </form>
