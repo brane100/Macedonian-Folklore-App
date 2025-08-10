@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 4445;
 
 // Middleware - CORS configuration for authentication
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'], // Frontend URLs
+  origin: [`${process.env.FRONTEND_URL}`, `http://127.0.0.1:${PORT}`], // Frontend URLs
   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
   credentials: true, // Allow cookies/sessions
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
