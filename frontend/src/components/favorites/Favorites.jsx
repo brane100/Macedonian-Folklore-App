@@ -394,16 +394,6 @@ const Favorites = () => {
                                                 </>
                                             )}
                                         </button>
-                                        <button 
-                                            className="action-btn share-btn" 
-                                            title={t('posts.share')}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                console.log('Share clicked for post:', post.id);
-                                            }}
-                                        >
-                                            📤
-                                        </button>
                                     </div>
                                 </div>
                             </article>

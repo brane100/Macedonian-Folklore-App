@@ -18,19 +18,114 @@ const SinglePost = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [likingInProgress, setLikingInProgress] = useState(false);
 
+    // Standardized region definitions (same as Posts.jsx)
+    const STANDARD_REGIONS = {
+        'Скопски': {
+            aliases: ['скопски', 'skopje', 'скопје', 'скопско', 'скопски регион', 'Skopska', 'Скопје'],
+            keywords: ['скоп']
+        },
+        'Полошки': {
+            aliases: ['полошки', 'polog', 'полог', 'полошко', 'полошки регион', 'Galička', 'Полог'],
+            keywords: ['полош', 'полог']
+        },
+        'Пелагониски': {
+            aliases: ['пелагониски', 'pelagonia', 'пелагонија', 'пелагонијски', 'пелагониски регион', 'Pelagonija', 'Пелагонија'],
+            keywords: ['пелагон']
+        },
+        'Вардарски': {
+            aliases: ['вардарски', 'vardar', 'вардар', 'вардарско', 'вардарски регион', 'Tikveška', 'Vardarska Makedonija'],
+            keywords: ['вардар']
+        },
+        'Источен': {
+            aliases: ['источен', 'eastern', 'источно', 'источен регион', 'источна', 'Источна Македонија'],
+            keywords: ['источ']
+        },
+        'Југозападен': {
+            aliases: ['југозападен', 'southwestern', 'југозапад', 'югозападно', 'югозападен регион', 'Ohridsko-Struška', 'Југозападен дел'],
+            keywords: ['југозапад']
+        },
+        'Југоисточен': {
+            aliases: ['југоисточен', 'southeastern', 'југоисток', 'югоисточно', 'югоисточен регион', 'Југоисточен дел'],
+            keywords: ['југоисток']
+        },
+        'Североисточен': {
+            aliases: ['североисточен', 'northeastern', 'североисток', 'североисточно', 'североисточен регион'],
+            keywords: ['североисток']
+        }
+    };
+
+    // Smart function to match database region to standard region
+    const normalizeRegion = (dbRegion) => {
+        if (!dbRegion) return null;
+        
+        const cleanRegion = dbRegion.toLowerCase().trim();
+        
+        // Direct match with standard regions
+        for (const [standardRegion, config] of Object.entries(STANDARD_REGIONS)) {
+            if (standardRegion.toLowerCase() === cleanRegion) {
+                return standardRegion;
+            }
+            
+            // Check aliases
+            if (config.aliases.some(alias => alias.toLowerCase() === cleanRegion)) {
+                return standardRegion;
+            }
+            
+            // Check if the database region contains any keywords
+            if (config.keywords.some(keyword => cleanRegion.includes(keyword.toLowerCase()))) {
+                return standardRegion;
+            }
+        }
+        
+        // If no match found, return the original region
+        return dbRegion;
+    };
+
+    // Function to get translated region name
+    const getTranslatedRegionName = (region) => {
+        const regionTranslationKeys = {
+            'Скопски': 'regions.skopje',
+            'Полошки': 'regions.polog',
+            'Пелагониски': 'regions.pelagonia',
+            'Вардарски': 'regions.vardar',
+            'Источен': 'regions.eastern',
+            'Југозападен': 'regions.southwestern',
+            'Југоисточен': 'regions.southeastern',
+            'Североисточен': 'regions.northeastern'
+        };
+        return t(regionTranslationKeys[region] || 'regions.unknown');
+    };
+
     const fetchPost = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/${id}`, {
+            const response = await fetch(`http://localhost:3001/prispevki/${id}`, {
                 credentials: 'include'
             });
             
             if (response.ok) {
-                const data = await response.json();
-                setPost(data);
-                setLikeCount(data.like_count || 0);
-                console.log('Fetched ime_plesa:', data.ime_plesa);
+                const responseData = await response.json();
+                console.log('Fetched post response:', responseData);
+                
+                // Handle different response formats
+                let postData;
+                if (responseData.success && responseData.data) {
+                    // Wrapped response format
+                    postData = responseData.data;
+                } else if (responseData.id) {
+                    // Direct post response format
+                    postData = responseData;
+                } else {
+                    // Fallback
+                    console.warn('Unexpected response format:', responseData);
+                    postData = responseData;
+                }
+                
+                setPost(postData);
+                setLikeCount(postData.like_count || 0);
+                console.log('Fetched post data:', postData);
             } else {
+                console.error('Response not ok:', response.status, response.statusText);
                 setError(t('singlePost.notFound'));
             }
         } catch (err) {
@@ -39,7 +134,7 @@ const SinglePost = () => {
         } finally {
             setLoading(false);
         }
-    }, [id]);
+    }, [id, t]);
 
     useEffect(() => {
         fetchPost();
@@ -50,7 +145,7 @@ const SinglePost = () => {
         if (!isAuthenticated || !user?.id || !id) return;
         
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/vsecki/liked-ids`, {
+            const response = await fetch('http://localhost:3001/vsecki/liked-ids', {
                 credentials: 'include'
             });
             
@@ -84,7 +179,7 @@ const SinglePost = () => {
 
         try {
             const method = isLiked ? 'DELETE' : 'POST';
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/vsecki/${id}`, {
+            const response = await fetch(`http://localhost:3001/vsecki/${id}`, {
                 method: method,
                 credentials: 'include',
                 headers: {
@@ -136,17 +231,19 @@ const SinglePost = () => {
     };
 
     const getRegijaIcon = (regija) => {
+        // Normalize the region first, then get the icon
+        const normalizedRegion = normalizeRegion(regija);
         const regionIcons = {
-            'Скопски регион': '🏛️',
-            'Пелагониски регион': '🌾',
-            'Источен регион': '🌄',
-            'Југоисточен регион': '🗻',
-            'Југозападен регион': '🏔️',
-            'Вардарски регион': '🌊',
-            'Североисточен регион': '🌲',
-            'Полошки регион': '🌿'
+            'Скопски': '🏛️',
+            'Пелагониски': '🌾',
+            'Источен': '🌄',
+            'Југоисточен': '🗻',
+            'Југозападен': '🏔️',
+            'Вардарски': '🌊',
+            'Североисточен': '🌲',
+            'Полошки': '🌿'
         };
-        return regionIcons[regija] || '📍';
+        return regionIcons[normalizedRegion] || '📍';
     };
 
     const getTipIcon = (tip) => {
@@ -216,7 +313,7 @@ const SinglePost = () => {
                             </div>
                             <div className="post-region">
                                 {getRegijaIcon(post.regija)}
-                                <span>{post.regija || t('singlePost.unknownRegion')}</span>
+                                <span>{getTranslatedRegionName(normalizeRegion(post.regija)) || t('singlePost.unknownRegion')}</span>
                             </div>
                         </div>
                     </header>
@@ -405,12 +502,6 @@ const SinglePost = () => {
                                         </>
                                     )}
                                 </button>
-                                <button className="action-button share-button">
-                                    📤 {t('singlePost.share')}
-                                </button>
-                                <Link to="/prispevci" className="action-button edit-button">
-                                    📋 {t('singlePost.allPosts')}
-                                </Link>
                             </div>
                         </div>
                     </footer>

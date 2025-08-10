@@ -654,17 +654,6 @@ const Posts = ({
                                                 </>
                                             )}
                                         </button>
-                                        <button 
-                                            className="action-btn share-btn" 
-                                            title={t('posts.share')}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                // Add share functionality here
-                                                console.log('Share clicked for post:', post.id);
-                                            }}
-                                        >
-                                            📤
-                                        </button>
                                     </div>
                                 </div>
                             </article>
