@@ -46,7 +46,7 @@ export default function Register() {
 
     const createUser = async () => {
         try {
-            const response = await fetch('http://localhost:3001/uporabnik/register', {
+            const response = await fetch(`${REACT_APP_API_URL}/uporabnik/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

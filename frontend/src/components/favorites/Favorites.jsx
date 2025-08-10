@@ -32,8 +32,8 @@ const Favorites = () => {
 
         try {
             setLoading(true);
-            console.log('Fetching from: http://localhost:3001/vsecki');
-            const response = await fetch('http://localhost:3001/vsecki', {
+            console.log(`Fetching from: ${REACT_APP_API_URL}/vsecki`);
+            const response = await fetch(`${REACT_APP_API_URL}/vsecki`, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -101,7 +101,7 @@ const Favorites = () => {
             const isCurrentlyLiked = userLikes.has(postId);
             const method = isCurrentlyLiked ? 'DELETE' : 'POST';
 
-            const response = await fetch(`http://localhost:3001/vsecki/${postId}`, {
+            const response = await fetch(`${REACT_APP_API_URL}/vsecki/${postId}`, {
                 method: method,
                 credentials: 'include',
                 headers: {

@@ -7,7 +7,7 @@ import './Posts.css';
 const Posts = ({
     title,
     subtitle,
-    apiEndpoint = 'http://localhost:3001/prispevki/odobren',
+    apiEndpoint = `${REACT_APP_API_URL}/prispevki/odobren`,
 }) => {
     // console.log('Posts component is rendering!');
     const { t } = useTranslation();
@@ -166,7 +166,7 @@ const Posts = ({
 
     const fetchUserLikes = async () => {
         try {
-            const response = await fetch('http://localhost:3001/vsecki/liked-ids', {
+            const response = await fetch(`${REACT_APP_API_URL}/vsecki/liked-ids`, {
                 credentials: 'include'
             });
 
@@ -201,9 +201,9 @@ const Posts = ({
             const isCurrentlyLiked = userLikes.has(postId);
             const method = isCurrentlyLiked ? 'DELETE' : 'POST';
 
-            console.log('Sending request:', method, `http://localhost:3001/vsecki/${postId}`);
+            console.log('Sending request:', method, `${REACT_APP_API_URL}/vsecki/${postId}`);
 
-            const response = await fetch(`http://localhost:3001/vsecki/${postId}`, {
+            const response = await fetch(`${REACT_APP_API_URL}/vsecki/${postId}`, {
                 method: method,
                 credentials: 'include',
                 headers: {
