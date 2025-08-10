@@ -151,13 +151,13 @@ const MapMKD = () => {
       case 'vardarRegion':
         return t('regions.vardar');
       case 'eastRegion':
-        return t('regions.east');
+        return t('regions.eastern');
       case 'southwestRegion':
-        return t('regions.southwest');
+        return t('regions.southwestern');
       case 'southeastRegion':
-        return t('regions.southeast');
+        return t('regions.southeastern');
       case 'northeastRegion':
-        return t('regions.northeast');
+        return t('regions.northeastern');
       default:
         return regionName; // Fallback to original name if not found
     }
