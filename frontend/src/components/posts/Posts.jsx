@@ -20,6 +20,99 @@ const Posts = ({
     const [filter, setFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
 
+    // Standardized region definitions (from map)
+    const STANDARD_REGIONS = {
+        'Скопски': {
+            aliases: ['скопски', 'skopje', 'скопје', 'скопско', 'скопски регион', 'Skopska', 'Скопје'],
+            keywords: ['скоп']
+        },
+        'Полошки': {
+            aliases: ['полошки', 'polog', 'полог', 'полошко', 'полошки регион', 'Galička', 'Полог'],
+            keywords: ['полош', 'полог']
+        },
+        'Пелагониски': {
+            aliases: ['пелагониски', 'pelagonia', 'пелагонија', 'пелагонијски', 'пелагониски регион', 'Pelagonija', 'Пелагонија'],
+            keywords: ['пелагон']
+        },
+        'Вардарски': {
+            aliases: ['вардарски', 'vardar', 'вардар', 'вардарско', 'вардарски регион', 'Tikveška', 'Vardarska Makedonija'],
+            keywords: ['вардар']
+        },
+        'Источен': {
+            aliases: ['источен', 'eastern', 'источно', 'источен регион', 'источна', 'Источна Македонија'],
+            keywords: ['источ']
+        },
+        'Југозападен': {
+            aliases: ['југозападен', 'southwestern', 'југозапад', 'югозападно', 'югозападен регион', 'Ohridsko-Struška', 'Југозападен дел'],
+            keywords: ['југозапад']
+        },
+        'Југоисточен': {
+            aliases: ['југоисточен', 'southeastern', 'југоисток', 'югоисточно', 'югоисточен регион', 'Југоисточен дел'],
+            keywords: ['југоисток']
+        },
+        'Североисточен': {
+            aliases: ['североисточен', 'northeastern', 'североисток', 'североисточно', 'североисточен регион'],
+            keywords: ['североисток']
+        }
+    };
+
+    // Smart function to match database region to standard region
+    const normalizeRegion = (dbRegion) => {
+        if (!dbRegion) return null;
+        
+        const cleanRegion = dbRegion.toLowerCase().trim();
+        
+        // Direct match with standard regions
+        for (const [standardRegion, config] of Object.entries(STANDARD_REGIONS)) {
+            if (standardRegion.toLowerCase() === cleanRegion) {
+                return standardRegion;
+            }
+            
+            // Check aliases
+            if (config.aliases.some(alias => alias.toLowerCase() === cleanRegion)) {
+                return standardRegion;
+            }
+            
+            // Check if the database region contains any keywords
+            if (config.keywords.some(keyword => cleanRegion.includes(keyword.toLowerCase()))) {
+                return standardRegion;
+            }
+        }
+        
+        // If no match found, return the original region
+        return dbRegion;
+    };
+
+    // Function to convert Slovenian URL parameters back to Macedonian regions
+    const slovenianToMacedonian = (slovenianRegion) => {
+        const urlToRegionMap = {
+            'skopska': 'Скопски',
+            'poloski': 'Полошки',
+            'pelagoniska': 'Пелагониски',
+            'vardarska': 'Вардарски',
+            'vzhodna': 'Источен',
+            'jugozahodna': 'Југозападен',
+            'jugovzhodna': 'Југоисточен',
+            'severovzhodna': 'Североисточен'
+        };
+        return urlToRegionMap[slovenianRegion] || slovenianRegion;
+    };
+
+    // Function to convert Macedonian regions to Slovenian URL parameters
+    const macedonianToSlovenian = (macedonianRegion) => {
+        const regionToUrlMap = {
+            'Скопски': 'skopska',
+            'Полошки': 'poloski',
+            'Пелагониски': 'pelagoniska',
+            'Вардарски': 'vardarska',
+            'Источен': 'vzhodna',
+            'Југозападен': 'jugozahodna',
+            'Југоисточен': 'jugovzhodna',
+            'Североисточен': 'severovzhodna'
+        };
+        return regionToUrlMap[macedonianRegion] || macedonianRegion;
+    };
+
     // Use translations as default values
     const displayTitle = title || `🎭 ${t('posts.title')}`;
     const displaySubtitle = subtitle || t('posts.approvedPosts');
@@ -154,6 +247,19 @@ const Posts = ({
         }
     };
 
+    // Function to update URL parameters when filter changes
+    const updateFilterParams = useCallback((newFilter) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (newFilter && newFilter !== 'all') {
+            // Convert Macedonian region to Slovenian URL parameter
+            const slovenianParam = macedonianToSlovenian(newFilter);
+            newSearchParams.set('region', slovenianParam);
+        } else {
+            newSearchParams.delete('region');
+        }
+        setSearchParams(newSearchParams);
+    }, [searchParams, setSearchParams]);
+
     // useEffect hooks
     useEffect(() => {
         fetchApprovedPosts();
@@ -164,6 +270,20 @@ const Posts = ({
             fetchUserLikes();
         }
     }, [isAuthenticated, user?.id]);
+
+    // Read region parameter from URL on component mount and when URL changes
+    useEffect(() => {
+        const slovenianRegionFromUrl = searchParams.get('region');
+        if (slovenianRegionFromUrl) {
+            // Convert Slovenian URL parameter back to Macedonian region
+            const macedonianRegion = slovenianToMacedonian(slovenianRegionFromUrl);
+            if (macedonianRegion !== filter) {
+                setFilter(macedonianRegion);
+            }
+        } else if (!slovenianRegionFromUrl && filter !== 'all') {
+            setFilter('all');
+        }
+    }, [searchParams]);
 
     // Memoized filtered and sorted posts
     const filteredAndSortedPosts = useMemo(() => {
@@ -195,9 +315,12 @@ const Posts = ({
             });
         }
 
-        // Filter by region
+        // Filter by region using smart matching
         if (filter !== 'all') {
-            filteredPosts = filteredPosts.filter(post => post.regija === filter);
+            filteredPosts = filteredPosts.filter(post => {
+                const normalizedPostRegion = normalizeRegion(post.regija);
+                return normalizedPostRegion === filter;
+            });
         }
 
         // Sort posts
@@ -215,9 +338,23 @@ const Posts = ({
 
     // Helper functions
     const getRegions = () => {
-        const allRegions = posts.map(post => post.regija).filter(Boolean);
-        const uniqueRegions = [...new Set(allRegions)];
-        return uniqueRegions.sort();
+        // Return standardized regions instead of database regions
+        return Object.keys(STANDARD_REGIONS);
+    };
+
+    // Function to get translated region name
+    const getTranslatedRegionName = (region) => {
+        const regionTranslationKeys = {
+            'Скопски': 'regions.skopje',
+            'Полошки': 'regions.polog',
+            'Пелагониски': 'regions.pelagonia',
+            'Вардарски': 'regions.vardar',
+            'Источен': 'regions.eastern',
+            'Југозападен': 'regions.southwestern',
+            'Југоисточен': 'regions.southeastern',
+            'Североисточен': 'regions.northeastern'
+        };
+        return t(regionTranslationKeys[region] || 'regions.unknown');
     };
 
     const formatDate = (dateString) => {
@@ -251,17 +388,19 @@ const Posts = ({
 
 
     const getRegijaIcon = (regija) => {
+        // Normalize the region first, then get the icon
+        const normalizedRegion = normalizeRegion(regija);
         const regionIcons = {
-            'Скопски регион': '🏛️',
-            'Пелагониски регион': '🌾',
-            'Источен регион': '🌄',
-            'Југоисточен регион': '🗻',
-            'Југозападен регион': '🏔️',
-            'Вардарски регион': '🌊',
-            'Североисточен регион': '🌲',
-            'Полошки регион': '🌿'
+            'Скопски': '🏛️',
+            'Пелагониски': '🌾',
+            'Источен': '🌄',
+            'Југоисточен': '🗻',
+            'Југозападен': '🏔️',
+            'Вардарски': '🌊',
+            'Североисточен': '🌲',
+            'Полошки': '🌿'
         };
-        return regionIcons[regija] || '📍';
+        return regionIcons[normalizedRegion] || '📍';
     };
 
     if (loading) {
@@ -322,19 +461,26 @@ const Posts = ({
                         <select
                             id="region-filter"
                             value={filter}
-                            onChange={(e) => setFilter(e.target.value)}
+                            onChange={(e) => {
+                                const newFilter = e.target.value;
+                                setFilter(newFilter);
+                                updateFilterParams(newFilter);
+                            }}
                             className="filter-select"
                         >
                             <option value="all">{t('posts.allRegions')}</option>
                             {getRegions().map(region => (
                                 <option key={region} value={region}>
-                                    {getRegijaIcon(region)} {region}
+                                    {getRegijaIcon(region)} {getTranslatedRegionName(region)}
                                 </option>
                             ))}
                         </select>
                         {filter !== 'all' && (
                             <button
-                                onClick={() => setFilter('all')}
+                                onClick={() => {
+                                    setFilter('all');
+                                    updateFilterParams('all');
+                                }}
                                 className="clear-filter-btn"
                                 title={t('posts.clearFilter')}
                             >
@@ -431,7 +577,7 @@ const Posts = ({
                                         {getTipIcon(post.tip_plesa)} {post.tip_plesa || t('posts.unknownType')}
                                     </div>
                                     <div className="post-region">
-                                        {getRegijaIcon(post.regija)} {post.regija || t('posts.unknownRegion')}
+                                        {getRegijaIcon(post.regija)} {getTranslatedRegionName(normalizeRegion(post.regija)) || t('posts.unknownRegion')}
                                     </div>
                                 </div>
 

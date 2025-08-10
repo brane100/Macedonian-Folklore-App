@@ -102,7 +102,13 @@ const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMous
 const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, onClick, children, ...props }) => (
   <g className={`region-group region-${regionName}`} {...props}>
     {React.Children.map(children, child =>
-      React.cloneElement(child, { regionName, onMouseEnter, onMouseMove, onMouseLeave, onClick })
+      React.cloneElement(child, { 
+        regionName, 
+        onMouseEnter, 
+        onMouseMove, 
+        onMouseLeave, 
+        onClick: onClick ? () => onClick(regionName) : undefined 
+      })
     )}
   </g>
 );
@@ -209,8 +215,25 @@ const MapMKD = () => {
     setTooltip({ show: false, name: '', id: '', x: 0, y: 0 });
   };
 
+  // Function to convert region names to Slovenian URL parameters
+  const getRegionValue = (regionName) => {
+    const regionMap = {
+      'skopjeRegion': 'skopska',
+      'polishRegion': 'poloski', 
+      'pelagonianRegion': 'pelagoniska',
+      'vardarRegion': 'vardarska',
+      'eastRegion': 'vzhodna',
+      'southwestRegion': 'jugozahodna',
+      'southeastRegion': 'jugovzhodna',
+      'northeastRegion': 'severovzhodna'
+    };
+    return regionMap[regionName] || regionName;
+  };
+
   const handleClick = (regionName) => {
-    navigate(`/plesi`);
+    // Convert region name to database format and navigate with filter
+    const regionValue = getRegionValue(regionName);
+    navigate(`/plesi?region=${encodeURIComponent(regionValue)}`);
   }
 
   return (
