@@ -219,9 +219,11 @@ export default function Navigation() {
               />
             </div>
 
-            <button className="nav-icon-btn desktop-icon" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
-              ❤️
-            </button>
+            {isAuthenticated && (
+              <button className="nav-icon-btn desktop-icon" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
+                ❤️
+              </button>
+            )}
 
             {/* Authentication-based Profile/Login section */}
             {isAuthenticated ? (
