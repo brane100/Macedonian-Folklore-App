@@ -55,7 +55,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
     // Test session before actual submission
     console.log('Testing session...');
     try {
-      const sessionTest = await fetch('http://localhost:3001/prispevki/test-session', {
+      const sessionTest = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/test-session`, {
         method: 'GET',
         credentials: 'include'
       });
@@ -66,7 +66,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/prispevki/submit', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

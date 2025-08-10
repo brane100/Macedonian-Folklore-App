@@ -1,8 +1,8 @@
-GET http://localhost:3001/users
+GET process.env.REACT_APP_API_URL/users
 
 ###
 
-POST http://localhost:3001/users
+POST process.env.REACT_APP_API_URL/users
 Content-Type: application/json
 {
     "ime": "Stanko",

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ProtectedRoute, PublicRoute } from './ProtectedRoute';
-import { AuthProvider } from '../contexts/AuthContext';
-import { ModeratorGuard } from './RoleBasedAccess';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { useRole, ModeratorGuard } from './RoleBasedAccess';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import './AppRouter.css';
@@ -636,16 +636,7 @@ export default function AppRouter() {
               <Route path="/plesi" element={<Posts />} />
               <Route path="/prispevci" element={<Posts />} />
               <Route path="/prispevci/:id" element={<SinglePost />} />
-              
-              {/* Protected Favorites route - require authentication */}
-              <Route 
-                path="/favorites" 
-                element={
-                  <ProtectedRoute>
-                    <Favorites />
-                  </ProtectedRoute>
-                } 
-              />
+              <Route path="/favorites" element={<Favorites />} />
 
               {/* Public routes - redirect to home if already logged in */}
               <Route

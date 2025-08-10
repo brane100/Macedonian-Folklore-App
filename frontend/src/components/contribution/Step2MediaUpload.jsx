@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import './Step2MediaUpload.css';
 
 export default function Step2MediaUpload({ formData, setFormData, nextStep, prevStep }) {
-  const { t } = useTranslation();
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaType, setMediaType] = useState('image');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -12,11 +10,11 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
   const [dragActive, setDragActive] = useState(false);
 
   const mediaTypes = [
-    { value: 'image', label: `🖼️ ${t('contribution.step2.image')}`, accept: 'image/*' },
-    { value: 'video', label: `🎥 ${t('contribution.step2.video')}`, accept: 'video/*' },
-    { value: 'audio', label: `🎵 ${t('contribution.step2.audio')}`, accept: 'audio/*' },
-    { value: 'document', label: `📄 ${t('contribution.step2.document')}`, accept: '.pdf,.doc,.docx,.txt' },
-    { value: 'other', label: `📎 ${t('contribution.step2.other')}`, accept: '*/*' }
+    { value: 'image', label: '🖼️ Слика', accept: 'image/*' },
+    { value: 'video', label: '🎥 Видео', accept: 'video/*' },
+    { value: 'audio', label: '🎵 Аудио', accept: 'audio/*' },
+    { value: 'document', label: '📄 Документ', accept: '.pdf,.doc,.docx,.txt' },
+    { value: 'other', label: '📎 Друго', accept: '*/*' }
   ];
 
   const handleFileSelect = (event) => {
@@ -77,14 +75,14 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
       });
 
       if (!response.ok) {
-        throw new Error(t('contribution.step2.uploadError'));
+        throw new Error('Грешка при прикачување на фајлот');
       }
 
       const result = await response.json();
       return result.filePath; // Server should return the file path
     } catch (error) {
       console.error('Upload error:', error);
-      alert(t('contribution.step2.uploadError') + ': ' + error.message);
+      alert('Грешка при прикачување на фајлот: ' + error.message);
       return null;
     } finally {
       setUploading(false);
@@ -93,7 +91,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
 
   const addMediaFromFile = async () => {
     if (!selectedFile) {
-      alert(t('contribution.step2.selectFilePrompt'));
+      alert('Ве молиме изберете фајл');
       return;
     }
 
@@ -159,8 +157,8 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
   return (
     <div className="step2-container">
       <div className="step2-header">
-        <h2>📎 {t('contribution.step2.title')}</h2>
-        <p>{t('contribution.step2.description')}</p>
+        <h2>📎 Корак 2: Додај медиуми</h2>
+        <p>Прикачете слики, видеа, аудио снимки или документи</p>
       </div>
 
       {/* Upload Method Selection */}
@@ -172,7 +170,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
             checked={uploadMethod === 'file'}
             onChange={(e) => setUploadMethod(e.target.value)}
           />
-          📁 {t('contribution.step2.uploadFile')}
+          📁 Прикачи фајл
         </label>
         <label className="method-option">
           <input
@@ -181,13 +179,13 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
             checked={uploadMethod === 'url'}
             onChange={(e) => setUploadMethod(e.target.value)}
           />
-          🔗 {t('contribution.step2.addUrl')}
+          🔗 Додај URL линк
         </label>
       </div>
 
       {/* Media Type Selection */}
       <div className="form-group">
-        <label>🎭 {t('contribution.step2.mediaType')}:</label>
+        <label>🎭 Вид на медиум:</label>
         <select 
           value={mediaType} 
           onChange={(e) => setMediaType(e.target.value)}
@@ -214,7 +212,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
           >
             <div className="drag-drop-content">
               <div className="upload-icon">📁</div>
-              <p>{t('contribution.step2.dragDropText')}</p>
+              <p>Повлечете и пуштете фајл овде или</p>
               <label className="file-input-label">
                 <input
                   type="file"
@@ -222,7 +220,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
                   accept={mediaTypes.find(t => t.value === mediaType)?.accept}
                   className="file-input-hidden"
                 />
-                <span className="file-input-button">{t('contribution.step2.selectFile')}</span>
+                <span className="file-input-button">Изберете фајл</span>
               </label>
             </div>
           </div>
@@ -254,11 +252,11 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
             {uploading ? (
               <>
                 <span className="loading-spinner"></span>
-                {t('contribution.step2.uploading')}
+                Се прикачува...
               </>
             ) : (
               <>
-                📤 {t('contribution.step2.uploadFile')}
+                📤 Прикачи фајл
               </>
             )}
           </button>
@@ -269,7 +267,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
       {uploadMethod === 'url' && (
         <div className="url-upload-section">
           <div className="form-group">
-            <label>🔗 {t('contribution.step2.mediaUrl')}:</label>
+            <label>🔗 URL на медиумот:</label>
             <input
               type="url"
               value={mediaUrl}
@@ -284,7 +282,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
             disabled={!mediaUrl.trim()}
             className="add-media-btn"
           >
-            ➕ {t('contribution.step2.addUrl')}
+            ➕ Додај URL
           </button>
         </div>
       )}
@@ -292,7 +290,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
       {/* Media List */}
       {formData.media.length > 0 && (
         <div className="media-list">
-          <h3>📋 {t('contribution.step2.addedMedia')}:</h3>
+          <h3>📋 Додадени медиуми:</h3>
           <div className="media-items">
             {formData.media.map((media, index) => (
               <div key={index} className="media-item">
@@ -307,7 +305,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
                       <div className="media-size">{formatFileSize(media.fileSize)}</div>
                     )}
                     <div className="media-source">
-                      {media.source === 'upload' ? `📁 ${t('contribution.step2.uploadedFile')}` : `🔗 ${t('contribution.step2.urlLink')}`}
+                      {media.source === 'upload' ? '📁 Прикачен фајл' : '🔗 URL линк'}
                     </div>
                   </div>
                 </div>
@@ -326,14 +324,14 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
       {/* Navigation Buttons */}
       <div className="step-navigation">
         <button onClick={prevStep} className="nav-btn prev-btn">
-          ⬅️ {t('contribution.navigation.back')}
+          ⬅️ Назад
         </button>
         <button 
           onClick={nextStep} 
           className="nav-btn next-btn"
           disabled={uploading}
         >
-          {t('contribution.navigation.next')} ➡️
+          Напред ➡️
         </button>
       </div>
     </div>

@@ -32,8 +32,8 @@ const UserSubmissions = () => {
             setLoading(true);
             const filterParam = filter !== 'all' ? `?status=${filter}` : '';
             console.log('Fetching submissions with filter:', filterParam);
-            
-            const response = await fetch(`http://localhost:3001/prispevki/my-contributions${filterParam}`, {
+
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/my-contributions${filterParam}`, {
                 credentials: 'include'
             });
 
@@ -90,7 +90,7 @@ const UserSubmissions = () => {
 
     const handleResubmit = async (submissionId) => {
         try {
-            const response = await fetch(`http://localhost:3001/prispevki/resubmit/${submissionId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/resubmit/${submissionId}`, {
                 method: 'POST',
                 credentials: 'include'
             });

@@ -7,7 +7,7 @@ const useAuth = () => {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await fetch('http://localhost:3001/uporabnik/check-auth', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/check-auth`, {
                 credentials: 'include' // Important for session cookies
             });
             const data = await response.json();
@@ -33,7 +33,7 @@ const useAuth = () => {
 
     const logout = async () => {
         try {
-            await fetch('http://localhost:3001/uporabnik/logout', {
+            await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/logout`, {
                 credentials: 'include'
             });
             setIsAuthenticated(false);
