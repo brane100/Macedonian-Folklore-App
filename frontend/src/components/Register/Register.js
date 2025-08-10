@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './Register.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 
 export default function Register() {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+    
     const [ime, setIme] = useState('');
     const [priimek, setPriimek] = useState('');
     const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ export default function Register() {
         if (email.trim() === '') {
             setEmailError('');
         } else if (!validateEmail(email)) {
-            setEmailError(t('register.invalidEmail'));
+            setEmailError(t('auth.invalidEmailFormat'));
         } else {
             setEmailError('');
         }
@@ -37,7 +38,7 @@ export default function Register() {
     const handlePasswordChange = (value) => {
         setGeslo(value);
         if (value.length > 0 && value.length < 8) {
-            setPasswordError(t('register.passwordTooShort', { minLength: 8 }));
+            setPasswordError(t('auth.passwordMinLength8'));
         } else {
             setPasswordError('');
         }
@@ -65,7 +66,7 @@ export default function Register() {
                 alert(data.message);
                 navigate('/prijava');
             } else {
-                alert(data.message || t('register.registrationFailed'));
+                alert(data.message || t('auth.registrationFailed'));
                 setIme('');
                 setPriimek('');
                 setEmail('');
@@ -73,8 +74,8 @@ export default function Register() {
                 setVloga('navaden');
             }
         } catch (error) {
-            alert(t('register.registrationError'));
-            console.error(t('register.registrationError'), error);
+            alert(t('auth.registrationError'));
+            console.error('Registration error:', error);
             setIme('');
             setPriimek('');
             setEmail('');
@@ -94,14 +95,14 @@ export default function Register() {
             <div className="floating-element">🕺</div>
 
             <div className="register-card">
-                <h2 className="register-title">Регистрација</h2>
+                <h2 className="register-title">{t('auth.registration')}</h2>
                 <div className="register-form">
                     {/* Name fields side by side */}
                     <div className="name-row">
                         <div className="input-group">
                             <input
                                 type="text"
-                                placeholder="Име"
+                                placeholder={t('auth.firstName')}
                                 className="register-input"
                                 value={ime}
                                 onChange={e => setIme(e.target.value)}
@@ -110,7 +111,7 @@ export default function Register() {
                         <div className="input-group">
                             <input
                                 type="text"
-                                placeholder="Презиме"
+                                placeholder={t('auth.lastName')}
                                 className="register-input"
                                 value={priimek}
                                 onChange={e => setPriimek(e.target.value)}
@@ -122,7 +123,7 @@ export default function Register() {
                     <div className="input-group">
                         <input
                             type="email"
-                            placeholder="Е-пошта"
+                            placeholder={t('auth.email')}
                             className={`register-input ${emailError ? 'error' : ''}`}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
@@ -147,7 +148,7 @@ export default function Register() {
                     <div className="input-group">
                         <input
                             type="password"
-                            placeholder="Лозинка"
+                            placeholder={t('auth.password')}
                             className={`register-input ${passwordError ? 'error' : ''}`}
                             value={geslo}
                             onChange={e => handlePasswordChange(e.target.value)}
@@ -172,7 +173,7 @@ export default function Register() {
                                 marginTop: '5px',
                                 color: geslo.length >= 8 ? '#28a745' : '#ffc107'
                             }}>
-                                {geslo.length >= 8 ? '✓ Добра јачина на лозинка' : `${8 - geslo.length} карактери преостануваат`}
+                                {geslo.length >= 8 ? t('auth.goodPasswordStrength') : t('auth.charactersRemaining', { count: 8 - geslo.length })}
                             </div>
                         )}
                     </div>
@@ -187,9 +188,9 @@ export default function Register() {
                                 borderColor: '#ffd700'
                             }}
                         >
-                            <option value="navaden">Navaden uporabnik</option>
-                            <option value="komisija">Komisija (Moderator)</option>
-                            <option value="superadmin">Superadmin</option>
+                            <option value="navaden">{t('auth.regularUser')}</option>
+                            <option value="komisija">{t('auth.committee')}</option>
+                            <option value="superadmin">{t('auth.superadmin')}</option>
                         </select>
                     </div>
 
@@ -207,10 +208,10 @@ export default function Register() {
                             cursor: validation ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        Регистрирај се
+                        {t('auth.registerButton')}
                     </button>
                 </div>
-                <Link to="/prijava"> Имаш сметка? Најави се </Link>
+                <Link to="/prijava">{t('auth.haveAccountLogin')}</Link>
             </div>
         </div>
     );

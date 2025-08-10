@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './Login.css';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function Login(props) {
+    const { t } = useTranslation();
     const { login } = useAuth();
 
     const [email, setEmail] = useState('');
@@ -23,7 +25,7 @@ export default function Login(props) {
         if (email.trim() === '') {
             setEmailError('');
         } else if (!validateEmail(email)) {
-            setEmailError('Невалиден формат на е-пошта');
+            setEmailError(t('auth.invalidEmailFormat'));
         } else {
             setEmailError('');
         }
@@ -55,7 +57,7 @@ export default function Login(props) {
                     navigate('/'); // Redirect to home page on successful login
                 } else {
                     // Handle cases where response is ok but login failed
-                    alert(data.message || 'Невалидни податоци за најавување');
+                    alert(data.message || t('auth.invalidCredentials'));
                 }
             } else {
                 // Handle HTTP error responses
@@ -65,28 +67,26 @@ export default function Login(props) {
                     
                     // Provide specific error messages based on the response
                     if (response.status === 401) {
-                        alert('Невалидна е-пошта или лозинка. Проверете ги вашите податоци.');
+                        alert(t('auth.invalidEmailOrPassword'));
                     } else if (response.status === 404) {
-                        const shouldRegister = window.confirm(
-                            'Корисникот не е пронајден. Дали сакате да се регистрирате сега?'
-                        );
+                        const shouldRegister = window.confirm(t('auth.userNotFoundRegister'));
                         if (shouldRegister) {
                             navigate('/registracija');
                             return;
                         }
                     } else if (response.status === 400) {
-                        alert('Потребни се е-пошта и лозинка.');
+                        alert(t('auth.emailPasswordRequired'));
                     } else {
-                        alert(errorData.message || 'Грешка при најавување');
+                        alert(errorData.message || t('auth.loginError'));
                     }
                 } catch (parseError) {
                     // If response doesn't contain JSON
-                    alert('Грешка при најавување. Обидете се повторно.');
+                    alert(t('auth.loginErrorRetry'));
                 }
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Мрежна грешка. Проверете ја вашата интернет врска и обидете се повторно.');
+            alert(t('auth.networkError'));
         } finally {
             setIsLoggingIn(false);
         }
@@ -102,12 +102,12 @@ export default function Login(props) {
             <div className="floating-element">🌾</div>
 
             <div className="login-card">
-                <h2 className="login-title">Добредојдовте</h2>
+                <h2 className="login-title">{t('auth.welcome')}</h2>
                 <div className="login-form">
                     <div className="input-group">
                         <input
                             type="email"
-                            placeholder="Е-пошта"
+                            placeholder={t('auth.email')}
                             className={`login-input ${emailError ? 'error' : ''}`}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
@@ -130,7 +130,7 @@ export default function Login(props) {
                     <div className="input-group">
                         <input
                             type="password"
-                            placeholder="Лозинка"
+                            placeholder={t('auth.password')}
                             className="login-input"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
@@ -150,11 +150,11 @@ export default function Login(props) {
                             cursor: validation || isLoggingIn ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        {isLoggingIn ? 'Се најавувам...' : 'Најави се'}
+                        {isLoggingIn ? t('auth.loggingIn') : t('auth.loginButton')}
                     </button>
                 </div>
                 <Link to="/registracija">
-                    Немаш сметка? Регистрирај се
+                    {t('auth.noAccountRegister')}
                 </Link>
             </div>
         </div>
