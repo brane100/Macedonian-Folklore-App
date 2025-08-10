@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import './Register.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function Register() {
-    
+    const {t} = useTranslation();
     const [ime, setIme] = useState('');
     const [priimek, setPriimek] = useState('');
     const [email, setEmail] = useState('');
@@ -26,7 +27,7 @@ export default function Register() {
         if (email.trim() === '') {
             setEmailError('');
         } else if (!validateEmail(email)) {
-            setEmailError('Невалиден формат на е-пошта');
+            setEmailError(t('register.invalidEmail'));
         } else {
             setEmailError('');
         }
@@ -36,7 +37,7 @@ export default function Register() {
     const handlePasswordChange = (value) => {
         setGeslo(value);
         if (value.length > 0 && value.length < 8) {
-            setPasswordError('Лозинката мора да содржи најмалку 8 карактери');
+            setPasswordError(t('register.passwordTooShort', { minLength: 8 }));
         } else {
             setPasswordError('');
         }
@@ -64,7 +65,7 @@ export default function Register() {
                 alert(data.message);
                 navigate('/prijava');
             } else {
-                alert(data.message || 'Registration failed.');
+                alert(data.message || t('register.registrationFailed'));
                 setIme('');
                 setPriimek('');
                 setEmail('');
@@ -72,8 +73,8 @@ export default function Register() {
                 setVloga('navaden');
             }
         } catch (error) {
-            alert('An error occurred during registration.');
-            console.error('Registration error:', error);
+            alert(t('register.registrationError'));
+            console.error(t('register.registrationError'), error);
             setIme('');
             setPriimek('');
             setEmail('');
