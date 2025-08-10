@@ -34,7 +34,7 @@ export default function Login(props) {
     const handleLogin = async () => {
         setIsLoggingIn(true);
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/uporabnik/login`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

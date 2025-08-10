@@ -19,7 +19,7 @@ const AdminPanel = () => {
     const fetchPendingContributions = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/pending`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/pending`, {
                 credentials: 'include'
             });
             
@@ -40,7 +40,7 @@ const AdminPanel = () => {
         
         setLoading(true);
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/users`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/users`, {
                 credentials: 'include'
             });
             
@@ -87,7 +87,7 @@ const AdminPanel = () => {
     const approveContribution = async (id, notes = '') => {
         console.log('Approving contribution:', id, 'with notes:', notes);
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/approve/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/approve/${id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -112,7 +112,7 @@ const AdminPanel = () => {
     const rejectContribution = async (id, notes = '') => {
         console.log('Rejecting contribution:', id, 'with notes:', notes);
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/reject/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/reject/${id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -137,7 +137,7 @@ const AdminPanel = () => {
     const requestEdits = async (id, notes = '') => {
         console.log('Requesting edits for contribution:', id, 'with notes:', notes);
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/request-edit/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/request-edit/${id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -162,7 +162,7 @@ const AdminPanel = () => {
     const editContribution = async (id, updatedData) => {
         console.log('Editing contribution:', id, 'with data:', updatedData);
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/edit/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/edit/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -200,7 +200,7 @@ const AdminPanel = () => {
         if (!isSuperAdmin) return;
         
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/users/${userId}/role`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/users/${userId}/role`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -228,7 +228,7 @@ const AdminPanel = () => {
         if (!confirmDelete) return;
         
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/moderacija/users/${userId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/users/${userId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'

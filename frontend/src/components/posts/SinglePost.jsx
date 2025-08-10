@@ -99,7 +99,7 @@ const SinglePost = () => {
     const fetchPost = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${REACT_APP_API_URL}/prispevki/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/${id}`, {
                 credentials: 'include'
             });
             
@@ -145,7 +145,7 @@ const SinglePost = () => {
         if (!isAuthenticated || !user?.id || !id) return;
         
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/vsecki/liked-ids`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/vsecki/liked-ids`, {
                 credentials: 'include'
             });
             
@@ -179,7 +179,7 @@ const SinglePost = () => {
 
         try {
             const method = isLiked ? 'DELETE' : 'POST';
-            const response = await fetch(`${REACT_APP_API_URL}/vsecki/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/vsecki/${id}`, {
                 method: method,
                 credentials: 'include',
                 headers: {
