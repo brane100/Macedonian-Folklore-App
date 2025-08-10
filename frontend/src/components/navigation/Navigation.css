@@ -27,6 +27,7 @@
   border-bottom: 3px solid var(--macedonia-red);
   box-shadow: var(--shadow-medium);
   width: 100%;
+  min-width: 300px;
 }
 
 .nav-container {
@@ -35,25 +36,47 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   position: relative;
   flex-direction: row;
   flex-wrap: nowrap;
+  min-height: 60px;
+  min-width: 300px;
 }
 
 .cultural-logo {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--macedonia-red);
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   transition: transform 0.3s ease;
   z-index: 1001;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+.cultural-logo img {
+  height: 2.8rem;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Smaller screens */
+@media (max-width: 768px) {
+  .cultural-logo img {
+    height: 2.3rem;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .cultural-logo img {
+    height: 2rem;
+  }
 }
 
 .cultural-logo:hover {
@@ -64,18 +87,18 @@
 /* Desktop Navigation - Horizontal Layout */
 .nav-center.desktop-nav {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
   flex-direction: row;
   justify-content: center;
   flex: 1;
-  margin: 0 2rem;
+  margin: 0 1.5rem;
 }
 
 /* Compact Navigation for smaller screens */
 .nav-center.compact-nav {
   display: none; /* Hidden by default */
-  gap: 1rem;
+  gap: 0.8rem;
   align-items: center;
   flex-direction: row;
   justify-content: center;
@@ -84,8 +107,8 @@
 }
 
 .compact-nav .nav-link {
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 
@@ -97,15 +120,16 @@
 }
 
 .nav-link {
-  padding: 0.8rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   font-weight: 500;
   color: var(--macedonia-yellow);
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: all 0.3s ease;
   position: relative;
   white-space: nowrap;
   display: inline-block;
+  font-size: 0.9rem;
 }
 
 .nav-link::after {
@@ -149,7 +173,7 @@
 
 .nav-icons {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
   flex-direction: row;
   flex-shrink: 0;
@@ -200,18 +224,21 @@
 
 /* Navigation Icon Buttons */
 .nav-icon-btn {
-  padding: 0.5rem;
+  padding: 0.4rem;
   border: none;
   background: transparent;
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.3s ease;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--macedonia-red);
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  min-width: 2.2rem;
+  min-height: 2.2rem;
+  justify-content: center;
 }
 
 .nav-icon-btn:hover {
@@ -556,6 +583,29 @@
   background: var(--macedonia-dark-red);
 }
 
+/* Very Small Screens - Ensure minimum functionality */
+@media (max-width: 320px) {
+  .nav-container {
+    padding: 0.4rem 0.6rem;
+    min-height: 52px;
+  }
+  
+  .cultural-logo img {
+    height: 1.8rem;
+  }
+  
+  .nav-icons {
+    gap: 0.4rem;
+  }
+  
+  .nav-icon-btn {
+    padding: 0.3rem;
+    font-size: 1rem;
+    min-width: 2rem;
+    min-height: 2rem;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .desktop-nav {
@@ -575,7 +625,8 @@
   }
   
   .nav-container {
-    padding: 1rem;
+    padding: 0.5rem 1rem;
+    min-height: 56px;
   }
 }
 
@@ -590,6 +641,11 @@
   
   .sidebar-toggle.tablet-only {
     display: block;
+  }
+  
+  .nav-container {
+    padding: 0.6rem 1.2rem;
+    min-height: 58px;
   }
 }
 

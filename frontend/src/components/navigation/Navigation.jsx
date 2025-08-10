@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../RoleBasedAccess';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+import logoImage from '../../assets/logo/logo sistemi 3 naj.png';
 import './Navigation.css';
 
 export default function Navigation() {
@@ -159,7 +160,7 @@ export default function Navigation() {
       <nav className="cultural-nav">
         <div className="nav-container">
           <Link to="/" className="cultural-logo">
-            🪗 Охрани Култура
+          <img src={logoImage} alt="MKD Folklore App" />
           </Link>
 
           {/* Desktop Navigation */}
