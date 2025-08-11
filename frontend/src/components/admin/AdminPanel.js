@@ -306,7 +306,7 @@ const AdminPanel = () => {
                         <div className="stats-grid">
                             <div className="stat-card">
                                 <h3>📄 {t('admin.pendingContributions')}</h3>
-                                <p className="stat-number">{pendingCount}</p>
+                                <p className="stat-number">{pendingContributions.length}</p>
                             </div>
                             <div className="stat-card">
                                 <h3>👥 {t('admin.totalUsers')}</h3>
