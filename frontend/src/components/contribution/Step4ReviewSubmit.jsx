@@ -52,6 +52,15 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
 
     const regionData = getRegionData(formData.regijaId);
 
+    if (formData.regijaId === '1') regionData.ime = 'Pelagonija';
+    else if (formData.regijaId === '2') regionData.ime = 'Skopje';
+    else if (formData.regijaId === '3') regionData.ime = 'Vardarska Makedonija';
+    else if (formData.regijaId === '4') regionData.ime = 'Vzhodna Makedonija';
+    else if (formData.regijaId === '5') regionData.ime = 'Jugozahodni del';
+    else if (formData.regijaId === '6') regionData.ime = 'Jugovzhodni del';
+    else if (formData.regijaId === '7') regionData.ime = 'Polog';
+    else if (formData.regijaId === '8') regionData.ime = 'Severovzhodni del';
+
     // Test session before actual submission
     console.log('Testing session...');
     try {

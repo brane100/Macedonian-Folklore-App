@@ -1,12 +1,12 @@
 {
   "regions": {
-    "skopje": "Skopje",
-    "polog": "Polog", 
     "pelagonia": "Pelagonija",
+    "skopje": "Skopje",
     "vardar": "Vardarska Makedonija",
     "eastern": "Vzhodna Makedonija",
     "southwestern": "Jugozahodni del", 
     "southeastern": "Jugovzhodni del",
+    "polog": "Polog", 
     "northeastern": "Severovzhodni del",
     "unknown": "Neznana regija"
   },
