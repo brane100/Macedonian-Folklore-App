@@ -230,7 +230,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
         </div>
 
         {/* Media Section */}
-        <div className="media-section">
+        {/* <div className="media-section">
           <h4>📎 {t('contribution.step4.media.title')} ({formData.media?.length || 0})</h4>
           {formData.media && formData.media.length > 0 ? (
             <div className="media-list">
@@ -249,7 +249,7 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
               📭 {t('contribution.step4.media.noMedia')}
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* References */}
         <div className="review-card">

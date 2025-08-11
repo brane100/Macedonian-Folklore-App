@@ -17,6 +17,8 @@ const AdminPanel = () => {
     const [viewMode, setViewMode] = useState('all');
     const [editingContribution, setEditingContribution] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [msgCount, setMsgCount] = useState(0);
+    const [badge, setBadge] = useState(false);
 
     // Fetch pending contributions
     const fetchPendingContributions = useCallback(async () => {
@@ -256,6 +258,18 @@ const AdminPanel = () => {
         } else if (activeTab === 'users' && isSuperAdmin) {
             fetchUsers();
         }
+        const fetchCount = async () => {
+            try {
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/messages-count`, { credentials: 'include' });
+                const data = await res.json();
+                setMsgCount(data.count);
+                setBadge(data.count > 0);
+            } catch (e) {
+                setMsgCount(0);
+                setBadge(false);
+            }
+        };
+        fetchCount();
     }, [activeTab, isSuperAdmin, fetchPendingContributions, fetchUsers]);
 
     if (!isModerator) {
@@ -375,7 +389,7 @@ const AdminPanel = () => {
                     <div className="users-section">
                         <h2>👥 {t('admin.userManagement')}</h2>
                         {loading ? (
-                             <p>{t('admin.loading')}</p>
+                            <p>{t('admin.loading')}</p>
                         ) : (
                             <div className="users-table">
                                 <table>

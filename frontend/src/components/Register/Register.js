@@ -47,6 +47,7 @@ export default function Register() {
     const validation = emailError || passwordError || !ime.trim() || !priimek.trim() || !email.trim() || !geslo.trim()
 
     const createUser = async () => {
+        const backendUrl = process.env.REACT_APP_API_URL;
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/register`, {
                 method: 'POST',
@@ -179,7 +180,7 @@ export default function Register() {
                     </div>
 
                     {/* Role selection (for testing purposes) */}
-                    <div className="input-group">
+                    {/* <div className="input-group">
                         <select
                             className="register-input"
                             value={vloga}
@@ -192,7 +193,7 @@ export default function Register() {
                             <option value="komisija">{t('auth.committee')}</option>
                             <option value="superadmin">{t('auth.superadmin')}</option>
                         </select>
-                    </div>
+                    </div> */}
 
                     <button
                         className="register-button"

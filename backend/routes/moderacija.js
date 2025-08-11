@@ -26,7 +26,7 @@ moderacija.get('/pending', requireModerator, async (req, res) => {
 // Save contact message from guest/user
 const fs = require('fs');
 const path = require('path');
-const messagesDir = path.join(__dirname, '../../messages'); // backend/messages
+const messagesDir = path.join(__dirname, '../messages'); // backend/messages
 
 if (!fs.existsSync(messagesDir)) {
     fs.mkdirSync(messagesDir);

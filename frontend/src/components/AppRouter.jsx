@@ -39,80 +39,80 @@ function NotFound() {
 }
 
 // Mock data for folk dances
-const mockDances = [
-  {
-    id: 1,
-    title: "Тешкото",
-    region: "Западна Македонија",
-    author: "Марија Петковска",
-    date: "15.12.2024",
-    description: "Традиционално машко оро од западниот дел на Македонија, познато по својата комплексна хореографија и енергични движења.",
-    image: "🕺",
-    tags: ["#Западна", "#Машко", "#Тешко"],
-    likes: 24,
-    comments: 8
-  },
-  {
-    id: 2,
-    title: "Калајџиското",
-    region: "Штип",
-    author: "Стефан Николовски",
-    date: "12.12.2024",
-    description: "Занаетчиско оро што го играат калајџиите во источна Македонија, со карактеристични ритмички обрасци.",
-    image: "🔨",
-    tags: ["#Источна", "#Занаетчиско", "#Калајџии"],
-    likes: 31,
-    comments: 12
-  },
-  {
-    id: 3,
-    title: "Неврокопчанка",
-    region: "Струмица",
-    author: "Ана Стојанова",
-    date: "10.12.2024",
-    description: "Женско оро од југоисточниот регион, познато по грациозните движења и традиционалните носии.",
-    image: "💃",
-    tags: ["#Југоисточна", "#Женско", "#Носии"],
-    likes: 45,
-    comments: 15
-  },
-  {
-    id: 4,
-    title: "Пајдушко",
-    region: "Велес",
-    author: "Димитар Митревски",
-    date: "08.12.2024",
-    description: "Брзо оро од централна Македонија, играно за време на младешки собири и весели настани.",
-    image: "🎵",
-    tags: ["#Централна", "#Брзо", "#Младешко"],
-    likes: 18,
-    comments: 6
-  },
-  {
-    id: 5,
-    title: "Букурешко",
-    region: "Битола",
-    author: "Елена Атанасова",
-    date: "05.12.2024",
-    description: "Соборно оро од Битола, со влијанија од балканската традиција и богата инструментална пратка.",
-    image: "🪗",
-    tags: ["#Битола", "#Соборно", "#Балкански"],
-    likes: 52,
-    comments: 20
-  },
-  {
-    id: 6,
-    title: "Старо городе",
-    region: "Охрид",
-    author: "Петар Здравески",
-    date: "02.12.2024",
-    description: "Историско оро од Охрид што ја прикажува убавината на старите македонски градови.",
-    image: "🏛️",
-    tags: ["#Охрид", "#Историско", "#Градско"],
-    likes: 67,
-    comments: 25
-  }
-];
+// const mockDances = [
+//   {
+//     id: 1,
+//     title: "Тешкото",
+//     region: "Западна Македонија",
+//     author: "Марија Петковска",
+//     date: "15.12.2024",
+//     description: "Традиционално машко оро од западниот дел на Македонија, познато по својата комплексна хореографија и енергични движења.",
+//     image: "🕺",
+//     tags: ["#Западна", "#Машко", "#Тешко"],
+//     likes: 24,
+//     comments: 8
+//   },
+//   {
+//     id: 2,
+//     title: "Калајџиското",
+//     region: "Штип",
+//     author: "Стефан Николовски",
+//     date: "12.12.2024",
+//     description: "Занаетчиско оро што го играат калајџиите во источна Македонија, со карактеристични ритмички обрасци.",
+//     image: "🔨",
+//     tags: ["#Источна", "#Занаетчиско", "#Калајџии"],
+//     likes: 31,
+//     comments: 12
+//   },
+//   {
+//     id: 3,
+//     title: "Неврокопчанка",
+//     region: "Струмица",
+//     author: "Ана Стојанова",
+//     date: "10.12.2024",
+//     description: "Женско оро од југоисточниот регион, познато по грациозните движења и традиционалните носии.",
+//     image: "💃",
+//     tags: ["#Југоисточна", "#Женско", "#Носии"],
+//     likes: 45,
+//     comments: 15
+//   },
+//   {
+//     id: 4,
+//     title: "Пајдушко",
+//     region: "Велес",
+//     author: "Димитар Митревски",
+//     date: "08.12.2024",
+//     description: "Брзо оро од централна Македонија, играно за време на младешки собири и весели настани.",
+//     image: "🎵",
+//     tags: ["#Централна", "#Брзо", "#Младешко"],
+//     likes: 18,
+//     comments: 6
+//   },
+//   {
+//     id: 5,
+//     title: "Букурешко",
+//     region: "Битола",
+//     author: "Елена Атанасова",
+//     date: "05.12.2024",
+//     description: "Соборно оро од Битола, со влијанија од балканската традиција и богата инструментална пратка.",
+//     image: "🪗",
+//     tags: ["#Битола", "#Соборно", "#Балкански"],
+//     likes: 52,
+//     comments: 20
+//   },
+//   {
+//     id: 6,
+//     title: "Старо городе",
+//     region: "Охрид",
+//     author: "Петар Здравески",
+//     date: "02.12.2024",
+//     description: "Историско оро од Охрид што ја прикажува убавината на старите македонски градови.",
+//     image: "🏛️",
+//     tags: ["#Охрид", "#Историско", "#Градско"],
+//     likes: 67,
+//     comments: 25
+//   }
+// ];
 
 // Floating Chat Component
 function FloatingChat() {
@@ -124,6 +124,8 @@ function FloatingChat() {
   const [error, setError] = useState(null);
   const [msgCount, setMsgCount] = useState(0);
   const [badge, setBadge] = useState(false);
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   // Poll for new messages every 30s
   useEffect(() => {
@@ -144,7 +146,26 @@ function FloatingChat() {
   }, []);
 
   const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    // Validate name and surname together
+    if (name === 'name' || name === 'surname') {
+      const fullName = name === 'name' ? value + ' ' + form.surname : form.name + ' ' + value;
+      // Name Surname: at least two words, each starting with a capital letter
+      if (!/^([A-ZŠĐŽČĆ][a-zšđžčć]+)\s+([A-ZŠĐŽČĆ][a-zšđžčć]+)$/.test(fullName.trim())) {
+        setNameError(t('chat.nameFormatError') || 'Format: Name Surname, each starting with a capital letter');
+      } else {
+        setNameError('');
+      }
+    }
+    if (name === 'email') {
+      // Simple email regex
+      if (!/^\S+@\S+\.\S+$/.test(value)) {
+        setEmailError(t('chat.emailFormatError') || 'Invalid email format');
+      } else {
+        setEmailError('');
+      }
+    }
   };
 
   const handleSubmit = async e => {
@@ -152,16 +173,36 @@ function FloatingChat() {
     setSending(true);
     setSuccess(null);
     setError(null);
+    // Validate before submit
+    const fullName = form.name + ' ' + form.surname;
+    let valid = true;
+    if (!/^([A-ZŠĐŽČĆ][a-zšđžčć]+)\s+([A-ZŠĐŽČĆ][a-zšđžčć]+)$/.test(fullName.trim())) {
+      setNameError(t('chat.nameFormatError') || 'Format: Name Surname, each starting with a capital letter');
+      valid = false;
+    } else {
+      setNameError('');
+    }
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      setEmailError(t('chat.emailFormatError') || 'Invalid email format');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+    if (!valid) {
+      setSending(false);
+      setError(t('chat.validationError') || 'Please fix the errors above.');
+      return;
+    }
     try {
-      const res = await fetch('/moderacija/contact-message', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/contact-message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({fullname: fullName, email: form.email, subject: form.subject, message: form.message }),
       });
       const data = await res.json();
       if (data.success) {
         setSuccess(t('chat.sentSuccess'));
-        setForm({ name: '', email: '', subject: '', message: '' });
+        setForm({ name: '', surname: '', email: '', subject: '', message: '' });
       } else {
         setError(data.error || t('chat.sentError'));
       }
@@ -178,14 +219,17 @@ function FloatingChat() {
         onClick={() => setIsOpen(!isOpen)}
       >
         💬
-        {badge && <span className="chat-badge">{msgCount}</span>}
+        {/* {badge && <span className="chat-badge">{msgCount}</span>} */}
       </button>
       {isOpen && (
         <div className="chat-modal">
           <h3>{t('chat.needHelp')}</h3>
           <form onSubmit={handleSubmit} className="chat-form">
             <input name="name" value={form.name} onChange={handleChange} placeholder={t('chat.name')} required />
+            <input name="surname" value={form.surname} onChange={handleChange} placeholder={t('chat.surname') || 'Surname'} required />
+            {nameError && <div className="chat-error">{nameError}</div>}
             <input name="email" type="email" value={form.email} onChange={handleChange} placeholder={t('chat.email')} required />
+            {emailError && <div className="chat-error">{emailError}</div>}
             <input name="subject" value={form.subject} onChange={handleChange} placeholder={t('chat.subject')} required />
             <textarea name="message" value={form.message} onChange={handleChange} placeholder={t('chat.message')} required />
             <button type="submit" disabled={sending}>{sending ? t('chat.sending') : t('chat.send')}</button>
@@ -231,7 +275,7 @@ function DanceCard({ dance }) {
 // Sidebar Component
 function Sidebar() {
   const { t } = useTranslation();
-  const topDances = mockDances.slice(0, 3).sort((a, b) => b.likes - a.likes);
+  // const topDances = mockDances.slice(0, 3).sort((a, b) => b.likes - a.likes);
   const popularRegions = ["Битола", "Охрид", "Штип", "Струмица"];
 
   return (
@@ -239,7 +283,7 @@ function Sidebar() {
       <div className="sidebar-section">
         <h3>🎵 {t('sections.topDances')}</h3>
         <div className="top-dances">
-          {topDances.map(dance => (
+          {/* {topDances.map(dance => (
             <div key={dance.id} className="top-dance-item">
               <span className="top-dance-emoji">{dance.image}</span>
               <div>
@@ -247,7 +291,7 @@ function Sidebar() {
                 <div className="top-dance-likes">❤️ {dance.likes}</div>
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
 
@@ -300,7 +344,7 @@ function Home() {
       </section>
 
       {/* Main Content with Masonry Grid and Sidebar */}
-      <section className="main-cultural-content">
+      {/* <section className="main-cultural-content"> 
         <div className="container">
           <div className="content-layout">
             <div className="content-main">
@@ -308,13 +352,14 @@ function Home() {
               <div className="masonry-grid">
                 {mockDances.map(dance => (
                   <DanceCard key={dance.id} dance={dance} />
-                ))}
+                ))} 
               </div>
             </div>
             <Sidebar />
           </div>
         </div>
       </section>
+      */}
     </>
   );
 }
@@ -427,7 +472,7 @@ export default function AppRouter() {
                 <h4>{t('footer.preserveCulture')}</h4>
                 <p>{t('footer.preserveDescription')}</p>
               </div>
-              <div className="footer-section">
+              {/* <div className="footer-section">
                 <h4>{t('footer.regions')}</h4>
                 <ul>
                   <li><Link to="/region/skopski">Скопски</Link></li>
@@ -435,7 +480,7 @@ export default function AppRouter() {
                   <li><Link to="/region/ohrid">Охрид</Link></li>
                   <li><Link to="/region/stip">Штип</Link></li>
                 </ul>
-              </div>
+              </div> */}
               <div className="footer-section">
                 <h4>{t('footer.resources')}</h4>
                 <ul>
@@ -445,7 +490,7 @@ export default function AppRouter() {
                   <li><Link to="/privatnost">{t('footer.privacy')}</Link></li>
                 </ul>
               </div>
-              <div className="footer-section">
+              {/* <div className="footer-section">
                 <h4>{t('footer.followUs')}</h4>
                 <div className="social-links">
                   <a href="https://facebook.com" aria-label="Facebook" target="_blank" rel="noopener noreferrer">📘</a>
@@ -453,7 +498,7 @@ export default function AppRouter() {
                   <a href="https://youtube.com" aria-label="YouTube" target="_blank" rel="noopener noreferrer">📹</a>
                   <a href="https://tiktok.com" aria-label="TikTok" target="_blank" rel="noopener noreferrer">🎵</a>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="footer-bottom">
               <p>{t('footer.copyright')}</p>
