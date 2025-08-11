@@ -14,11 +14,10 @@ export default function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   // Initialize search query from URL params
   useEffect(() => {
@@ -30,51 +29,30 @@ export default function Navigation() {
   useEffect(() => {
     if (!location.pathname.startsWith('/plesi') && !location.pathname.startsWith('/prispevci')) {
       setSearchQuery('');
-      setIsSearchExpanded(false);
     }
   }, [location.pathname]);
 
   // Handle search functionality
-  const handleSearchClick = () => {
-    setIsSearchExpanded(true);
+  const handleSearchSubmit = (query) => {
+    if (query.trim()) {
+      navigate(`/plesi?search=${encodeURIComponent(query.trim())}`);
+    }
   };
 
   const handleSearchKeyDown = (e) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       // Navigate to plesi page with search parameter
       navigate(`/plesi?search=${encodeURIComponent(searchQuery.trim())}`);
-      setIsSearchExpanded(false);
     }
     if (e.key === 'Escape') {
       setSearchQuery('');
-      setIsSearchExpanded(false);
-    }
-  };
-
-  const handleSearchFocus = () => {
-    setIsSearchExpanded(true);
-  };
-
-  const handleSearchBlur = () => {
-    if (!searchQuery) {
-      setIsSearchExpanded(false);
-    }
-  };
-
-  const handleMouseEnter = () => {
-    setIsSearchExpanded(true);
-  };
-
-  const handleMouseLeave = () => {
-    if (!searchQuery) {
-      setIsSearchExpanded(false);
     }
   };
 
   const handleSearchChange = (e) => {
     const newSearchQuery = e.target.value;
     setSearchQuery(newSearchQuery);
-    
+
     // Update URL params if we're on a posts page
     if (location.pathname.startsWith('/plesi') || location.pathname.startsWith('/prispevci')) {
       const newSearchParams = new URLSearchParams(searchParams);
@@ -160,11 +138,27 @@ export default function Navigation() {
       <nav className="cultural-nav">
         <div className="nav-container">
           <Link to="/" className="cultural-logo">
-          <img src={logoImage} alt="MKD Folklore App" />
+            <img src={logoImage} alt="MKD Folklore App" />
           </Link>
 
           {/* Desktop Navigation */}
           <div className="nav-center desktop-nav">
+            {/* Clean Search Bar */}
+            <div className="search-container">
+              <form onSubmit={(e) => { e.preventDefault(); handleSearchSubmit(searchQuery); }} className="search-form">
+                <button type="submit" className="search-icon" title={t('common.search')}>
+                  🔍
+                </button>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder={t('common.searchPlaceholder')}
+                  className="search-input"
+                />
+              </form>
+            </div>
             {navigationLinks.map((link, index) => (
               <Link
                 key={index}
@@ -178,6 +172,22 @@ export default function Navigation() {
 
           {/* Compact Navigation for smaller screens */}
           <div className="nav-center compact-nav">
+            {/* Clean Search Bar */}
+            <div className="search-container">
+              <form onSubmit={(e) => { e.preventDefault(); handleSearchSubmit(searchQuery); }} className="search-form">
+                <button type="submit" className="search-icon" title={t('common.search')}>
+                  🔍
+                </button>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder={t('common.searchPlaceholder')}
+                  className="search-input"
+                />
+              </form>
+            </div>
             {navigationLinks.map((link, index) => (
               <Link
                 key={index}
@@ -194,30 +204,7 @@ export default function Navigation() {
             {/* Language Switcher */}
             <LanguageSwitcher />
 
-            {/* Compact Search with Hover Expansion */}
-            <div
-              className="search-container"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <button
-                className={`nav-icon-btn desktop-icon search-btn ${isSearchExpanded ? 'hidden' : ''}`}
-                title={t('common.search')}
-                onClick={handleSearchClick}
-              >
-                🔍
-              </button>
-              <input
-                type="text"
-                placeholder={t('common.searchPlaceholder')}
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onKeyDown={handleSearchKeyDown}
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
-                className={`search-input-hover ${isSearchExpanded ? 'expanded' : ''}`}
-              />
-            </div>
+
 
             {isAuthenticated && (
               <button className="nav-icon-btn desktop-icon" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
@@ -350,7 +337,7 @@ export default function Navigation() {
       <aside className={`nav-sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <Link to="/" className="sidebar-logo" onClick={() => setIsSidebarOpen(false)}>
-            🪗 Охрани Култура
+            🪗 MKD Folklore
           </Link>
           <button
             className="sidebar-close"
@@ -360,7 +347,9 @@ export default function Navigation() {
             ✕
           </button>
         </div>
+        
         <div className="sidebar-content">
+          
           <nav className="sidebar-nav">
             {navigationLinks.map((link, index) => (
               <Link
@@ -395,9 +384,12 @@ export default function Navigation() {
                 🔍
               </button>
             </div>
-            <button className="sidebar-icon-btn" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
+            {/* show Favorites if logged in */}
+            {isAuthenticated && (
+              <button className="sidebar-icon-btn" title={t('navigation.favorites')} onClick={() => navigate('/favorites')}>
               ❤️ {t('navigation.favorites')}
             </button>
+            )}
 
             {/* Authentication-based sidebar */}
             {isAuthenticated ? (

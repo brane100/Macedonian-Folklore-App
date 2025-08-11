@@ -609,21 +609,6 @@
   gap: 0.5rem;
 }
 
-/* Sidebar for Medium Screens - Vertical Left */
-.nav-sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 280px;
-  height: 100vh;
-  background: linear-gradient(135deg, #ffffff 0%, #fff8e7 100%);
-  box-shadow: var(--shadow-heavy);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 1002;
-  display: none;
-}
-
 .nav-sidebar.open {
   transform: translateX(0);
 }
@@ -772,7 +757,7 @@
 .sidebar-overlay {
   position: fixed;
   top: 0;
-  left: 0;
+  right: 0;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
@@ -899,8 +884,8 @@
   max-width: 1600px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 3rem;
+  grid-template-columns: 1fr;
+  /* gap: 3rem; */
 }
 
 .content-main h2 {
@@ -1028,13 +1013,14 @@
 
 /* Cultural Sidebar */
 .cultural-sidebar {
-  background: var(--macedonia-white);
+  /* background: var(--macedonia-white);
   border-radius: 16px;
   padding: 2rem;
   box-shadow: var(--shadow-light);
   height: fit-content;
   position: sticky;
-  top: 120px;
+  top: 120px; */
+  display: none;
 }
 
 .sidebar-section {
@@ -1557,12 +1543,6 @@
   
   .hero-title {
     font-size: 3rem;
-  }
-  
-  /* Adjust main content when sidebar is open */
-  .nav-sidebar.open ~ .main-content {
-    margin-left: 280px;
-    transition: margin-left 0.3s ease;
   }
 }
 
