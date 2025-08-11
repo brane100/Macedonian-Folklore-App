@@ -34,9 +34,10 @@ export default function Login(props) {
     const validation = emailError || password.trim() === '' || password.length < 8
 
     const handleLogin = async () => {
+        const backendUrl = process.env.REACT_APP_API_URL;
         setIsLoggingIn(true);
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/login`, {
+            const response = await fetch(`${backendUrl}/uporabnik/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

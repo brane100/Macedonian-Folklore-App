@@ -27,9 +27,9 @@ export default function CreateContributionWizard() {
   return (
     <div className="wizard-container" data-step={step}>
       {step === 1 && <Step1BasicInfo formData={formData} setFormData={setFormData} nextStep={nextStep} />}
-      {step === 2 && <Step2MediaUpload formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />}
-      {step === 3 && <Step3References formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />}
-      {step === 4 && <Step4ReviewSubmit formData={formData} prevStep={prevStep} />}
+      {/* {step === 2 && <Step2MediaUpload formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />} */}
+      {step === 2 && <Step3References formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />}
+      {step === 3 && <Step4ReviewSubmit formData={formData} prevStep={prevStep} />}
     </div>
   );
 }
