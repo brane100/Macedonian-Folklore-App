@@ -118,6 +118,58 @@ const mockDances = [
 function FloatingChat() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', surname: '', email: '', subject: '', message: '' });
+  const [sending, setSending] = useState(false);
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
+  const [msgCount, setMsgCount] = useState(0);
+  const [badge, setBadge] = useState(false);
+
+  // Poll for new messages every 30s
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/messages-count`, { credentials: 'include' });
+        const data = await res.json();
+        setMsgCount(data.count);
+        setBadge(data.count > 0);
+      } catch (e) {
+        setMsgCount(0);
+        setBadge(false);
+      }
+    };
+    fetchCount();
+    // const interval = setInterval(fetchCount, 30000);
+    // return () => clearInterval(interval);
+  }, []);
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setSending(true);
+    setSuccess(null);
+    setError(null);
+    try {
+      const res = await fetch('/moderacija/contact-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSuccess(t('chat.sentSuccess'));
+        setForm({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setError(data.error || t('chat.sentError'));
+      }
+    } catch (err) {
+      setError(t('chat.sentError'));
+    }
+    setSending(false);
+  };
 
   return (
     <div className="floating-chat">
@@ -126,11 +178,20 @@ function FloatingChat() {
         onClick={() => setIsOpen(!isOpen)}
       >
         💬
+        {badge && <span className="chat-badge">{msgCount}</span>}
       </button>
       {isOpen && (
         <div className="chat-modal">
           <h3>{t('chat.needHelp')}</h3>
-          <p>{t('chat.contactMessage')}</p>
+          <form onSubmit={handleSubmit} className="chat-form">
+            <input name="name" value={form.name} onChange={handleChange} placeholder={t('chat.name')} required />
+            <input name="email" type="email" value={form.email} onChange={handleChange} placeholder={t('chat.email')} required />
+            <input name="subject" value={form.subject} onChange={handleChange} placeholder={t('chat.subject')} required />
+            <textarea name="message" value={form.message} onChange={handleChange} placeholder={t('chat.message')} required />
+            <button type="submit" disabled={sending}>{sending ? t('chat.sending') : t('chat.send')}</button>
+          </form>
+          {success && <div className="chat-success">{success}</div>}
+          {error && <div className="chat-error">{error}</div>}
           <button onClick={() => setIsOpen(false)}>{t('chat.close')}</button>
         </div>
       )}
@@ -159,9 +220,6 @@ function DanceCard({ dance }) {
         <div className="dance-actions">
           <span className="dance-reaction">
             ❤️ {dance.likes}
-          </span>
-          <span className="dance-reaction">
-            💬 {dance.comments}
           </span>
           <span className="dance-region-badge">{dance.region}</span>
         </div>

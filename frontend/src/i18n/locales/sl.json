@@ -180,10 +180,18 @@
   "chat": {
     "needHelp": "Potrebujete pomoč?",
     "contactMessage": "Kontaktirajte nas za vsa vprašanja o makedonski folklorni tradiciji.",
-    "close": "Zapri"
+    "close": "Zapri",
+    "sentSuccess": "Poročilo je bilo uspešno poslano",
+    "sentError": "Napaka pri pošiljanju sporočila",
+    "name": "Ime in Priimek",
+    "email": "E-pošta",
+    "subject": "Predmet",
+    "message": "Sporočilo",
+    "sending": "Pošiljanje...",
+    "send": "Pošlji"
   },
   "footer": {
-    "preserveCulture": "MKD - Folklore",
+    "preserveCulture": "Folklore MK",
     "preserveDescription": "Ohranjanje makedonske folklorne tradicije za prihodnje generacije.",
     "regions": "Regije",
     "resources": "Viri",
@@ -192,7 +200,7 @@
     "terms": "Pogoji",
     "privacy": "Zasebnost",
     "followUs": "Sledite nam",
-    "copyright": "© 2025 MKD - Folklore. Vse pravice pridržane."
+    "copyright": "© 2025 Folklore MK. Vse pravice pridržane."
   },
   "favorites": {
     "subtitle": "Vaši priljubljeni makedonski ljudski plesi in tradicije",

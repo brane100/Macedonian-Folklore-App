@@ -72,44 +72,18 @@ app.get('/', (req, res) => {
 //     });
 // });
 
-// Folklore routes (example)
-app.get('/api/folklore', (req, res) => {
-  res.json({
-    message: 'Folklore data endpoint',
-    data: [
-      {
-        id: 1,
-        title: 'Macedonian Folk Tales',
-        description: 'Traditional stories from Macedonia',
-        region: 'Pelagonija'
-      },
-      {
-        id: 2,
-        title: 'Traditional Dances',
-        description: 'Folk dances from different regions',
-        region: 'Skopje'
-      }
-    ]
-  });
-});
+app.post('/submit-message', (req, res) => {
+  const { name, subject, message } = req.body;
 
-// User authentication routes (example)
-app.post('/api/auth/login', (req, res) => {
-  const { username, password } = req.body;
+  // Here you would typically save the message to the database, but now will save it locally in the messages folder
   
-  // This is just a placeholder - implement real authentication
-  if (username && password) {
-    res.json({
-      success: true,
-      message: 'Login successful',
-      token: 'dummy-jwt-token'
-    });
-  } else {
-    res.status(400).json({
-      success: false,
-      message: 'Username and password required'
-    });
-  }
+
+  console.log(`Sending message from ${name}: ${message}, with subject: ${subject}`);
+
+  res.status(201).json({
+    success: true,
+    message: 'Message submitted successfully'
+  });
 });
 
 app.get('/users', (req, res) => {

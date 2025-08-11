@@ -3,6 +3,9 @@ const moderacija = express.Router();
 const DB = require('../DB/dbConn');
 const { requireModerator, requireSuperAdmin, USER_ROLES } = require('../middleware/roleAuth');
 
+
+
+
 // Get pending contributions for moderation
 moderacija.get('/pending', requireModerator, async (req, res) => {
     try {
@@ -20,6 +23,65 @@ moderacija.get('/pending', requireModerator, async (req, res) => {
     }
 });
 
+// Save contact message from guest/user
+const fs = require('fs');
+const path = require('path');
+const messagesDir = path.join(__dirname, '../../messages'); // backend/messages
+
+if (!fs.existsSync(messagesDir)) {
+    fs.mkdirSync(messagesDir);
+}
+
+moderacija.post('/contact-message', async (req, res) => {
+    try {
+        const { fullname, email, subject, message } = req.body;
+        if (!fullname || !email || !subject || !message) {
+            return res.status(400).json({ success: false, error: 'Missing fields' });
+        }
+        const timestamp = Date.now();
+        const filename = `${timestamp}_${email.replace(/[^a-zA-Z0-9]/g, '')}.json`;
+        const filePath = path.join(messagesDir, filename);
+        const data = {
+            fullname,
+            email,
+            subject,
+            message,
+            timestamp
+        };
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error saving contact message:', error);
+        res.status(500).json({ success: false, error: 'Error saving message' });
+    }
+});
+
+// Get number of messages
+moderacija.get('/messages-count', requireModerator, async (req, res) => {
+    try {
+        const files = fs.readdirSync(messagesDir);
+        res.json({ count: files.length });
+    } catch (error) {
+        console.error('Error counting messages:', error);
+        res.status(500).json({ count: 0, error: 'Error counting messages' });
+    }
+});
+
+// Get all messages
+moderacija.get('/messages', requireModerator, async (req, res) => {
+    try {
+        const files = fs.readdirSync(messagesDir);
+        const messages = files.map(file => {
+            const filePath = path.join(messagesDir, file);
+            const content = fs.readFileSync(filePath, 'utf-8');
+            return JSON.parse(content);
+        });
+        res.json({ messages });
+    } catch (error) {
+        console.error('Error reading messages:', error);
+        res.status(500).json({ messages: [], error: 'Error reading messages' });
+    }
+});
 // 1 - odobren
 // 2 - zavrnjen
 // 3 - zahteva spremembe / arhiviran

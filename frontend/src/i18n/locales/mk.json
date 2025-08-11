@@ -180,10 +180,18 @@
   "chat": {
     "needHelp": "Потреба од помош?",
     "contactMessage": "Контактирајте не за било какви прашања околу македонската фолклорна традиција.",
-    "close": "Затвори"
+    "close": "Затвори",
+    "sentSuccess": "Пораката е успешно испратена",
+    "sentError": "Грешка при испраќање на пораката",
+    "name": "Име и Презиме",
+    "email": "Е-пошта",
+    "subject": "Предмет",
+    "message": "Порака",
+    "sending": "Испраќање...",
+    "send": "Испрати"
   },
   "footer": {
-    "preserveCulture": "MKD - Folklore",
+    "preserveCulture": "Folklore MK",
     "preserveDescription": "Зачувување на македонската фолклорна традиција за идните генерации.",
     "regions": "Региони",
     "resources": "Ресурси",
@@ -192,7 +200,7 @@
     "terms": "Услови",
     "privacy": "Приватност",
     "followUs": "Следи не",
-    "copyright": "© 2025 MKD - Folklore. Сите права се заштитени."
+    "copyright": "© 2025 Folklore MK. Сите права се заштитени."
   },
   "favorites": {
     "subtitle": "Вашите допаднати македонски народни ора и традиции",

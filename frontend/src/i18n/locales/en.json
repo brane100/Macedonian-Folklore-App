@@ -180,10 +180,18 @@
   "chat": {
     "needHelp": "Need help?",
     "contactMessage": "Contact us for any questions about Macedonian folklore tradition.",
-    "close": "Close"
+    "close": "Close",
+    "sentSuccess": "Message sent successfully",
+    "sentError": "Error sending message",
+    "name": "Name and Surname",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "sending": "Sending...",
+    "send": "Send"
   },
   "footer": {
-    "preserveCulture": "MKD - Folklore",
+    "preserveCulture": "Folklore MK",
     "preserveDescription": "Preserving Macedonian folklore tradition for future generations.",
     "regions": "Regions",
     "resources": "Resources",
@@ -192,7 +200,7 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "followUs": "Follow us",
-    "copyright": "© 2025 MKD - Folklore. All rights reserved."
+    "copyright": "© 2025 Folklore MK. All rights reserved."
   },
   "favorites": {
     "subtitle": "Your liked Macedonian folk dances and traditions",
