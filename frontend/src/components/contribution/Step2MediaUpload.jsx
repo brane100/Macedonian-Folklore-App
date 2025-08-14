@@ -4,7 +4,7 @@ import './Step2MediaUpload.css';
 export default function Step2MediaUpload({ formData, setFormData, nextStep, prevStep }) {
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaType, setMediaType] = useState('image');
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadMethod, setUploadMethod] = useState('file'); // 'file' or 'url'
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -18,16 +18,9 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
   ];
 
   const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      // Auto-detect media type based on file
-      if (file.type.startsWith('image/')) setMediaType('image');
-      else if (file.type.startsWith('video/')) setMediaType('video');
-      else if (file.type.startsWith('audio/')) setMediaType('audio');
-      else if (file.type === 'application/pdf' || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
-        setMediaType('document');
-      } else setMediaType('other');
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      setSelectedFiles(Array.from(files));
     }
   };
 
@@ -45,11 +38,10 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setSelectedFiles(Array.from(e.dataTransfer.files));
+      // Optionally auto-detect media type from first file
       const file = e.dataTransfer.files[0];
-      setSelectedFile(file);
-      // Auto-detect media type
       if (file.type.startsWith('image/')) setMediaType('image');
       else if (file.type.startsWith('video/')) setMediaType('video');
       else if (file.type.startsWith('audio/')) setMediaType('audio');
@@ -59,80 +51,72 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
     }
   };
 
-  const uploadFile = async () => {
-    if (!selectedFile) return null;
+  // const uploadFiles = async () => {
+  //   if (!selectedFiles.length) return [];
+  //   setUploading(true);
+  //   try {
+  //     const formData = new FormData();
+  //     selectedFiles.forEach((file, i) => {
+  //       formData.append(`media-${i}`, file, file.name);
+  //     });
+  //     formData.append('type', mediaType);
+  //     const response = await fetch('/upload-media', {
+  //       method: 'POST',
+  //       body: formData,
+  //       credentials: 'include'
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error('Грешка при прикачување на фајлот');
+  //     }
+  //     const result = await response.json();
+  //     // Expecting result.filePaths: array of file paths
+  //     return result.filePaths || [];
+  //   } catch (error) {
+  //     console.error('Upload error:', error);
+  //     alert('Грешка при прикачување на фајлот: ' + error.message);
+  //     return [];
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
 
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('media', selectedFile);
-      formData.append('type', mediaType);
-
-      const response = await fetch('/api/upload-media', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        throw new Error('Грешка при прикачување на фајлот');
-      }
-
-      const result = await response.json();
-      return result.filePath; // Server should return the file path
-    } catch (error) {
-      console.error('Upload error:', error);
-      alert('Грешка при прикачување на фајлот: ' + error.message);
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const addMediaFromFile = async () => {
-    if (!selectedFile) {
-      alert('Ве молиме изберете фајл');
+  const addMediaFromFile = () => {
+    if (!selectedFiles.length) {
+      alert('Ве молиме изберете фајлови');
       return;
     }
-
-    const filePath = await uploadFile();
-    if (filePath) {
-      setFormData({
-        ...formData,
-        media: [...formData.media, { 
-          url: filePath, 
-          type: mediaType, 
-          fileName: selectedFile.name,
-          fileSize: selectedFile.size,
-          source: 'upload'
-        }]
-      });
-      setSelectedFile(null);
-      // Reset file input
-      const fileInput = document.querySelector('input[type="file"]');
-      if (fileInput) fileInput.value = '';
-    }
+    setFormData({
+      ...formData,
+      mediaRaw: [...(formData.mediaRaw || []), ...selectedFiles]
+    });
+    setSelectedFiles([]);
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) fileInput.value = '';
   };
 
   const addMediaFromUrl = () => {
     if (mediaUrl.trim()) {
       setFormData({
         ...formData,
-        media: [...formData.media, { 
-          url: mediaUrl, 
-          type: mediaType,
-          source: 'url'
-        }]
+        mediaUrl: [...(formData.mediaUrl || []), mediaUrl]
       });
       setMediaUrl('');
     }
   };
 
-  const removeMedia = (index) => {
-    const newMedia = formData.media.filter((_, i) => i !== index);
+  const removeMediaRaw = (index) => {
+    const newMediaRaw = (formData.mediaRaw || []).filter((_, i) => i !== index);
     setFormData({
       ...formData,
-      media: newMedia
+      mediaRaw: newMediaRaw
+    });
+  };
+
+  const removeMediaUrl = (index) => {
+    const newMediaUrl = (formData.mediaUrl || []).filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      mediaUrl: newMediaUrl
     });
   };
 
@@ -212,41 +196,45 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
           >
             <div className="drag-drop-content">
               <div className="upload-icon">📁</div>
-              <p>Повлечете и пуштете фајл овде или</p>
+              <p>Повлечете и пуштете фајлови овде или</p>
               <label className="file-input-label">
                 <input
                   type="file"
                   onChange={handleFileSelect}
                   accept={mediaTypes.find(t => t.value === mediaType)?.accept}
                   className="file-input-hidden"
+                  multiple
+                  required
                 />
-                <span className="file-input-button">Изберете фајл</span>
+                <span className="file-input-button">Изберете фајлови</span>
               </label>
             </div>
           </div>
 
-          {/* Selected File Preview */}
-          {selectedFile && (
+          {/* Selected Files Preview */}
+          {selectedFiles.length > 0 && (
             <div className="selected-file-preview">
-              <div className="file-info">
-                <div className="file-icon">{getMediaTypeIcon(mediaType)}</div>
-                <div className="file-details">
-                  <div className="file-name">{selectedFile.name}</div>
-                  <div className="file-size">{formatFileSize(selectedFile.size)}</div>
+              {selectedFiles.map((file, idx) => (
+                <div className="file-info" key={idx}>
+                  <div className="file-icon">{getMediaTypeIcon(mediaType)}</div>
+                  <div className="file-details">
+                    <div className="file-name">{file.name}</div>
+                    <div className="file-size">{formatFileSize(file.size)}</div>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedFiles(selectedFiles.filter((_, i) => i !== idx))}
+                    className="remove-file-btn"
+                  >
+                    ❌
+                  </button>
                 </div>
-                <button 
-                  onClick={() => setSelectedFile(null)}
-                  className="remove-file-btn"
-                >
-                  ❌
-                </button>
-              </div>
+              ))}
             </div>
           )}
 
           <button 
             onClick={addMediaFromFile}
-            disabled={!selectedFile || uploading}
+            disabled={!selectedFiles.length || uploading}
             className="add-media-btn"
           >
             {uploading ? (
@@ -256,7 +244,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
               </>
             ) : (
               <>
-                📤 Прикачи фајл
+                📤 Прикачи фајлови
               </>
             )}
           </button>
@@ -288,29 +276,43 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
       )}
 
       {/* Media List */}
-      {formData.media.length > 0 && (
+      {(formData.mediaRaw?.length > 0 || formData.mediaUrl?.length > 0) && (
         <div className="media-list">
           <h3>📋 Додадени медиуми:</h3>
           <div className="media-items">
-            {formData.media.map((media, index) => (
+            {/* Show raw files */}
+            {formData.mediaRaw?.map((file, index) => (
               <div key={index} className="media-item">
                 <div className="media-info">
-                  <span className="media-icon">{getMediaTypeIcon(media.type)}</span>
+                  <span className="media-icon">{getMediaTypeIcon(file.type)}</span>
                   <div className="media-details">
-                    <div className="media-type">{media.type.toUpperCase()}</div>
-                    <div className="media-name">
-                      {media.fileName || media.url}
-                    </div>
-                    {media.fileSize && (
-                      <div className="media-size">{formatFileSize(media.fileSize)}</div>
-                    )}
-                    <div className="media-source">
-                      {media.source === 'upload' ? '📁 Прикачен фајл' : '🔗 URL линк'}
-                    </div>
+                    <div className="media-type">{file.type?.toUpperCase()}</div>
+                    <div className="media-name">{file.name}</div>
+                    <div className="media-size">{formatFileSize(file.size)}</div>
+                    <div className="media-source">📁 Прикачен фајл</div>
                   </div>
                 </div>
                 <button 
-                  onClick={() => removeMedia(index)}
+                  onClick={() => removeMediaRaw(index)}
+                  className="remove-media-btn"
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
+            {/* Show URLs */}
+            {formData.mediaUrl?.map((url, index) => (
+              <div key={index} className="media-item">
+                <div className="media-info">
+                  <span className="media-icon">{getMediaTypeIcon('other')}</span>
+                  <div className="media-details">
+                    <div className="media-type">URL</div>
+                    <div className="media-name">{url}</div>
+                    <div className="media-source">🔗 URL линк</div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => removeMediaUrl(index)}
                   className="remove-media-btn"
                 >
                   🗑️

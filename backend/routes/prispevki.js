@@ -279,6 +279,10 @@ prispevki.post('/submit', async (req, res, next) => {
             danceResult.insertId
         );
         console.log('Contribution result:', contributionResult);
+
+        const multimediaResult = array.forEach(element => {
+            
+        });
         
         res.json({
             success: true,
