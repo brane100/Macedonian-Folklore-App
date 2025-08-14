@@ -15,6 +15,7 @@ moderacija.get('/pending', requireModerator, async (req, res) => {
             data: pendingContributions
         });
     } catch (error) {
+        
         console.error('Error fetching pending contributions:', error);
         res.status(500).json({
             success: false,
