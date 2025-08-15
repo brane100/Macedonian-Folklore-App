@@ -1,8 +1,8 @@
 const express = require('express')
 const DB = require('../DB/dbConn')
 const multer = require('multer')
-const uploads = multer({ dest: '../multimedia/' }) // Adjust destination as needed
 const path = require('path')
+const uploads = multer({ dest: path.join(__dirname, '../multimedia/')}) // Adjust destination as needed
 const prispevki = express.Router()
 
 // Upload media files and return their paths (include prispevekId in filename)
