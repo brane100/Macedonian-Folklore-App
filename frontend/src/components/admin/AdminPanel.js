@@ -270,6 +270,10 @@ const AdminPanel = () => {
             }
         };
         fetchCount();
+
+        // fetch every 10 minutes
+        const interval = setInterval(fetchCount, 10 * 60 * 1000);
+        return () => clearInterval(interval);
     }, [activeTab, isSuperAdmin, fetchPendingContributions, fetchUsers]);
 
     if (!isModerator) {
@@ -289,6 +293,12 @@ const AdminPanel = () => {
                     {userRole === USER_ROLES.SUPERADMIN ? '👑 ' + t('admin.roles.superadmin') : '⚖️ ' + t('admin.roles.komisija')}
                 </div>
             </div>
+            {badge && (
+                <div className="admin-notification">
+                    <span role="img" aria-label="new-message">📩</span>
+                    {t('admin.newMessagesNotification', { count: msgCount })}
+                </div>
+            )}
 
             <div className="admin-tabs">
                 <button

@@ -12,6 +12,23 @@ const SinglePost = () => {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [mediaUrls, setMediaUrls] = useState([]);
+    // const { isAuthenticated, user } = useAuth();
+    
+    // Helper to check if a URL is external
+    const isExternalUrl = (url) => {
+        if (!url) return false;
+        return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//');
+    };
+
+    // Helper to get local media path
+    const getLocalMediaPath = (url) => {
+        // If the url starts with /multimedia/, serve it as is
+        if (url.startsWith('/multimedia/')) {
+            return `${process.env.REACT_APP_API_URL}${url}`;
+        }
+        return url;
+    };
     
     // Like-related state
     const [likeCount, setLikeCount] = useState(0);
@@ -120,10 +137,22 @@ const SinglePost = () => {
                     console.warn('Unexpected response format:', responseData);
                     postData = responseData;
                 }
-                
                 setPost(postData);
                 setLikeCount(postData.like_count || 0);
                 console.log('Fetched post data:', postData);
+
+                // Fetch media URLs for this post
+                const mediaRes = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/media/${id}`, {
+                    credentials: 'include'
+                });
+                if (mediaRes.ok) {
+                    const mediaData = await mediaRes.json();
+                    console.log('Fetched media for post:', mediaData);
+                    // Use the correct property from backend response
+                    setMediaUrls(mediaData.mediaUrls || []);
+                } else {
+                    setMediaUrls([]);
+                }
             } else {
                 console.error('Response not ok:', response.status, response.statusText);
                 setError(t('singlePost.notFound'));
@@ -285,6 +314,46 @@ const SinglePost = () => {
         );
     }
 
+    // Collect all media items (including legacy keys and fetched media)
+    // Debug: log raw media sources
+    console.log('mediaUrls:', mediaUrls);
+    console.log('post.media:', post && post.media);
+    console.log('post.image_url:', post && post.image_url);
+    console.log('post.video_url:', post && post.video_url);
+    console.log('post.audio_url:', post && post.audio_url);
+
+    let allMedia = [];
+    if (mediaUrls && Array.isArray(mediaUrls)) {
+        allMedia = allMedia.concat(mediaUrls);
+    }
+    if (post && post.media && Array.isArray(post.media)) {
+        allMedia = allMedia.concat(post.media);
+    }
+    if (post && post.image_url) {
+        allMedia.push({ url: post.image_url, type: 'slika' });
+    }
+    if (post && post.video_url) {
+        allMedia.push({ url: post.video_url, type: 'video' });
+    }
+    if (post && post.audio_url) {
+        allMedia.push({ url: post.audio_url, type: 'avdio' });
+    }
+
+    // Filter out any media items without a valid url
+    // Only filter out items without a valid url, do not restrict by type
+    allMedia = allMedia.filter(item => item && item.url);
+    console.log('Final allMedia array:', allMedia);
+
+    // Debug: log when media section will be rendered
+    if (allMedia.length > 0) {
+        console.log('Rendering media section for post:', post.id || post._id);
+        allMedia.forEach((mediaItem, idx) => {
+            console.log(`Media item ${idx}:`, mediaItem);
+        });
+    } else {
+        console.log('No media to display for post:', post.id || post._id);
+    }
+
     return (
         <div className="single-post-container">
             <div className="single-post-wrapper">
@@ -318,93 +387,65 @@ const SinglePost = () => {
                         </div>
                     </header>
 
-                    {/* Multimedia Section - Full Width */}
-                    {(post.media || post.video_url || post.image_url || post.audio_url || post.multimedia) && (
-                        <section className="multimedia-section">
-                            {/* Video Content */}
-                            {(post.video_url || (post.media && post.media.find(m => m.type === 'video'))) && (
-                                <div className="multimedia-item video-container">
-                                    <video 
-                                        controls 
-                                        className="multimedia-video"
-                                        poster={post.video_thumbnail}
-                                    >
-                                        <source 
-                                            src={post.video_url || post.media.find(m => m.type === 'video')?.url} 
-                                            type="video/mp4" 
-                                        />
-                                        {t('singlePost.videoNotSupported')}
-                                    </video>
-                                </div>
-                            )}
-
-                            {/* Image Content */}
-                            {(post.image_url || (post.media && post.media.find(m => m.type === 'image'))) && (
-                                <div className="multimedia-item image-container">
-                                    <img 
-                                        src={post.image_url || post.media.find(m => m.type === 'image')?.url}
-                                        alt={`${t('singlePost.imageAlt')} ${post.ime_plesa || t('singlePost.theDance')}`}
-                                        className="multimedia-image"
-                                    />
-                                </div>
-                            )}
-
-                            {/* Audio Content */}
-                            {(post.audio_url || (post.media && post.media.find(m => m.type === 'audio'))) && (
-                                <div className="multimedia-item audio-container">
-                                    <div className="audio-header">
-                                        🎵 {t('singlePost.audioRecording')}
-                                    </div>
-                                    <audio 
-                                        controls 
-                                        className="multimedia-audio"
-                                    >
-                                        <source 
-                                            src={post.audio_url || post.media.find(m => m.type === 'audio')?.url} 
-                                            type="audio/mpeg" 
-                                        />
-                                        {t('singlePost.audioNotSupported')}
-                                    </audio>
-                                </div>
-                            )}
-
-                            {/* Multiple Media Items */}
-                            {post.media && post.media.length > 1 && (
-                                <div className="multimedia-gallery">
-                                    <div className="gallery-header">
-                                        📸 {t('singlePost.mediaGallery')}
-                                    </div>
-                                    <div className="media-grid">
-                                        {post.media.map((mediaItem, index) => (
-                                            <div key={index} className="gallery-item">
-                                                {mediaItem.type === 'image' && (
+                    {/* Media Section - Always show if media exists */}
+                    {allMedia.length > 0 && (
+                        <section className="media-section">
+                            {console.log('Media section is being rendered for post:', post.id || post._id)}
+                            <h2 className="section-title">{t('singlePost.mediaGallery')}</h2>
+                            <div className="media-grid">
+                                {allMedia.map((mediaItem, index) => {
+                                    let src = mediaItem.url;
+                                    // If not an external link, prepend REACT_APP_PROJECT_DIRECTORY
+                                    if (!isExternalUrl(src)) {
+                                        // Remove leading slashes from src
+                                        // src = src.replace(/^\/+/, '');
+                                        src = `${process.env.REACT_APP_URL}}${src}`;
+                                    }
+                                    const key = mediaItem.id ? mediaItem.id : index;
+                                    console.log(`Rendering media item ${index}:`, mediaItem, 'src:', src);
+                                    if (mediaItem.type === 'slika' || mediaItem.type === 'image') {
+                                        return (
+                                            <div key={key} className="gallery-item">
+                                                <a href={src} target="_blank" rel="noopener noreferrer">
                                                     <img 
-                                                        src={mediaItem.url} 
+                                                        src={src}
                                                         alt={`${t('singlePost.media')} ${index + 1}`}
                                                         className="gallery-image"
                                                     />
-                                                )}
-                                                {mediaItem.type === 'video' && (
-                                                    <video 
-                                                        controls 
-                                                        className="gallery-video"
-                                                    >
-                                                        <source src={mediaItem.url} type="video/mp4" />
-                                                    </video>
-                                                )}
-                                                {mediaItem.type === 'audio' && (
-                                                    <div className="gallery-audio-wrapper">
-                                                        <div className="audio-icon">🎵</div>
-                                                        <audio controls className="gallery-audio">
-                                                            <source src={mediaItem.url} type="audio/mpeg" />
-                                                        </audio>
-                                                    </div>
-                                                )}
+                                                </a>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                                        );
+                                    } else if (mediaItem.type === 'video') {
+                                        return (
+                                            <div key={key} className="gallery-item">
+                                                <a href={src} target="_blank" rel="noopener noreferrer">
+                                                    <video controls className="gallery-video">
+                                                        <source src={src} type="video/mp4" />
+                                                    </video>
+                                                </a>
+                                            </div>
+                                        );
+                                    } else if (mediaItem.type === 'avdio' || mediaItem.type === 'audio') {
+                                        return (
+                                            <div key={key} className="gallery-item gallery-audio-wrapper">
+                                                <a href={src} target="_blank" rel="noopener noreferrer">
+                                                    <div className="audio-icon">🎵</div>
+                                                    <audio controls className="gallery-audio">
+                                                        <source src={src} type="audio/mpeg" />
+                                                    </audio>
+                                                </a>
+                                            </div>
+                                        );
+                                    } else {
+                                        // fallback for other types
+                                        return (
+                                            <div key={key} className="gallery-item">
+                                                <a href={src} target="_blank" rel="noopener noreferrer">{t('singlePost.downloadMedia')}</a>
+                                            </div>
+                                        );
+                                    }
+                                })}
+                            </div>
                         </section>
                     )}
 

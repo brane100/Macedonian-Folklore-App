@@ -100,24 +100,23 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
             referenca_url: formData.referencaUrl
           },
           media: {
-            raw: formData.mediaRaw || [],
             url: formData.mediaUrl || [],
             urltype: formData.mediaUrlType || []
           }
         })
       });
       const result = await response.json();
+
       // Get prispevekId from response
-      const prispevekId = result?.data?.contribution?.insertId;
-      if (prispevekId) {
+      const prispevekId = result?.data?.contribution?.insertId; // ova e dobro
+
+      if (prispevekId && Array.isArray(formData.mediaRaw) && formData.mediaRaw.length > 0) {
+        const fd = new FormData();
+        formData.mediaRaw.forEach(file => fd.append('media', file));
         await fetch(`${process.env.REACT_APP_API_URL}/prispevki/upload-media/${prispevekId}`, {
           method: 'POST',
           credentials: 'include',
-          body: JSON.stringify({
-            media: {
-              raw: formData.mediaRaw || []
-            }
-          })
+          body: fd
         });
       }
 
@@ -248,10 +247,10 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
 
         {/* Media Section */}
         <div className="media-section">
-          <h4>📎 {t('contribution.step4.media.title')} ({formData.media?.length || 0})</h4>
-          {formData.media && formData.media.length > 0 ? (
+          <h4>📎 {t('contribution.step4.media.title')} ({formData.mediaRaw?.length && formData.mediaUrl?.length ? formData.mediaRaw.length + formData.mediaUrl.length : formData.mediaRaw?.length || formData.mediaUrl?.length || 0})</h4>
+          {(formData.mediaRaw?.length || formData.mediaUrl?.length) ? (
             <div className="media-list">
-              {formData.media.map((m, index) => (
+              {[...(formData.mediaRaw || []), ...(formData.mediaUrl || [])].map((m, index) => (
                 <div key={index} className="media-item">
                   <div className="media-icon">{getMediaIcon(m.type)}</div>
                   <div className="media-details">

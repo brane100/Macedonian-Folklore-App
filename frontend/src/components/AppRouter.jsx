@@ -128,22 +128,22 @@ function FloatingChat() {
   const [emailError, setEmailError] = useState('');
 
   // Poll for new messages every 30s
-  useEffect(() => {
-    const fetchCount = async () => {
-      try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/messages-count`, { credentials: 'include' });
-        const data = await res.json();
-        setMsgCount(data.count);
-        setBadge(data.count > 0);
-      } catch (e) {
-        setMsgCount(0);
-        setBadge(false);
-      }
-    };
-    fetchCount();
-    // const interval = setInterval(fetchCount, 30000);
-    // return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   const fetchCount = async () => {
+  //     try {
+  //       const res = await fetch(`${process.env.REACT_APP_API_URL}/moderacija/messages-count`, { credentials: 'include' });
+  //       const data = await res.json();
+  //       setMsgCount(data.count);
+  //       setBadge(data.count > 0);
+  //     } catch (e) {
+  //       setMsgCount(0);
+  //       setBadge(false);
+  //     }
+  //   };
+  //   fetchCount();
+  //   // const interval = setInterval(fetchCount, 30000);
+  //   // return () => clearInterval(interval);
+  // }, []);
 
   const handleChange = e => {
     const { name, value } = e.target;
