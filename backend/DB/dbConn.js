@@ -433,8 +433,8 @@ dataPool.query = (sql, params = []) => {
 
 dataPool.saveMediaUrl = (url, tip, prispevekId) => {
   return new Promise((resolve, reject) => {
-    conn.query(`INSERT INTO Multimedija (prispevek_id, url, tip) VALUES (?, ?, ?)`,
-      [prispevekId, url, tip], (err, res) => {
+    conn.query(`INSERT INTO Multimedija (prispevek_id, tip, url) VALUES (?, ?, ?)`,
+      [prispevekId, tip, url], (err, res) => {
         if (err) { return reject(err) }
         return resolve(res)
       })

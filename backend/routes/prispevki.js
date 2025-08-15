@@ -24,8 +24,17 @@ prispevki.post('/upload-media/:prispevekId', uploads.array('mediaFiles'), (req, 
             return { url: `/multimedia/${newName}`, type: file.mimetype };
         });
 
-        // Save each file path to DB
-        const savePromises = fileUrls.map(f => DB.saveMediaUrl(f.url, f.type, prispevekId));
+        // Save each file path to DB with logging
+        const savePromises = fileUrls.map(async f => {
+            try {
+                const result = await DB.saveMediaUrl(f.url, f.type, prispevekId);
+                console.log(`Saved media to DB: url=${f.url}, type=${f.type}, prispevekId=${prispevekId}`);
+                return result;
+            } catch (err) {
+                console.error(`Failed to save media to DB: url=${f.url}, type=${f.type}, prispevekId=${prispevekId}, error=${err.message}`);
+                throw err;
+            }
+        });
         Promise.all(savePromises)
             .then(() => {
                 res.json({ success: true, fileUrls: fileUrls.map(f => f.url) });
@@ -321,10 +330,16 @@ prispevki.post('/submit', async (req, res, next) => {
         // Save media URLs (file paths or external URLs) to DB
         if (media && media.url && media.url.length > 0) {
             console.log('Media URLs provided, saving to DB...');
-            const mediaUrlPromises = media.url.map((url, index) => {
+            const mediaUrlPromises = media.url.map(async (url, index) => {
                 const type = media.urltype[index];
-                // Save each URL/path to DB for this contribution
-                return DB.saveMediaUrl(url, type, contributionResult.insertId);
+                try {
+                    const result = await DB.saveMediaUrl(url, type, contributionResult.insertId);
+                    console.log(`Saved media to DB: url=${url}, type=${type}, prispevekId=${contributionResult.insertId}`);
+                    return result;
+                } catch (err) {
+                    console.error(`Failed to save media to DB: url=${url}, type=${type}, prispevekId=${contributionResult.insertId}, error=${err.message}`);
+                    throw err;
+                }
             });
             await Promise.all(mediaUrlPromises);
         }
