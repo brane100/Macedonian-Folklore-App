@@ -235,7 +235,7 @@ prispevki.post('/submit', async (req, res, next) => {
             });
         }
 
-        const { regija, ples, prispevek } = req.body;
+        const { regija, ples, prispevek, mediaRaw, mediaUrl } = req.body;
         
         console.log('Received data:', { regija, ples, prispevek });
         console.log('User ID from session:', req.session.user_id);
