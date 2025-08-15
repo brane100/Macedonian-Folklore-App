@@ -117,6 +117,32 @@
     "removeFromLiked": "Remove from liked",
     "likePost": "Like post"
   },
+  "step2": {
+    "title": "Step 2: Add Media",
+    "subtitle": "Upload images, videos, audio recordings or documents",
+    "uploadFile": "Upload file",
+    "addUrl": "Add URL link",
+    "mediaType": "Media type:",
+    "dragDrop": "Drag and drop files here or",
+    "chooseFiles": "Choose files",
+    "uploadFiles": "Upload files",
+    "uploading": "Uploading...",
+    "back": "Back",
+    "next": "Next",
+    "addedMedia": "Added media:",
+    "uploadedFile": "Uploaded file",
+    "addUrlBtn": "Add URL",
+    "urlLabel": "Media URL:",
+    "urlType": "URL",
+    "urlLink": "URL link"
+  },
+  "media": {
+    "image": "Image",
+    "video": "Video",
+    "audio": "Audio",
+    "document": "Document",
+    "other": "Other"
+  },
   "singlePost": {
     "notFound": "Post not found",
     "loadingError": "Error loading post",

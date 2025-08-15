@@ -117,6 +117,32 @@
     "removeFromLiked": "Odstrani iz priljubljenih",
     "likePost": "Všeč mi je"
   },
+  "step2": {
+    "title": "Korak 2: Dodaj medije",
+    "subtitle": "Naložite slike, videe, zvočne posnetke ali dokumente",
+    "uploadFile": "Naloži datoteko",
+    "addUrl": "Dodaj URL povezavo",
+    "mediaType": "Vrsta medija:",
+    "dragDrop": "Povlecite in spustite datoteke tukaj ali",
+    "chooseFiles": "Izberite datoteke",
+    "uploadFiles": "Naloži datoteke",
+    "uploading": "Nalagam...",
+    "back": "Nazaj",
+    "next": "Naprej",
+    "addedMedia": "Dodani mediji:",
+    "uploadedFile": "Naložena datoteka",
+    "addUrlBtn": "Dodaj URL",
+    "urlLabel": "URL medija:",
+    "urlType": "URL",
+    "urlLink": "URL povezava"
+  },
+  "media": {
+    "image": "Slika",
+    "video": "Video",
+    "audio": "Avdio",
+    "document": "Dokument",
+    "other": "Drugo"
+  },
   "singlePost": {
     "notFound": "Objava ni najdena",
     "loadingError": "Napaka pri nalaganju objave",
