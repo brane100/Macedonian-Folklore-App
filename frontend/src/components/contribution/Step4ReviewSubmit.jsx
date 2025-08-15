@@ -101,13 +101,25 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
           },
           media: {
             raw: formData.mediaRaw || [],
-            url: formData.mediaUrl || []
+            url: formData.mediaUrl || [],
+            urltype: formData.mediaUrlType || []
           }
-
         })
       });
-
       const result = await response.json();
+      // Get prispevekId from response
+      const prispevekId = result?.data?.contribution?.insertId;
+      if (prispevekId) {
+        await fetch(`${process.env.REACT_APP_API_URL}/prispevki/upload-media/${prispevekId}`, {
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify({
+            media: {
+              raw: formData.mediaRaw || []
+            }
+          })
+        });
+      }
 
       if (response.ok && result.success) {
         setIsSubmitted(true);

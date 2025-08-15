@@ -5,6 +5,7 @@ import './Step2MediaUpload.css';
 export default function Step2MediaUpload({ formData, setFormData, nextStep, prevStep }) {
   const {t} = useTranslation();
   const [mediaUrl, setMediaUrl] = useState('');
+  const [mediaUrlType, setMediaUrlType] = useState('image');
   const [mediaType, setMediaType] = useState('image');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadMethod, setUploadMethod] = useState('file'); // 'file' or 'url'
@@ -14,9 +15,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
   const mediaTypes = [
   { value: 'image', label: t('media.image'), accept: 'image/*' },
   { value: 'video', label: t('media.video'), accept: 'video/*' },
-  { value: 'audio', label: t('media.audio'), accept: 'audio/*' },
-  { value: 'document', label: t('media.document'), accept: '.pdf,.doc,.docx,.txt' },
-  { value: 'other', label: t('media.other'), accept: '*/*' }
+  { value: 'audio', label: t('media.audio'), accept: 'audio/*' }
   ];
 
   const handleFileSelect = (event) => {
@@ -46,10 +45,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
       const file = e.dataTransfer.files[0];
       if (file.type.startsWith('image/')) setMediaType('image');
       else if (file.type.startsWith('video/')) setMediaType('video');
-      else if (file.type.startsWith('audio/')) setMediaType('audio');
-      else if (file.type === 'application/pdf' || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
-        setMediaType('document');
-      } else setMediaType('other');
+      else setMediaType('audio');
     }
   };
 
@@ -84,7 +80,7 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
 
   const addMediaFromFile = () => {
     if (!selectedFiles.length) {
-      alert('Ве молиме изберете фајлови');
+      alert(t('step2.selectFilePrompt'));
       return;
     }
     setFormData({
@@ -100,9 +96,10 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
     if (mediaUrl.trim()) {
       setFormData({
         ...formData,
-        mediaUrl: [...(formData.mediaUrl || []), mediaUrl]
+        mediaUrl: [...(formData.mediaUrl || []), { url: mediaUrl, type: mediaUrlType }]
       });
       setMediaUrl('');
+      setMediaUrlType('image');
     }
   };
 
@@ -266,7 +263,20 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
               className="url-input"
             />
           </div>
-
+          <div className="form-group">
+            <label>🎭 {t('step2.mediaType')}</label>
+            <select 
+              value={mediaUrlType} 
+              onChange={(e) => setMediaUrlType(e.target.value)}
+              className="media-type-select"
+            >
+              {mediaTypes.filter(type => type.value !== 'other' && type.value !== 'document').map(type => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <button 
             onClick={addMediaFromUrl}
             disabled={!mediaUrl.trim()}
@@ -303,13 +313,13 @@ export default function Step2MediaUpload({ formData, setFormData, nextStep, prev
               </div>
             ))}
             {/* Show URLs */}
-            {formData.mediaUrl?.map((url, index) => (
+            {formData.mediaUrl?.map((item, index) => (
               <div key={index} className="media-item">
                 <div className="media-info">
-                  <span className="media-icon">{getMediaTypeIcon('other')}</span>
+                  <span className="media-icon">{getMediaTypeIcon(item.type)}</span>
                   <div className="media-details">
-                    <div className="media-type">{t('step2.urlType')}</div>
-                    <div className="media-name">{url}</div>
+                    <div className="media-type">{item.type?.toUpperCase()}</div>
+                    <div className="media-name">{item.url}</div>
                     <div className="media-source">🔗 {t('step2.urlLink')}</div>
                   </div>
                 </div>
