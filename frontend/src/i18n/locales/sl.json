@@ -365,7 +365,13 @@
       "navaden": "Navaden uporabnik",
       "komisija": "Moderator", 
       "superadmin": "Super admin"
-    }
+    },
+    "newMessagesNotification": "{{msgCount}} novih sporočil",
+    "badge": "Obvestilo",
+    "msgCount": "Število sporočil",
+    "noNewMessages": "Ni novih sporočil",
+    "newMessages": "Nova sporočila",
+    "viewMessages": "Poglej sporočila"
   },
   "contribution": {
     "wizard": {

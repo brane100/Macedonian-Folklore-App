@@ -441,4 +441,13 @@ dataPool.saveMediaUrl = (url, tip, prispevekId) => {
   })
 }
 
+dataPool.getMediaUrls = (prispevekId) => {
+  return new Promise((resolve, reject) => {
+    conn.query(`SELECT * FROM Multimedija WHERE prispevek_id = ?`, [prispevekId], (err, res) => {
+      if (err) { return reject(err) }
+      return resolve(res)
+    })
+  })
+}
+
 module.exports = dataPool;

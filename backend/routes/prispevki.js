@@ -2,11 +2,15 @@ const express = require('express')
 const DB = require('../DB/dbConn')
 const multer = require('multer')
 const path = require('path')
-const uploads = multer({ dest: path.join(__dirname, '../multimedia/')}) // Adjust destination as needed
+const uploads = multer({ dest: path.join(__dirname, '../')}) // Adjust destination as needed
 const prispevki = express.Router()
 
+// Serve static files from multimedia folder, handling spaces in folder name
+const multimediaFolder = path.join(__dirname, '../');
+prispevki.use('/', express.static(multimediaFolder));
+
 // Upload media files and return their paths (include prispevekId in filename)
-prispevki.post('/upload-media/:prispevekId', uploads.array('mediaFiles'), (req, res) => {
+prispevki.post('/upload-media/:prispevekId', uploads.array('media'), (req, res) => {
     try {
         const prispevekId = req.params.prispevekId;
         if (!prispevekId) {
@@ -16,12 +20,27 @@ prispevki.post('/upload-media/:prispevekId', uploads.array('mediaFiles'), (req, 
         const fs = require('fs');
         const path = require('path');
         const fileUrls = req.files.map(file => {
-            const ext = path.extname(file.originalname);
+            const ext = path.extname(file.originalname).toLowerCase();
             const newName = `${prispevekId}_${Date.now()}_${file.originalname}`;
             const newPath = path.join(file.destination, newName);
             fs.renameSync(file.path, newPath);
+            // Improved type detection
+            let type = 'slika';
+            const audioExts = ['.mp3', '.wav', '.aac', '.flac', '.ogg', '.m4a', '.wma'];
+            const videoExts = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv', '.webm', '.mpeg', '.mpg', '.3gp'];
+            if (
+                file.mimetype.startsWith('audio') ||
+                audioExts.includes(ext)
+            ) {
+                type = 'avdio';
+            } else if (
+                file.mimetype.startsWith('video') ||
+                videoExts.includes(ext)
+            ) {
+                type = 'video';
+            }
             // Return relative path for DB
-            return { url: `/multimedia/${newName}`, type: file.mimetype };
+            return { url: `/multimedia/${newName}`, type };
         });
 
         // Save each file path to DB with logging
@@ -434,6 +453,40 @@ prispevki.put('/edit/:id', async (req, res) => {
             message: 'Error updating prispevek',
             error: err.message
         });
+    }
+});
+
+// Get media URLs for a specific contribution
+prispevki.get('/media/:prispevekId', async (req, res) => {
+    try {
+        const prispevekId = req.params.prispevekId;
+        if (!prispevekId) {
+            return res.status(400).json({ success: false, error: 'Missing prispevekId' });
+        }
+        // Get all media info for this contribution
+        const mediaRows = await DB.getMediaUrls(prispevekId); // Should return [{url, type}, ...]
+        if (!mediaRows || mediaRows.length === 0) {
+            return res.status(404).json({ success: false, error: 'No media found for this contribution' });
+        }
+        // Expose complete file path and type for each media item
+        const mediaInfo = mediaRows.map(m => {
+            // If url is relative, expose absolute path for frontend
+            let filePath = m.url;
+            if (filePath && !filePath.startsWith('http')) {
+                // Local file, don't expose full path but keep relative URL
+                filePath = path.join(multimediaFolder, filePath); // Absolute path for backend debugging
+                
+            }
+            return {
+                url: m.url, // original relative url for frontend
+                type: m.type,
+                filePath: filePath // absolute path for backend debugging or advanced frontend use
+            };
+        });
+        res.json({ success: true, mediaUrls: mediaInfo });
+    } catch (err) {
+        console.error('Error fetching media URLs:', err);
+        res.status(500).json({ success: false, error: 'Error fetching media URLs' });
     }
 });
 

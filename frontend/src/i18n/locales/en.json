@@ -365,7 +365,13 @@
       "navaden": "Regular User",
       "komisija": "Moderator", 
       "superadmin": "Super Admin"
-    }
+    },
+    "newMessagesNotification": "{{msgCount}} new messages",
+    "badge": "Notification",
+    "msgCount": "Message count",
+    "noNewMessages": "No new messages",
+    "newMessages": "New messages",
+    "viewMessages": "View messages"
   },
   "contribution": {
     "wizard": {

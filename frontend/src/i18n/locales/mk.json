@@ -365,7 +365,15 @@
       "navaden": "Обичен корисник",
       "komisija": "Модератор", 
       "superadmin": "Супер админ"
-    }
+    },
+    "newMessagesNotification": "Нови пораки",
+    "newMessagesNotificationDescription": "Имате {{msgCount}} нови пораки",
+    "viewMessagesButton": "Погледни пораки",
+    "badge": "Известување",
+    "msgCount": "Број на пораки",
+    "noNewMessages": "Нема нови пораки",
+    "newMessages": "Нови пораки",
+    "viewMessages": "Погледни пораки"
   },
   "contribution": {
     "wizard": {
