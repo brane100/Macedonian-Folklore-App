@@ -117,6 +117,32 @@
     "removeFromLiked": "Отстрани од допаднати",
     "likePost": "Ми се допаѓа"
   },
+  "step2": {
+    "title": "Корак 2: Додај медиуми",
+    "subtitle": "Прикачете слики, видеа, аудио снимки или документи",
+    "uploadFile": "Прикачи фајл",
+    "addUrl": "Додај URL линк",
+    "mediaType": "Вид на медиум:",
+    "dragDrop": "Повлечете и пуштете фајлови овде или",
+    "chooseFiles": "Изберете фајлови",
+    "uploadFiles": "Прикачи фајлови",
+    "uploading": "Се прикачува...",
+    "back": "Назад",
+    "next": "Напред",
+    "addedMedia": "Додадени медиуми:",
+    "uploadedFile": "Прикачен фајл",
+    "addUrlBtn": "Додај URL",
+    "urlLabel": "URL на медиумот:",
+    "urlType": "URL",
+    "urlLink": "URL линк"
+  },
+  "media": {
+    "image": "Слика",
+    "video": "Видео",
+    "audio": "Аудио",
+    "document": "Документ",
+    "other": "Друго"
+  },
   "singlePost": {
     "notFound": "Прспевокот не е пронајден",
     "loadingError": "Грешка при вчитување на прспевокот",
