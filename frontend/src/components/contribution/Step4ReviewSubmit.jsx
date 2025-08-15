@@ -98,7 +98,12 @@ export default function Step4ReviewSubmit({ formData, prevStep }) {
             je_anonimen: formData.jeAnonimen,
             referenca_opis: formData.referencaOpis,
             referenca_url: formData.referencaUrl
+          },
+          media: {
+            raw: formData.mediaRaw || [],
+            url: formData.mediaUrl || []
           }
+
         })
       });
 
