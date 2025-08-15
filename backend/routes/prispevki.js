@@ -5,6 +5,39 @@ const uploads = multer({ dest: '../multimedia/' }) // Adjust destination as need
 const path = require('path')
 const prispevki = express.Router()
 
+// Upload media files and return their paths (include prispevekId in filename)
+prispevki.post('/upload-media/:prispevekId', uploads.array('mediaFiles'), (req, res) => {
+    try {
+        const prispevekId = req.params.prispevekId;
+        if (!prispevekId) {
+            return res.status(400).json({ success: false, error: 'Missing prispevekId' });
+        }
+        // Rename each file to include prispevekId
+        const fs = require('fs');
+        const path = require('path');
+        const fileUrls = req.files.map(file => {
+            const ext = path.extname(file.originalname);
+            const newName = `${prispevekId}_${Date.now()}_${file.originalname}`;
+            const newPath = path.join(file.destination, newName);
+            fs.renameSync(file.path, newPath);
+            // Return relative path for DB
+            return { url: `/multimedia/${newName}`, type: file.mimetype };
+        });
+
+        // Save each file path to DB
+        const savePromises = fileUrls.map(f => DB.saveMediaUrl(f.url, f.type, prispevekId));
+        Promise.all(savePromises)
+            .then(() => {
+                res.json({ success: true, fileUrls: fileUrls.map(f => f.url) });
+            })
+            .catch(err => {
+                res.status(500).json({ success: false, error: 'DB error: ' + err.message });
+            });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 prispevki.get('/', async (req, res, next) => {
     try {
         var queryResult = await DB.allPrispevki();
@@ -38,22 +71,22 @@ prispevki.get('/test', (req, res) => {
 prispevki.get('/test-session', (req, res) => {
     console.log('Session test endpoint hit');
     console.log('Session data:', req.session);
-    res.json({ 
-        message: 'Session test', 
+    res.json({
+        message: 'Session test',
         sessionExists: !!req.session,
         sessionData: req.session || {},
-        timestamp: new Date() 
+        timestamp: new Date()
     });
 });
 
 // Get current user's contributions (requires authentication)
 prispevki.get('/my-contributions', async (req, res) => {
     console.log('MY-CONTRIBUTIONS ENDPOINT HIT');
-    
+
     try {
         console.log('Session data:', req.session);
         console.log('User ID from session:', req.session?.user_id);
-        
+
         if (!req.session || !req.session.user_id) {
             console.log('No user_id in session - returning 401');
             return res.status(401).json({
@@ -63,7 +96,7 @@ prispevki.get('/my-contributions', async (req, res) => {
         }
 
         console.log('User authenticated, user_id:', req.session.user_id);
-        
+
         // Get detailed user contributions with related data
         console.log('Getting user contributions with details...');
         const contributionsQuery = `
@@ -93,12 +126,12 @@ prispevki.get('/my-contributions', async (req, res) => {
             WHERE p.uporabnik_id = ?
             ORDER BY p.datum_ustvarjen DESC
         `;
-        
+
         const queryResult = await DB.query(contributionsQuery, [req.session.user_id]);
         console.log('Query executed successfully');
         console.log('Query result:', queryResult);
         console.log('Number of results:', queryResult ? queryResult.length : 0);
-        
+
         // Transform the data to include nested objects for better frontend handling
         const transformedData = queryResult.map(row => ({
             id: row.id,
@@ -127,19 +160,19 @@ prispevki.get('/my-contributions', async (req, res) => {
                 priimek: row.uporabnik_priimek
             }
         }));
-        
+
         const response = {
             success: true,
             data: transformedData || []
         };
-        
+
         console.log('Sending response with', transformedData.length, 'contributions');
         res.setHeader('Content-Type', 'application/json');
         return res.status(200).json(response);
-        
+
     } catch (err) {
         console.error('ERROR in my-contributions endpoint:', err);
-        
+
         return res.status(500).json({
             success: false,
             message: 'Error fetching contributions',
@@ -216,6 +249,8 @@ prispevki.post('/resubmit/:id', async (req, res) => {
     }
 });
 
+
+
 prispevki.post('/submit', async (req, res, next) => {
     try {
         console.log('=== SUBMIT ENDPOINT DEBUG ===');
@@ -225,7 +260,7 @@ prispevki.post('/submit', async (req, res, next) => {
         console.log('user_id in session:', req.session?.user_id);
         console.log('logged_in in session:', req.session?.logged_in);
         console.log('Session keys:', req.session ? Object.keys(req.session) : 'no session');
-        
+
         // Check authentication first
         if (!req.session || !req.session.user_id) {
             console.log('AUTHENTICATION FAILED:');
@@ -239,10 +274,10 @@ prispevki.post('/submit', async (req, res, next) => {
         }
 
         const { regija, ples, prispevek, media } = req.body;
-        
+
         console.log('Received data:', { regija, ples, prispevek });
         console.log('User ID from session:', req.session.user_id);
-        
+
         // Validate required fields
         if (!regija || !ples || !prispevek) {
             return res.status(400).json({
@@ -250,15 +285,15 @@ prispevki.post('/submit', async (req, res, next) => {
                 message: 'Missing required data: regija, ples, or prispevek'
             });
         }
-        
+
         // Create or get region
         const regionResult = await DB.createOrGetRegion(
-            regija.ime, 
-            regija.koordinata_x, 
+            regija.ime,
+            regija.koordinata_x,
             regija.koordinata_y
         );
         console.log('Region result:', regionResult);
-        
+
         // Create dance
         const danceResult = await DB.createDance(
             regionResult.id,
@@ -271,7 +306,7 @@ prispevki.post('/submit', async (req, res, next) => {
 
         // If contribution is anonymous, set user_id to null
         const user_id = prispevek.je_anonimen ? null : req.session.user_id;
-        
+
         // Create contribution
         const contributionResult = await DB.createPrispevek(
             prispevek.opis,
@@ -283,15 +318,17 @@ prispevki.post('/submit', async (req, res, next) => {
         );
         console.log('Contribution result:', contributionResult);
 
-        // Handle media if provided
-        if (media && media.raw && media.raw.length > 0) {
-            console.log('Media provided, processing...');
-            const mediaRawPromises = media.raw.map(file => {
-                return DB.uploadMediaFile(file, contributionResult.insertId);
-            }
-            );
-            const mediaUrl
-        
+        // Save media URLs (file paths or external URLs) to DB
+        if (media && media.url && media.url.length > 0) {
+            console.log('Media URLs provided, saving to DB...');
+            const mediaUrlPromises = media.url.map((url, index) => {
+                const type = media.urltype[index];
+                // Save each URL/path to DB for this contribution
+                return DB.saveMediaUrl(url, type, contributionResult.insertId);
+            });
+            await Promise.all(mediaUrlPromises);
+        }
+
         res.json({
             success: true,
             message: 'Prispevek successfully created',
@@ -301,7 +338,7 @@ prispevki.post('/submit', async (req, res, next) => {
                 contribution: contributionResult
             }
         });
-        
+
     } catch (err) {
         console.error('Error creating prispevek:', err);
         res.status(500).json({
@@ -324,7 +361,7 @@ prispevki.put('/edit/:id', async (req, res) => {
 
         const contributionId = req.params.id;
         const { regija, ples, prispevek } = req.body;
-        
+
         console.log('Editing contribution:', contributionId);
         console.log('Received data:', { regija, ples, prispevek });
 
@@ -339,12 +376,12 @@ prispevki.put('/edit/:id', async (req, res) => {
 
         // Create or get region
         const regionResult = await DB.createOrGetRegion(
-            regija.ime, 
-            regija.koordinata_x, 
+            regija.ime,
+            regija.koordinata_x,
             regija.koordinata_y
         );
         console.log('Region result:', regionResult);
-        
+
         // Update dance - get the ples_id from existing contribution
         const danceUpdateResult = await DB.updateDance(
             existingContribution.ples_id,
@@ -355,7 +392,7 @@ prispevki.put('/edit/:id', async (req, res) => {
             ples.opis_tehnike
         );
         console.log('Dance update result:', danceUpdateResult);
-        
+
         // Update prispevek
         const contributionUpdateResult = await DB.updatePrispevek(
             contributionId,
@@ -364,7 +401,7 @@ prispevki.put('/edit/:id', async (req, res) => {
             prispevek.referenca_url
         );
         console.log('Contribution update result:', contributionUpdateResult);
-        
+
         res.json({
             success: true,
             message: 'Prispevek successfully updated',
@@ -374,7 +411,7 @@ prispevki.put('/edit/:id', async (req, res) => {
                 contribution: contributionUpdateResult
             }
         });
-        
+
     } catch (err) {
         console.error('Error updating prispevek:', err);
         res.status(500).json({
