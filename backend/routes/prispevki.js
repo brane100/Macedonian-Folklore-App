@@ -1,5 +1,8 @@
 const express = require('express')
 const DB = require('../DB/dbConn')
+const multer = require('multer')
+const uploads = multer({ dest: '../multimedia/' }) // Adjust destination as needed
+const path = require('path')
 const prispevki = express.Router()
 
 prispevki.get('/', async (req, res, next) => {
@@ -235,7 +238,7 @@ prispevki.post('/submit', async (req, res, next) => {
             });
         }
 
-        const { regija, ples, prispevek, mediaRaw, mediaUrl } = req.body;
+        const { regija, ples, prispevek, media } = req.body;
         
         console.log('Received data:', { regija, ples, prispevek });
         console.log('User ID from session:', req.session.user_id);
@@ -280,9 +283,14 @@ prispevki.post('/submit', async (req, res, next) => {
         );
         console.log('Contribution result:', contributionResult);
 
-        const multimediaResult = array.forEach(element => {
-            
-        });
+        // Handle media if provided
+        if (media && media.raw && media.raw.length > 0) {
+            console.log('Media provided, processing...');
+            const mediaRawPromises = media.raw.map(file => {
+                return DB.uploadMediaFile(file, contributionResult.insertId);
+            }
+            );
+            const mediaUrl
         
         res.json({
             success: true,
