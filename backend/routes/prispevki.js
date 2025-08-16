@@ -2,14 +2,15 @@ const express = require('express')
 const DB = require('../DB/dbConn')
 const multer = require('multer')
 const path = require('path')
-const uploads = multer({ dest: path.join(__dirname, '/multimedia')}) // Adjust destination as needed
 const prispevki = express.Router()
 // console.log(uploads)
 
 // Serve static files from multimedia folder, handling spaces in folder name
-const multimediaFolder = path.join(__dirname, '../multimedia');
-console.log('Multimedia folder:', multimediaFolder);
-prispevki.use('/multimedia', express.static(multimediaFolder));
+const multimediaFolder = path.join(__dirname, '../multimedia/');
+// console.log('Multimedia folder:', multimediaFolder);
+// prispevki.use('/ajde', express.static(multimediaFolder));
+
+const uploads = multer({ dest: multimediaFolder}) // Adjust destination as needed
 
 // Upload media files and return their paths (include prispevekId in filename)
 prispevki.post('/upload-media/:prispevekId', uploads.array('media'), (req, res) => {
@@ -42,7 +43,7 @@ prispevki.post('/upload-media/:prispevekId', uploads.array('media'), (req, res) 
                 type = 'video';
             }
             // Return relative path for DB
-            return { url: `${process.env.URL}${newName}`, type };
+            return { url: `${newName}`, type };
         });
 
         // Save each file path to DB with logging

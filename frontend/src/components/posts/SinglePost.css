@@ -253,8 +253,10 @@
 .gallery-image,
 .gallery-video {
   width: 100%;
-  height: 200px;
-  object-fit: cover;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: var(--macedonia-white);
 }
 
 .gallery-audio-wrapper {
