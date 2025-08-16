@@ -15,10 +15,15 @@ const vsecki = require('./routes/vsecki.js'); // Importing the favorites route
 const DB = require('./DB/dbConn.js'); // Importing the database connection
 // console.log('Ovdje load');
 
+const path = require('path');
+
 // console.log('DB_USER:', process.env.DB_USER);
 // console.log('Ovdje load');
 const app = express();
 const PORT = process.env.PORT || 4445;
+
+app.use('/multimedia', express.static(path.join(__dirname, '../multimedia')));
+console.log('Multimedia folder s:', path.join(__dirname, '/multimedia'));
 
 // const users = [{name: 'stanko'}]
 

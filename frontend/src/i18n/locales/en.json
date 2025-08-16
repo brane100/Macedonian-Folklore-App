@@ -175,7 +175,9 @@
     "relatedPosts": "Related posts",
     "youMightLike": "You might also be interested...",
     "browseOtherPosts": "Browse other posts about Macedonian folklore",
-    "browseAll": "Browse all"
+    "browseAll": "Browse all",
+    "noMedia": "No media available for this post"
+
   },
   "map": {
     "title": "Macedonia Map",

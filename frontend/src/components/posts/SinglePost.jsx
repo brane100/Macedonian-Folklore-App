@@ -317,32 +317,17 @@ const SinglePost = () => {
     // Collect all media items (including legacy keys and fetched media)
     // Debug: log raw media sources
     console.log('mediaUrls:', mediaUrls);
-    console.log('post.media:', post && post.media);
-    console.log('post.image_url:', post && post.image_url);
-    console.log('post.video_url:', post && post.video_url);
-    console.log('post.audio_url:', post && post.audio_url);
 
     let allMedia = [];
     if (mediaUrls && Array.isArray(mediaUrls)) {
         allMedia = allMedia.concat(mediaUrls);
-    }
-    if (post && post.media && Array.isArray(post.media)) {
-        allMedia = allMedia.concat(post.media);
-    }
-    if (post && post.image_url) {
-        allMedia.push({ url: post.image_url, type: 'slika' });
-    }
-    if (post && post.video_url) {
-        allMedia.push({ url: post.video_url, type: 'video' });
-    }
-    if (post && post.audio_url) {
-        allMedia.push({ url: post.audio_url, type: 'avdio' });
     }
 
     // Filter out any media items without a valid url
     // Only filter out items without a valid url, do not restrict by type
     allMedia = allMedia.filter(item => item && item.url);
     console.log('Final allMedia array:', allMedia);
+    console.log('Post media count:', allMedia.length);
 
     // Debug: log when media section will be rendered
     if (allMedia.length > 0) {
@@ -395,52 +380,47 @@ const SinglePost = () => {
                             <div className="media-grid">
                                 {allMedia.map((mediaItem, index) => {
                                     let src = mediaItem.url;
-                                    // If not an external link, prepend REACT_APP_PROJECT_DIRECTORY
                                     if (!isExternalUrl(src)) {
-                                        // Remove leading slashes from src
-                                        // src = src.replace(/^\/+/, '');
-                                        src = `${process.env.REACT_APP_URL}}${src}`;
+                                        src = `${process.env.REACT_APP_URL}${src}`;
+                                        console.log(src);
                                     }
                                     const key = mediaItem.id ? mediaItem.id : index;
-                                    console.log(`Rendering media item ${index}:`, mediaItem, 'src:', src);
+                                    console.log(`Rendering media item ${index + 1}: `, mediaItem);
                                     if (mediaItem.type === 'slika' || mediaItem.type === 'image') {
                                         return (
                                             <div key={key} className="gallery-item">
-                                                <a href={src} target="_blank" rel="noopener noreferrer">
-                                                    <img 
-                                                        src={src}
-                                                        alt={`${t('singlePost.media')} ${index + 1}`}
-                                                        className="gallery-image"
-                                                    />
-                                                </a>
+                                                <img 
+                                                    src={src}
+                                                    alt={`${t('singlePost.media')} ${index + 1}`}
+                                                    className="gallery-image"
+                                                    style={{ maxWidth: '100%', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                                                />
                                             </div>
                                         );
                                     } else if (mediaItem.type === 'video') {
                                         return (
                                             <div key={key} className="gallery-item">
-                                                <a href={src} target="_blank" rel="noopener noreferrer">
-                                                    <video controls className="gallery-video">
-                                                        <source src={src} type="video/mp4" />
-                                                    </video>
-                                                </a>
+                                                <video controls className="gallery-video" style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                                                    <source src={src} type="video/mp4" />
+                                                    {t('singlePost.videoNotSupported')}
+                                                </video>
                                             </div>
                                         );
                                     } else if (mediaItem.type === 'avdio' || mediaItem.type === 'audio') {
                                         return (
-                                            <div key={key} className="gallery-item gallery-audio-wrapper">
-                                                <a href={src} target="_blank" rel="noopener noreferrer">
-                                                    <div className="audio-icon">🎵</div>
-                                                    <audio controls className="gallery-audio">
-                                                        <source src={src} type="audio/mpeg" />
-                                                    </audio>
-                                                </a>
+                                            <div key={key} className="gallery-item gallery-audio-wrapper" style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}>
+                                                <div className="audio-icon" style={{ fontSize: '2rem', marginRight: '8px' }}>🎵</div>
+                                                <audio controls className="gallery-audio" style={{ width: '100%' }}>
+                                                    <source src={src} type="audio/mpeg" />
+                                                    {t('singlePost.audioNotSupported')}
+                                                </audio>
                                             </div>
                                         );
                                     } else {
                                         // fallback for other types
                                         return (
                                             <div key={key} className="gallery-item">
-                                                <a href={src} target="_blank" rel="noopener noreferrer">{t('singlePost.downloadMedia')}</a>
+                                                <a href={src} target="_blank" rel="noopener noreferrer" style={{ color: '#007bff', textDecoration: 'underline' }}>{t('singlePost.downloadMedia')}</a>
                                             </div>
                                         );
                                     }
