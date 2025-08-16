@@ -14,22 +14,13 @@ const SinglePost = () => {
     const [error, setError] = useState(null);
     const [mediaUrls, setMediaUrls] = useState([]);
     // const { isAuthenticated, user } = useAuth();
-    
+
     // Helper to check if a URL is external
     const isExternalUrl = (url) => {
         if (!url) return false;
         return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//');
     };
 
-    // Helper to get local media path
-    const getLocalMediaPath = (url) => {
-        // If the url starts with /multimedia/, serve it as is
-        if (url.startsWith('/multimedia/')) {
-            return `${process.env.REACT_APP_API_URL}${url}`;
-        }
-        return url;
-    };
-    
     // Like-related state
     const [likeCount, setLikeCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
@@ -74,26 +65,26 @@ const SinglePost = () => {
     // Smart function to match database region to standard region
     const normalizeRegion = (dbRegion) => {
         if (!dbRegion) return null;
-        
+
         const cleanRegion = dbRegion.toLowerCase().trim();
-        
+
         // Direct match with standard regions
         for (const [standardRegion, config] of Object.entries(STANDARD_REGIONS)) {
             if (standardRegion.toLowerCase() === cleanRegion) {
                 return standardRegion;
             }
-            
+
             // Check aliases
             if (config.aliases.some(alias => alias.toLowerCase() === cleanRegion)) {
                 return standardRegion;
             }
-            
+
             // Check if the database region contains any keywords
             if (config.keywords.some(keyword => cleanRegion.includes(keyword.toLowerCase()))) {
                 return standardRegion;
             }
         }
-        
+
         // If no match found, return the original region
         return dbRegion;
     };
@@ -119,11 +110,11 @@ const SinglePost = () => {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/prispevki/${id}`, {
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
                 const responseData = await response.json();
                 console.log('Fetched post response:', responseData);
-                
+
                 // Handle different response formats
                 let postData;
                 if (responseData.success && responseData.data) {
@@ -172,12 +163,12 @@ const SinglePost = () => {
     // Fetch user like status for this post
     const fetchUserLikeStatus = useCallback(async () => {
         if (!isAuthenticated || !user?.id || !id) return;
-        
+
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/vsecki/liked-ids`, {
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
                 const likedPostIds = await response.json();
                 setIsLiked(likedPostIds.includes(parseInt(id)));
@@ -359,7 +350,7 @@ const SinglePost = () => {
                         <h1 className="post-title-main">
                             {post.ime_plesa || t('singlePost.noTitle')}
                         </h1>
-                        
+
                         <div className="post-type-region">
                             <div className="post-type">
                                 {getTipIcon(post.tip_plesa)}
@@ -381,7 +372,7 @@ const SinglePost = () => {
                                 {allMedia.map((mediaItem, index) => {
                                     let src = mediaItem.url;
                                     if (!isExternalUrl(src)) {
-                                        src = `${process.env.REACT_APP_URL}${src}`;
+                                        src = `${process.env.REACT_APP_API_URL}/files/${src}`;
                                         console.log(src);
                                     }
                                     const key = mediaItem.id ? mediaItem.id : index;
@@ -389,8 +380,8 @@ const SinglePost = () => {
                                     if (mediaItem.type === 'slika' || mediaItem.type === 'image') {
                                         return (
                                             <div key={key} className="gallery-item">
-                                                <img 
-                                                    src={src}
+                                                    <img
+                                                        src={src}
                                                     alt={`${t('singlePost.media')} ${index + 1}`}
                                                     className="gallery-image"
                                                     style={{ maxWidth: '100%', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
@@ -476,9 +467,9 @@ const SinglePost = () => {
                                 <div className="section-content">
                                     {post.referenca_opis && <p>{post.referenca_opis}</p>}
                                     {post.referenca_url && (
-                                        <a 
-                                            href={post.referenca_url} 
-                                            target="_blank" 
+                                        <a
+                                            href={post.referenca_url}
+                                            target="_blank"
                                             rel="noopener noreferrer"
                                             className="reference-link"
                                         >
@@ -508,7 +499,7 @@ const SinglePost = () => {
                             </div>
 
                             <div className="post-actions">
-                                <button 
+                                <button
                                     className={`action-button like-button ${isLiked ? 'liked' : ''}`}
                                     onClick={handleLike}
                                     disabled={likingInProgress}
