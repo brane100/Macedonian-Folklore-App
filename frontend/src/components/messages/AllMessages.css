@@ -1,0 +1,90 @@
+:root {
+  --macedonia-red: #cc0000;
+  --macedonia-dark-red: #8a1c1c;
+  --macedonia-yellow: #ffcc00;
+  --macedonia-white: #ffffff;
+  --macedonia-cream: #fff8e7;
+  --macedonia-light-gray: #f5f5f5;
+  --folk-green: #375e3f;
+  --ochre-yellow: #cc9900;
+  --text-primary: #2c2c2c;
+  --text-secondary: #666666;
+  --shadow-light: 0 2px 8px rgba(0,0,0,0.07);
+  --shadow-medium: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.all-messages {
+  background: var(--macedonia-cream);
+  border-radius: 20px;
+  box-shadow: var(--shadow-light);
+  padding: 2rem;
+  max-width: 700px;
+  margin: 2rem auto;
+  border: 1px solid var(--macedonia-yellow);
+}
+
+.all-messages h2 {
+  color: var(--macedonia-red);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.all-messages ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.all-messages li {
+  background: var(--macedonia-white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--macedonia-light-gray);
+  margin-bottom: 1.2rem;
+  padding: 1.2rem 1.5rem;
+  color: var(--text-primary);
+  transition: box-shadow 0.2s;
+}
+
+.all-messages li:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.all-messages strong {
+  color: var(--macedonia-red);
+  font-weight: 600;
+}
+
+.all-messages span {
+  display: block;
+  margin: 0.5rem 0 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
+.all-messages div {
+  font-size: 0.9em;
+  color: var(--folk-green);
+}
+
+/* Loading/Error */
+.all-messages > div {
+  text-align: center;
+  color: var(--text-secondary);
+  margin: 2rem 0;
+}
+
+@media (max-width: 600px) {
+  .all-messages {
+    padding: 1rem;
+    max-width: 98vw;
+  }
+  .all-messages h2 {
+    font-size: 1.3rem;
+  }
+  .all-messages li {
+    padding: 1rem;
+  }
+}

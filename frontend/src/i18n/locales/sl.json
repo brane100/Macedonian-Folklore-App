@@ -4,9 +4,9 @@
     "skopje": "Skopje",
     "vardar": "Vardarska Makedonija",
     "eastern": "Vzhodna Makedonija",
-    "southwestern": "Jugozahodni del", 
+    "southwestern": "Jugozahodni del",
     "southeastern": "Jugovzhodni del",
-    "polog": "Polog", 
+    "polog": "Polog",
     "northeastern": "Severovzhodni del",
     "unknown": "Neznana regija"
   },
@@ -184,6 +184,7 @@
   },
   "errors": {
     "pageNotFound": "Stran ni najdena",
+    "pageInDevelopment": "Stran je v izdelavi, hvala za razumevanje :)",
     "pageNotFoundMessage": "Oprostite, zahtevana stran ne obstaja.",
     "insufficientPermissions": "Nezadostne pravice",
     "insufficientPermissionsMessage": "Za dostop do admin panela je potrebna vloga Commission ali Superadmin."
@@ -363,7 +364,7 @@
     "close": "Zapri",
     "roles": {
       "navaden": "Navaden uporabnik",
-      "komisija": "Moderator", 
+      "komisija": "Moderator",
       "superadmin": "Super admin"
     },
     "newMessagesNotification": "{{msgCount}} novih sporočil",
@@ -411,7 +412,7 @@
       "title": "Korak 2: Dodaj medije",
       "description": "Priložite slike, videoposnetke, zvočne posnetke ali dokumente",
       "image": "Slika",
-      "video": "Video", 
+      "video": "Video",
       "audio": "Zvok",
       "document": "Dokument",
       "other": "Drugo",
@@ -442,7 +443,7 @@
       "successMessage": "Vaš prispevek je bil uspešno dodan v bazo makedonskega folklora!",
       "validation": {
         "danceName": "Ime plesa",
-        "danceType": "Tip plesa", 
+        "danceType": "Tip plesa",
         "region": "Regija",
         "description": "Opis",
         "shortHistory": "Kratka zgodovina",
@@ -455,7 +456,7 @@
       "review": {
         "danceName": "Ime plesa",
         "danceType": "Tip plesa",
-        "shortHistory": "Kratka zgodovina", 
+        "shortHistory": "Kratka zgodovina",
         "techniqueDescription": "Opis tehnike",
         "description": "Opis",
         "anonymity": "Anonimnost",

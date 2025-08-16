@@ -1,11 +1,11 @@
 {
   "regions": {
     "skopje": "Скопје",
-    "polog": "Полог", 
+    "polog": "Полог",
     "pelagonia": "Пелагонија",
     "vardar": "Вардарска Македонија",
     "eastern": "Источна Македонија",
-    "southwestern": "Југозападен дел", 
+    "southwestern": "Југозападен дел",
     "southeastern": "Југоисточен дел",
     "northeastern": "Североисточен дел",
     "unknown": "Непозната регија"
@@ -184,6 +184,7 @@
   },
   "errors": {
     "pageNotFound": "Страницата не е најдена",
+    "pageInDevelopment": "Страната е во изработка, Ви благодариме за разбирањето :)",
     "pageNotFoundMessage": "Извините, бараната страница не постои.",
     "insufficientPermissions": "Недостатни дозволи",
     "insufficientPermissionsMessage": "Потребна е улога Komisija или Superadmin за пристап до админ панелот."
@@ -193,7 +194,7 @@
     "toMap": "Кон мапата"
   },
   "hero": {
-    "title": "Охрани културата што живее преку движење",
+    "title": "Зачувај ја културата што живее преку движење",
     "subtitle": "Истражи региони, откриј ора, зачувај наследство"
   },
   "sections": {
@@ -363,7 +364,7 @@
     "close": "Затвори",
     "roles": {
       "navaden": "Обичен корисник",
-      "komisija": "Модератор", 
+      "komisija": "Модератор",
       "superadmin": "Супер админ"
     },
     "newMessagesNotification": "Нови пораки",
@@ -413,7 +414,7 @@
       "title": "Корак 2: Додај медиуми",
       "description": "Прикачете слики, видеа, аудио снимки или документи",
       "image": "Слика",
-      "video": "Видео", 
+      "video": "Видео",
       "audio": "Аудио",
       "document": "Документ",
       "other": "Друго",
@@ -444,7 +445,7 @@
       "successMessage": "Вашиот прispevok е успешно додаден во базата на македонски фолклор!",
       "validation": {
         "danceName": "Име на плес",
-        "danceType": "Тип на плес", 
+        "danceType": "Тип на плес",
         "region": "Регија",
         "description": "Опис",
         "shortHistory": "Кратка историја",
@@ -457,7 +458,7 @@
       "review": {
         "danceName": "Име на плес",
         "danceType": "Тип на плес",
-        "shortHistory": "Кратка историја", 
+        "shortHistory": "Кратка историја",
         "techniqueDescription": "Опис на техниката",
         "description": "Опис",
         "anonymity": "Анонимност",
