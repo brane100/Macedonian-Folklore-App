@@ -11,9 +11,9 @@ node_modules/
 **/.env.production.local
 
 # Build outputs - ignore in ALL directories
-**/build/
+# **/build/
 **/dist/
-build/
+# build/
 dist/
 
 # Logs - ignore in ALL directories
