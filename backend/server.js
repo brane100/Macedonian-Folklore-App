@@ -5,9 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const flash = require('express-flash');
 const session = require('express-session');
-const methodOverride = require('method-override');
 
 const posts = require('./routes/prispevki'); // Importing the posts route
 const uporabnik = require('./routes/uporabnik'); // Importing the uporabnik route
@@ -24,6 +22,12 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 4445;
 
+
+app.use(express.static(path.join(__dirname, "build")))
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html")) 
+})
 
 
 
