@@ -492,6 +492,15 @@
     "navigation": {
       "back": "Back",
       "next": "Next"
+    },
+    "aboutProject": {
+      "missionLabel": "Mission",
+      "visionLabel": "Vision",
+      "lang": "English",
+      "title": "About the Project",
+      "description": "This project is dedicated to preserving and promoting Macedonian folklore tradition through a digital platform. The goal is to collect, document, and share information about Macedonian dances and customs, as well as to encourage interest in this cultural heritage.",
+      "mission": "Our mission is to preserve Macedonian folklore heritage for future generations.",
+      "vision": "The vision is to create a platform that will be a resource for research, learning, and sharing of Macedonian folklore tradition."
     }
   }
 }
