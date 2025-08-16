@@ -1,11 +1,11 @@
 {
   "regions": {
     "skopje": "Skopje",
-    "polog": "Polog", 
+    "polog": "Polog",
     "pelagonia": "Pelagonia",
     "vardar": "Vardar Macedonia",
     "eastern": "Eastern Macedonia",
-    "southwestern": "Southwestern Part", 
+    "southwestern": "Southwestern Part",
     "southeastern": "Southeastern Part",
     "northeastern": "Northeastern Part",
     "unknown": "Unknown Region"
@@ -177,7 +177,6 @@
     "browseOtherPosts": "Browse other posts about Macedonian folklore",
     "browseAll": "Browse all",
     "noMedia": "No media available for this post"
-
   },
   "map": {
     "title": "Macedonia Map",
@@ -186,6 +185,7 @@
   },
   "errors": {
     "pageNotFound": "Page not found",
+    "pageInDevelopment": "This page is still in development, thank you for understanding :)",
     "pageNotFoundMessage": "Sorry, the requested page does not exist.",
     "insufficientPermissions": "Insufficient permissions",
     "insufficientPermissionsMessage": "Commission or Superadmin role required for admin panel access."
@@ -365,7 +365,7 @@
     "close": "Close",
     "roles": {
       "navaden": "Regular User",
-      "komisija": "Moderator", 
+      "komisija": "Moderator",
       "superadmin": "Super Admin"
     },
     "newMessagesNotification": "{{msgCount}} new messages",
@@ -413,7 +413,7 @@
       "title": "Step 2: Add Media",
       "description": "Attach images, videos, audio recordings or documents",
       "image": "Image",
-      "video": "Video", 
+      "video": "Video",
       "audio": "Audio",
       "document": "Document",
       "other": "Other",
@@ -444,7 +444,7 @@
       "successMessage": "Your contribution has been successfully added to the Macedonian folklore database!",
       "validation": {
         "danceName": "Dance Name",
-        "danceType": "Dance Type", 
+        "danceType": "Dance Type",
         "region": "Region",
         "description": "Description",
         "shortHistory": "Short History",
@@ -457,7 +457,7 @@
       "review": {
         "danceName": "Dance Name",
         "danceType": "Dance Type",
-        "shortHistory": "Short History", 
+        "shortHistory": "Short History",
         "techniqueDescription": "Technique Description",
         "description": "Description",
         "anonymity": "Anonymity",

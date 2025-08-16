@@ -19,6 +19,7 @@ import UserSubmissions from './user/UserSubmissions';
 import EditContribution from './user/EditContribution';
 import Favorites from './favorites/Favorites';
 import Navigation from './navigation/Navigation';
+import AboutUs from './about/AboutProject';
 
 // 404 Component
 function NotFound() {
@@ -27,7 +28,7 @@ function NotFound() {
   return (
     <div className="not-found">
       <div className="not-found-content">
-        <h1>{t('errors.pageNotFound')}</h1>
+        <h1>{t('errors.pageInDevelopment')}</h1>
         <p>{t('errors.pageNotFoundMessage')}</p>
         <div className="not-found-actions">
           <Link to="/" className="btn btn-primary">{t('buttons.homePage')}</Link>
@@ -115,9 +116,8 @@ function NotFound() {
 // ];
 
 // Floating Chat Component
-function FloatingChat() {
+function FloatingChat({ isOpen, setIsOpen }) {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({ name: '', surname: '', email: '', subject: '', message: '' });
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(null);
@@ -366,6 +366,13 @@ function Home() {
 
 export default function AppRouter() {
   const { t } = useTranslation();
+  const [chatOpen, setChatOpen] = useState(false);
+
+  // Handler for Contact link
+  const handleContactClick = (e) => {
+    e.preventDefault();
+    setChatOpen(true);
+  };
 
   return (
     <AuthProvider>
@@ -380,6 +387,7 @@ export default function AppRouter() {
               <Route path="/plesi" element={<Posts />} />
               <Route path="/prispevci" element={<Posts />} />
               <Route path="/prispevci/:id" element={<SinglePost />} />
+              <Route path="/za-nas" element={<AboutUs />} />
 
                 <Route path="/favorites" element={
                   <ProtectedRoute>
@@ -485,7 +493,7 @@ export default function AppRouter() {
                 <h4>{t('footer.resources')}</h4>
                 <ul>
                   <li><Link to="/za-nas">{t('footer.aboutUs')}</Link></li>
-                  <li><Link to="/kontakt">{t('footer.contact')}</Link></li>
+                  <li><a href="#chat" onClick={handleContactClick}>{t('footer.contact')}</a></li>
                   <li><Link to="/uslovni">{t('footer.terms')}</Link></li>
                   <li><Link to="/privatnost">{t('footer.privacy')}</Link></li>
                 </ul>
@@ -505,7 +513,7 @@ export default function AppRouter() {
             </div>
           </footer>
 
-          <FloatingChat />
+          <FloatingChat isOpen={chatOpen} setIsOpen={setChatOpen} />
         </div>
       </Router>
     </AuthProvider>

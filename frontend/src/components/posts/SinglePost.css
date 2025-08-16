@@ -223,7 +223,7 @@
 /* Media Gallery */
 .multimedia-gallery {
   padding: 2rem;
-  background: var(--macedonia-white);
+  background: none;
 }
 
 .gallery-header {
