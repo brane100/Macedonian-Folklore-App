@@ -2,12 +2,14 @@ const express = require('express')
 const DB = require('../DB/dbConn')
 const multer = require('multer')
 const path = require('path')
-const uploads = multer({ dest: path.join(__dirname, '../')}) // Adjust destination as needed
+const uploads = multer({ dest: path.join(__dirname, '/multimedia')}) // Adjust destination as needed
 const prispevki = express.Router()
+// console.log(uploads)
 
 // Serve static files from multimedia folder, handling spaces in folder name
-const multimediaFolder = path.join(__dirname, '../');
-prispevki.use('/', express.static(multimediaFolder));
+const multimediaFolder = path.join(__dirname, '../multimedia');
+console.log('Multimedia folder:', multimediaFolder);
+prispevki.use('/multimedia', express.static(multimediaFolder));
 
 // Upload media files and return their paths (include prispevekId in filename)
 prispevki.post('/upload-media/:prispevekId', uploads.array('media'), (req, res) => {
@@ -40,7 +42,7 @@ prispevki.post('/upload-media/:prispevekId', uploads.array('media'), (req, res) 
                 type = 'video';
             }
             // Return relative path for DB
-            return { url: `/multimedia/${newName}`, type };
+            return { url: `${process.env.URL}${newName}`, type };
         });
 
         // Save each file path to DB with logging
@@ -472,14 +474,14 @@ prispevki.get('/media/:prispevekId', async (req, res) => {
         const mediaInfo = mediaRows.map(m => {
             // If url is relative, expose absolute path for frontend
             let filePath = m.url;
-            if (filePath && !filePath.startsWith('http')) {
+            if (filePath && !filePath.startsWith('http') && !filePath.startsWith('/')) {
                 // Local file, don't expose full path but keep relative URL
                 filePath = path.join(multimediaFolder, filePath); // Absolute path for backend debugging
                 
             }
             return {
                 url: m.url, // original relative url for frontend
-                type: m.type,
+                type: m.tip, // type matched from the database
                 filePath: filePath // absolute path for backend debugging or advanced frontend use
             };
         });
