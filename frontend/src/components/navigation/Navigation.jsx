@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +19,16 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
+  
+  function getUserFullName(user) {
+    if (!user) return t('navigation.defaultUser', 'Корисник');
+    if (user.ime && user.priimek) return `${user.ime} ${user.priimek}`;
+    if (user.fullname) return user.fullname;
+    if (user.name) return user.name;
+    if (user.ime) return user.ime;
+    if (user.username) return user.username;
+    return t('navigation.defaultUser', 'Корисник');
+  }
   // Initialize search query from URL params
   useEffect(() => {
     const urlSearchQuery = searchParams.get('search') || '';
@@ -215,12 +225,12 @@ export default function Navigation() {
             {/* Authentication-based Profile/Login section */}
             {isAuthenticated ? (
               <div className="user-dropdown desktop-icon">
-                <button className="user-profile-btn" title={`Најавен како ${user?.ime || 'Корисник'}`}>
+                <button className="user-profile-btn" title={`Најавен како ${getUserFullName(user)}`}> 
                   👤
                 </button>
                 <div className="dropdown-menu">
                   <div className="dropdown-item user-info">
-                    {user?.ime || 'Корисник'}
+                    {getUserFullName(user)}
                   </div>
                   <Link to="/moji-prispevki">
                     <button className="dropdown-item">
@@ -306,7 +316,7 @@ export default function Navigation() {
               {isAuthenticated ? (
                 <>
                   <div className="mobile-user-info">
-                    👤 {user?.ime || 'Корисник'}
+                    👤 {getUserFullName(user)}
                   </div>
                   <button
                     onClick={() => {
@@ -395,7 +405,7 @@ export default function Navigation() {
             {isAuthenticated ? (
               <>
                 <div className="sidebar-user-info">
-                  👤 {user?.ime || 'Корисник'}
+                  👤 {getUserFullName(user)}
                 </div>
                 <button
                   onClick={() => {

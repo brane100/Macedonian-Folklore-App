@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserGuard } from '../RoleBasedAccess';
@@ -8,6 +9,7 @@ const EditContribution = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { t } = useTranslation();
     
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -107,12 +109,12 @@ const EditContribution = () => {
 
     const getStatusLabel = (status) => {
         const labels = {
-            0: 'Во чекање',
-            1: 'Одобрено',
-            2: 'Одбиено',
-            3: 'Потребни измени'
+            0: t('editContribution.status.pending'),
+            1: t('editContribution.status.approved'),
+            2: t('editContribution.status.rejected'),
+            3: t('editContribution.status.changesRequired')
         };
-        return labels[status] || 'Непознат';
+        return labels[status] || t('editContribution.status.unknown');
     };
 
     const getStatusColor = (status) => {
@@ -129,7 +131,7 @@ const EditContribution = () => {
         return (
             <div className="edit-contribution-loading">
                 <div className="loading-spinner"></div>
-                <p>Loading contribution...</p>
+                <p>{t('editContribution.loading')}</p>
             </div>
         );
     }
@@ -137,10 +139,10 @@ const EditContribution = () => {
     if (error) {
         return (
             <div className="edit-contribution-error">
-                <h3>Error</h3>
+                <h3>{t('editContribution.errorTitle')}</h3>
                 <p>{error}</p>
                 <button onClick={() => navigate('/moji-prispevki')} className="back-btn">
-                    Back to My Contributions
+                    {t('editContribution.backToMyContributions')}
                 </button>
             </div>
         );
@@ -149,8 +151,8 @@ const EditContribution = () => {
     return (
         <UserGuard fallback={
             <div className="access-denied">
-                <h3>Authentication Required</h3>
-                <p>You must be logged in to edit contributions.</p>
+                <h3>{t('editContribution.authRequiredTitle')}</h3>
+                <p>{t('editContribution.authRequiredText')}</p>
             </div>
         }>
             <div className="edit-contribution">
@@ -159,11 +161,11 @@ const EditContribution = () => {
                         onClick={() => navigate('/moji-prispevki')} 
                         className="back-button"
                     >
-                        ← Back to My Contributions
+                        ← {t('editContribution.backToMyContributions')}
                     </button>
-                    <h2>Edit Contribution</h2>
+                    <h2>{t('editContribution.title')}</h2>
                     <div className="current-status">
-                        <span>Current Status: </span>
+                        <span>{t('editContribution.currentStatus')}: </span>
                         <span 
                             className="status-badge" 
                             style={{ backgroundColor: getStatusColor(contribution?.status) }}
@@ -176,20 +178,19 @@ const EditContribution = () => {
                 {/* Show moderator notes if available */}
                 {contribution?.moderator_notes && (
                     <div className="moderator-feedback">
-                        <h3>Moderator Feedback</h3>
+                        <h3>{t('editContribution.moderatorFeedback')}</h3>
                         <p>{contribution.moderator_notes}</p>
                         <small>
-                            Moderated on: {new Date(contribution.moderated_at).toLocaleDateString('mk-MK')}
+                            {t('editContribution.moderatedOn')}: {new Date(contribution.moderated_at).toLocaleDateString('mk-MK')}
                         </small>
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="edit-form">
                     <div className="form-section">
-                        <h3>Basic Information</h3>
-                        
+                        <h3>{t('editContribution.basicInfo')}</h3>
                         <div className="form-group">
-                            <label htmlFor="novPlesIme">Dance Name *</label>
+                            <label htmlFor="novPlesIme">{t('editContribution.danceName')} *</label>
                             <input
                                 type="text"
                                 id="novPlesIme"
@@ -199,9 +200,8 @@ const EditContribution = () => {
                                 required
                             />
                         </div>
-
                         <div className="form-group">
-                            <label htmlFor="tipPlesa">Dance Type *</label>
+                            <label htmlFor="tipPlesa">{t('editContribution.danceType')} *</label>
                             <select
                                 id="tipPlesa"
                                 name="tipPlesa"
@@ -209,13 +209,12 @@ const EditContribution = () => {
                                 onChange={handleInputChange}
                                 required
                             >
-                                <option value="обредни">Обредни</option>
-                                <option value="посветни">Посветни</option>
+                                <option value="обредни">{t('editContribution.ceremonial')}</option>
+                                <option value="посветни">{t('editContribution.secular')}</option>
                             </select>
                         </div>
-
                         <div className="form-group">
-                            <label htmlFor="regijaId">Region *</label>
+                            <label htmlFor="regijaId">{t('editContribution.region')} *</label>
                             <select
                                 id="regijaId"
                                 name="regijaId"
@@ -223,87 +222,79 @@ const EditContribution = () => {
                                 onChange={handleInputChange}
                                 required
                             >
-                                <option value="">Select Region</option>
-                                <option value="1">Пелагонија</option>
-                                <option value="2">Скопје</option>
-                                <option value="3">Вардарска Македонија</option>
-                                <option value="4">Источна Македонија</option>
-                                <option value="5">Југозападен дел</option>
-                                <option value="6">Југоисточен дел</option>
-                                <option value="7">Полог</option>
-                                <option value="8">Североисточен дел</option>
+                                <option value="">{t('editContribution.selectRegion')}</option>
+                                <option value="1">{t('regions.pelagonija')}</option>
+                                <option value="2">{t('regions.skopje')}</option>
+                                <option value="3">{t('regions.vardar')}</option>
+                                <option value="4">{t('regions.eastern')}</option>
+                                <option value="5">{t('regions.southwestern')}</option>
+                                <option value="6">{t('regions.southeastern')}</option>
+                                <option value="7">{t('regions.polog')}</option>
+                                <option value="8">{t('regions.northeastern')}</option>
                             </select>
                         </div>
-
                         <div className="form-group">
-                            <label htmlFor="opisTehnike">Technique Description</label>
+                            <label htmlFor="opisTehnike">{t('editContribution.techniqueDescription')}</label>
                             <textarea
                                 id="opisTehnike"
                                 name="opisTehnike"
                                 value={formData.opisTehnike}
                                 onChange={handleInputChange}
                                 rows={3}
-                                placeholder="Describe the dance technique, steps, formations..."
+                                placeholder={t('editContribution.techniquePlaceholder')}
                             />
                         </div>
-
                         <div className="form-group">
-                            <label htmlFor="opis">Contribution Description</label>
+                            <label htmlFor="opis">{t('editContribution.contributionDescription')}</label>
                             <textarea
                                 id="opis"
                                 name="opis"
                                 value={formData.opis}
                                 onChange={handleInputChange}
                                 rows={4}
-                                placeholder="Describe your contribution, additional context..."
+                                placeholder={t('editContribution.contributionPlaceholder')}
                             />
                         </div>
                     </div>
-
                     <div className="form-section">
-                        <h3>Historical Context</h3>
-                        
+                        <h3>{t('editContribution.historicalContext')}</h3>
                         <div className="form-group">
-                            <label htmlFor="kratkaZgodovina">Short History</label>
+                            <label htmlFor="kratkaZgodovina">{t('editContribution.shortHistory')}</label>
                             <textarea
                                 id="kratkaZgodovina"
                                 name="kratkaZgodovina"
                                 value={formData.kratkaZgodovina}
                                 onChange={handleInputChange}
                                 rows={3}
-                                placeholder="Brief history and cultural significance of the dance..."
+                                placeholder={t('editContribution.historyPlaceholder')}
                             />
                         </div>
                     </div>
-
                     <div className="form-section">
-                        <h3>References</h3>
-                        
+                        <h3>{t('editContribution.references')}</h3>
                         <div className="form-group">
-                            <label htmlFor="referencaOpis">Reference Description</label>
+                            <label htmlFor="referencaOpis">{t('editContribution.referenceDescription')}</label>
                             <textarea
                                 id="referencaOpis"
                                 name="referencaOpis"
                                 value={formData.referencaOpis}
                                 onChange={handleInputChange}
                                 rows={3}
-                                placeholder="Books, articles, research papers..."
+                                placeholder={t('editContribution.referencePlaceholder')}
                             />
                         </div>
-
                         <div className="form-group">
-                            <label htmlFor="referencaUrl">Reference URL</label>
+                            <label htmlFor="referencaUrl">{t('editContribution.referenceUrl')}</label>
                             <input
                                 type="url"
                                 id="referencaUrl"
                                 name="referencaUrl"
                                 value={formData.referencaUrl}
                                 onChange={handleInputChange}
-                                placeholder="https://..."
+                                placeholder={t('editContribution.urlPlaceholder')}
                             />
                         </div>
                     </div>
-
                     <div className="form-actions">
                         <button 
                             type="button" 
@@ -311,14 +302,14 @@ const EditContribution = () => {
                             className="cancel-btn"
                             disabled={saving}
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </button>
                         <button 
                             type="submit" 
                             className="save-btn"
                             disabled={saving}
                         >
-                            {saving ? 'Saving...' : 'Save Changes'}
+                            {saving ? t('editContribution.saving') : t('editContribution.saveChanges')}
                         </button>
                     </div>
                 </form>

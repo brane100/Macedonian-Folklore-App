@@ -40,20 +40,20 @@ const UserSubmissions = () => {
             console.log('Response status:', response.status);
             console.log('Response ok:', response.ok);
             console.log('Response statusText:', response.statusText);
-            
+
             if (response.ok) {
                 const contentType = response.headers.get('content-type');
                 console.log('Content-Type:', contentType);
-                
+
                 // Get response as text first to see what we're dealing with
                 const responseText = await response.text();
                 console.log('Raw response text:', responseText);
-                
+
                 if (!responseText || responseText.trim() === '') {
                     console.error('Empty response from server');
                     throw new Error('Серверот враќа празен одговор');
                 }
-                
+
                 try {
                     const data = JSON.parse(responseText);
                     console.log('Parsed JSON data:', data);
@@ -112,19 +112,6 @@ const UserSubmissions = () => {
         return submission.status.toString() === filter;
     });
 
-    const getSubmissionCounts = () => {
-        const counts = {
-            all: submissions.length,
-            0: submissions.filter(s => s.status === 0).length,
-            1: submissions.filter(s => s.status === 1).length,
-            2: submissions.filter(s => s.status === 2).length,
-            3: submissions.filter(s => s.status === 3).length
-        };
-        return counts;
-    };
-
-    const counts = getSubmissionCounts();
-
     if (loading) {
         return (
             <div className="user-submissions-loading">
@@ -155,42 +142,8 @@ const UserSubmissions = () => {
         }>
             <div className="user-submissions">
                 <div className="submissions-header">
-                    <h2>Мои Prispevki</h2>
-                    <p>Овде можете да ги видите сите ваши поднесени prispevki и нивниот статус.</p>
-                </div>
-
-                {/* Filter tabs */}
-                <div className="filter-tabs">
-                    <button 
-                        className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
-                        onClick={() => setFilter('all')}
-                    >
-                        Сите ({counts.all})
-                    </button>
-                    <button 
-                        className={`filter-tab ${filter === '0' ? 'active' : ''}`}
-                        onClick={() => setFilter('0')}
-                    >
-                        Во чекање ({counts[0]})
-                    </button>
-                    <button 
-                        className={`filter-tab ${filter === '1' ? 'active' : ''}`}
-                        onClick={() => setFilter('1')}
-                    >
-                        Одобрени ({counts[1]})
-                    </button>
-                    <button 
-                        className={`filter-tab ${filter === '2' ? 'active' : ''}`}
-                        onClick={() => setFilter('2')}
-                    >
-                        Одбиени ({counts[2]})
-                    </button>
-                    <button 
-                        className={`filter-tab ${filter === '3' ? 'active' : ''}`}
-                        onClick={() => setFilter('3')}
-                    >
-                        Потребни измени ({counts[3]})
-                    </button>
+                    <h2>{t('userSubmissions.title')}</h2>
+                    <p>{t('userSubmissions.subtitle')}</p>
                 </div>
 
                 {/* Status legend */}
@@ -199,8 +152,8 @@ const UserSubmissions = () => {
                     <div className="legend-items">
                         {Object.entries(statusLabels).map(([status, label]) => (
                             <div key={status} className="legend-item">
-                                <div 
-                                    className="status-indicator" 
+                                <div
+                                    className="status-indicator"
                                     style={{ backgroundColor: statusColors[status] }}
                                 ></div>
                                 <span>{label}</span>
@@ -215,8 +168,8 @@ const UserSubmissions = () => {
                         <div className="no-submissions">
                             <h3>Нема prispevki</h3>
                             <p>
-                                {filter === 'all' 
-                                    ? 'Сѐ уште немате поднесено prispevki.' 
+                                {filter === 'all'
+                                    ? 'Сѐ уште немате поднесено prispevki.'
                                     : `Немате prispevki со статус "${statusLabels[filter]}".`
                                 }
                             </p>
