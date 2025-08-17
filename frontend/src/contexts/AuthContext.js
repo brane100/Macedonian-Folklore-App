@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { buildApiUrl, API_CONFIG } from '../config/env';
 
 const AuthContext = createContext();
 
@@ -21,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         if (initialized) return; // Prevent multiple calls
         
         try {
-            const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.CHECK_AUTH), {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/check-auth`, {
                 method: 'GET',
                 credentials: 'include', // Important for session cookies
                 headers: {
@@ -69,8 +68,8 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             setLoading(true);
-            await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.LOGOUT), {
-                method: 'GET',
+            await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/logout`, {
+                method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
