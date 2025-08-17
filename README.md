@@ -15,7 +15,7 @@ macedonian-folklore-app/
 
 ### Prerequisites
 - Node.js (v16 or higher)
-- npm or yarn
+- npm
 
 ### Installation & Setup
 
@@ -27,36 +27,22 @@ macedonian-folklore-app/
 
 2. **Install dependencies for both frontend and backend**
    ```bash
-   npm run install:all
+   cd frontend
+   npm install
+   cd ../backend
+   npm install
    ```
 
-3. **Start development servers**
+3. **Start servers**
    ```bash
-   # Start both frontend and backend simultaneously
-   npm run dev
-   
-   # Or start them separately:
-   npm run start:frontend  # Frontend on http://localhost:4444
-   npm run start:backend   # Backend on http://localhost:4445
+   # Start both frontend and backend simultaneously, in separate terminals
+   cd frontend
+   npm start
+
+   cd backend
+   node server.js
    ```
-
-## 🛠️ Available Scripts
-
-### Root Level Commands
-- `npm run install:all` - Install dependencies for both frontend and backend
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run build:all` - Build both frontend and backend for production
-- `npm run test:all` - Run tests for both frontend and backend
-
-### Frontend Commands
-- `npm run start:frontend` - Start the React development server
-- `npm run build:frontend` - Build the React app for production
-- `npm run test:frontend` - Run frontend tests
-
-### Backend Commands
-- `npm run start:backend` - Start the Express server
-- `npm run build:backend` - Build the backend for production
-- `npm run test:backend` - Run backend tests
+   
 - **Or simply:**
   ```bash
   cd backend
@@ -82,7 +68,7 @@ macedonian-folklore-app/
 ### Frontend
 - React.js
 - CSS3 with Macedonia-inspired design
-- Interactive SVG maps
+- Manually implemented Interactive SVG map
 
 ### Backend
 - Node.js
