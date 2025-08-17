@@ -45,7 +45,7 @@ h2 {
 }
 
 h2::before {
-  content: '📚';
+  content: none;
   font-size: 2.5rem;
   position: absolute;
   left: -60px;
@@ -157,7 +157,6 @@ button:first-of-type {
 }
 
 button:first-of-type::before {
-  content: '⬅️';
   margin-right: 0.5rem;
 }
 
@@ -178,7 +177,7 @@ button:last-of-type {
 }
 
 button:last-of-type::after {
-  content: '➡️';
+  content: none;
   margin-left: 0.5rem;
 }
 

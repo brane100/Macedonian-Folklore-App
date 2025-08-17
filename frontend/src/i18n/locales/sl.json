@@ -281,6 +281,7 @@
     "browsePosts": "Preglej objave"
   },
   "admin": {
+    "allMessages": "Sporočila",
     "title": "Admin panel",
     "overview": "Pregled",
     "pendingContributions": "Prispevki na čakanju",
@@ -534,15 +535,15 @@
     "navigation": {
       "back": "Nazaj",
       "next": "Naprej"
-    },
-    "aboutProject": {
-      "missionLabel": "Naša misija",
-      "visionLabel": "Naša vizija",
-      "lang": "Slovenščina",
-      "title": "O projektu",
-      "description": "Ta projekt je namenjen ohranjanju in promociji makedonske folklorne tradicije preko digitalne platforme. Cilj je zbrati, dokumentirati in deliti informacije o makedonskih plesih in običajih ter spodbuditi zanimanje za to kulturno dediščino.",
-      "mission": "Naša misija je ohraniti makedonsko folklorno dediščino za prihodnje generacije.",
-      "vision": "Vizija je ustvariti platformo, ki bo vir za raziskovanje, učenje in deljenje makedonske folklorne tradicije."
     }
+  },
+  "aboutProject": {
+    "title":"O projektu",
+    "lang": "Slovenščina",
+    "description": "Ta projekt je namenjen ohranjanju in promociji makedonske folklorne tradicije preko digitalne platforme. Cilj je zbrati, dokumentirati in deliti informacije o makedonskih plesih in običajih ter spodbuditi zanimanje za to kulturno dediščino.",
+    "missionLabel": "Naša misija",
+    "mission": "Naša misija je ohraniti makedonsko folklorno dediščino za prihodnje generacije.",
+    "visionLabel": "Naša vizija",
+    "vision": "Vizija je ustvariti platformo, ki bo vir za raziskovanje, učenje in deljenje makedonske folklorne tradicije."
   }
 }

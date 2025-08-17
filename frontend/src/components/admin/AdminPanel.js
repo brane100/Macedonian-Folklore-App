@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import AllMessages from '../messages/AllMessages';
+import { useState, useEffect, useCallback } from 'react';
 import { useRole, USER_ROLES } from '../RoleBasedAccess';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -288,15 +289,20 @@ const AdminPanel = () => {
     return (
         <div className="admin-panel">
             <div className="admin-header">
-                <h1>🛡️ {t('admin.title')}</h1>
+                <h1>{t('admin.title')}</h1>
                 <div className="user-role-badge">
-                    {userRole === USER_ROLES.SUPERADMIN ? '👑 ' + t('admin.roles.superadmin') : '⚖️ ' + t('admin.roles.komisija')}
+                    {userRole === USER_ROLES.SUPERADMIN ? t('admin.roles.superadmin') : t('admin.roles.komisija')}
                 </div>
             </div>
             {badge && (
-                <div className="admin-notification">
+                <div
+                    className="admin-notification clickable"
+                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => setActiveTab('messages')}
+                    title={t('admin.viewMessages')}
+                >
                     <span role="img" aria-label="new-message">📩</span>
-                    {t('admin.newMessagesNotification', { count: msgCount })}
+                    {t('admin.newMessagesNotification', { msgCount })}
                 </div>
             )}
 
@@ -305,20 +311,21 @@ const AdminPanel = () => {
                     className={activeTab === 'overview' ? 'active' : ''}
                     onClick={() => setActiveTab('overview')}
                 >
-                    📊 {t('admin.overview')}
+                    {t('admin.overview')}
                 </button>
                 <button
                     className={activeTab === 'moderation' ? 'active' : ''}
                     onClick={() => setActiveTab('moderation')}
                 >
-                    📝 {t('admin.pendingContributions')}
+                    {t('admin.pendingContributions')}
                 </button>
+                {/* Removed messages tab button */}
                 {isSuperAdmin && (
                     <button
                         className={activeTab === 'users' ? 'active' : ''}
                         onClick={() => setActiveTab('users')}
                     >
-                        👥 {t('admin.userManagement')}
+                        {t('admin.userManagement')}
                     </button>
                 )}
             </div>
@@ -326,14 +333,14 @@ const AdminPanel = () => {
             <div className="admin-content">
                 {activeTab === 'overview' && (
                     <div className="overview-section">
-                        <h2>📊 {t('admin.systemOverview')}</h2>
+                        <h2>{t('admin.systemOverview')}</h2>
                         <div className="stats-grid">
                             <div className="stat-card">
-                                <h3>📄 {t('admin.pendingContributions')}</h3>
+                                <h3>{t('admin.pendingContributions')}</h3>
                                 <p className="stat-number">{pendingContributions.length}</p>
                             </div>
                             <div className="stat-card">
-                                <h3>👥 {t('admin.totalUsers')}</h3>
+                                <h3>{t('admin.totalUsers')}</h3>
                                 <p className="stat-number">{users.length}</p>
                             </div>
                         </div>
@@ -393,6 +400,10 @@ const AdminPanel = () => {
                             </div>
                         )}
                     </div>
+                )}
+
+                {activeTab === 'messages' && (
+                    <AllMessages />
                 )}
 
                 {activeTab === 'users' && isSuperAdmin && (
