@@ -46,7 +46,9 @@ app.use('/files', express.static(multimediaFolder));
 
 // Middleware - CORS configuration for authentication
 app.use(cors({
-  origin: [`${process.env.FRONTEND_URL}`, `http://127.0.0.1:${PORT}`, `${process.env.URL}:${PORT}`], // Frontend URLs
+  origin: '*',
+  // origin: [`${process.env.FRONTEND_URL}`, `http://127.0.0.1:${process.env.PORT}`,
+  //   `${process.env.URL}:${PORT}`, `http://localhost:${process.env.PORT_F}`], // Frontend URLs
   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
   credentials: true, // Allow cookies/sessions
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
