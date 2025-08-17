@@ -217,26 +217,93 @@ function FloatingChat({ isOpen, setIsOpen }) {
       <button
         className={`chat-button ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
+        style={{
+          position: 'fixed',
+          bottom: '32px',
+          right: '32px',
+          zIndex: 1000,
+          background: 'linear-gradient(135deg, var(--macedonia-red) 0%, var(--macedonia-yellow) 100%)',
+          color: 'var(--macedonia-white)',
+          border: 'none',
+          borderRadius: '50%',
+          width: '64px',
+          height: '64px',
+          boxShadow: '0 4px 16px rgba(210,0,0,0.15)',
+          fontSize: '2rem',
+          cursor: 'pointer',
+          transition: 'background 0.3s, transform 0.2s',
+          outline: 'none',
+        }}
+        aria-label={t('chat.needHelp')}
       >
         💬
         {/* {badge && <span className="chat-badge">{msgCount}</span>} */}
       </button>
       {isOpen && (
-        <div className="chat-modal">
-          <h3>{t('chat.needHelp')}</h3>
-          <form onSubmit={handleSubmit} className="chat-form">
-            <input name="name" value={form.name} onChange={handleChange} placeholder={t('chat.name')} required />
-            <input name="surname" value={form.surname} onChange={handleChange} placeholder={t('chat.surname') || 'Surname'} required />
-            {nameError && <div className="chat-error">{nameError}</div>}
-            <input name="email" type="email" value={form.email} onChange={handleChange} placeholder={t('chat.email')} required />
-            {emailError && <div className="chat-error">{emailError}</div>}
-            <input name="subject" value={form.subject} onChange={handleChange} placeholder={t('chat.subject')} required />
-            <textarea name="message" value={form.message} onChange={handleChange} placeholder={t('chat.message')} required />
-            <button type="submit" disabled={sending}>{sending ? t('chat.sending') : t('chat.send')}</button>
+        <div className="chat-modal" style={{
+          position: 'fixed',
+          bottom: '110px',
+          right: '32px',
+          zIndex: 1001,
+          background: 'var(--macedonia-white)',
+          borderRadius: '18px',
+          boxShadow: '0 8px 32px rgba(210,0,0,0.18)',
+          padding: '2rem 1.5rem 1.5rem 1.5rem',
+          minWidth: '320px',
+          maxWidth: '90vw',
+          width: '350px',
+          animation: 'fadeIn 0.3s',
+          border: '2px solid var(--macedonia-yellow)',
+        }}>
+          <h3 style={{
+            margin: '0 0 1rem 0',
+            fontWeight: 700,
+            fontSize: '1.3rem',
+            color: 'var(--macedonia-red)',
+            textAlign: 'center',
+            letterSpacing: '0.5px',
+          }}>{t('chat.needHelp')}</h3>
+          <form onSubmit={handleSubmit} className="chat-form" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.7rem',
+          }}>
+            <input name="name" value={form.name} onChange={handleChange} placeholder={t('chat.name')} required style={{padding:'0.5rem',borderRadius:'8px',border:'2px solid var(--macedonia-yellow)',background:'var(--macedonia-light-gray)',color:'var(--text-dark)'}} />
+            <input name="surname" value={form.surname} onChange={handleChange} placeholder={t('chat.surname') || 'Surname'} required style={{padding:'0.5rem',borderRadius:'8px',border:'2px solid var(--macedonia-yellow)',background:'var(--macedonia-light-gray)',color:'var(--text-dark)'}} />
+            {nameError && <div className="chat-error" style={{color:'var(--macedonia-red)',fontSize:'0.95rem'}}>{nameError}</div>}
+            <input name="email" type="email" value={form.email} onChange={handleChange} placeholder={t('chat.email')} required style={{padding:'0.5rem',borderRadius:'8px',border:'2px solid var(--macedonia-yellow)',background:'var(--macedonia-light-gray)',color:'var(--text-dark)'}} />
+            {emailError && <div className="chat-error" style={{color:'var(--macedonia-red)',fontSize:'0.95rem'}}>{emailError}</div>}
+            <input name="subject" value={form.subject} onChange={handleChange} placeholder={t('chat.subject')} required style={{padding:'0.5rem',borderRadius:'8px',border:'2px solid var(--macedonia-yellow)',background:'var(--macedonia-light-gray)',color:'var(--text-dark)'}} />
+            <textarea name="message" value={form.message} onChange={handleChange} placeholder={t('chat.message')} required style={{padding:'0.5rem',borderRadius:'8px',border:'2px solid var(--macedonia-yellow)',background:'var(--macedonia-light-gray)',color:'var(--text-dark)',minHeight:'70px'}} />
+            <button type="submit" disabled={sending} style={{
+              background: 'linear-gradient(135deg, var(--macedonia-yellow) 0%, var(--macedonia-red) 100%)',
+              color: 'var(--macedonia-white)',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '0.7rem',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: sending ? 'not-allowed' : 'pointer',
+              boxShadow: '0 2px 8px rgba(210,0,0,0.08)',
+              marginTop: '0.5rem',
+              transition: 'background 0.3s',
+            }}>{sending ? t('chat.sending') : t('chat.send')}</button>
           </form>
-          {success && <div className="chat-success">{success}</div>}
-          {error && <div className="chat-error">{error}</div>}
-          <button onClick={() => setIsOpen(false)}>{t('chat.close')}</button>
+          {success && <div className="chat-success" style={{color:'var(--macedonia-red)',marginTop:'0.7rem',textAlign:'center'}}>{success}</div>}
+          {error && <div className="chat-error" style={{color:'var(--macedonia-red)',marginTop:'0.7rem',textAlign:'center'}}>{error}</div>}
+          <button onClick={() => setIsOpen(false)} style={{
+            marginTop: '1rem',
+            background: 'var(--macedonia-yellow)',
+            color: 'var(--macedonia-red)',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.5rem 1rem',
+            fontWeight: 500,
+            cursor: 'pointer',
+            width: '100%',
+            boxShadow: '0 1px 4px rgba(210,0,0,0.05)',
+            letterSpacing: '0.5px',
+          }}>{t('chat.close')}</button>
         </div>
       )}
     </div>
