@@ -1,6 +1,6 @@
 # 🏛️ Macedonian Folklore App
 
-A full-stack web application dedicated to preserving and sharing the rich folklore traditions of Macedonia.
+A full-stack web application dedicated to preserving and sharing the rich folklore traditions of Macedonia, with modern digital features for community, education, and cultural heritage.
 
 ## 📁 Project Structure
 
@@ -57,25 +57,38 @@ macedonian-folklore-app/
 - `npm run start:backend` - Start the Express server
 - `npm run build:backend` - Build the backend for production
 - `npm run test:backend` - Run backend tests
+- **Or simply:**
+  ```bash
+  cd backend
+  node server.js
+  ```
+  This will start the backend API server on the configured port (default: 4445).
 
 ## 🎨 Features
 
-- **Interactive Map**: Explore folklore by Macedonian regions
-- **Multilingual Support**: Macedonian and English languages
-- **User Authentication**: Login system for content management
-- **Responsive Design**: Works on all devices
-- **Traditional Styling**: Design inspired by Macedonian cultural elements
+- **Interactive Map**: Explore folklore by Macedonian regions, with region-based filtering and multilingual support.
+- **Media Gallery**: Upload, view, and display images, audio, and video files attached to each post. Media is served from the backend and rendered in a responsive gallery.
+- **Multilingual Support**: Macedonian, English, and Slovenian languages for all main content and UI elements.
+- **User Authentication**: Register, login, and manage your own contributions. Anonymous posting is supported.
+- **Favorites & Likes**: Like posts, view your favorite dances, and see like counts for each contribution.
+- **Floating Chat**: Contact form and live chat widget for user support and feedback, accessible from the footer.
+- **Admin Panel**: Moderation tools for approving, editing, and managing user contributions and messages.
+- **Digital Preservation Mission**: Centralized platform for archiving, teaching, and sharing Macedonian folk dances, with a focus on accessibility and sustainability.
+- **Responsive Design**: Works on all devices, with traditional Macedonian-inspired styling.
+- **Community & Education**: Platform designed for schools, dance groups, researchers, and global enthusiasts.
 
 ## 🌍 Tech Stack
 
 ### Frontend
 - React.js
-- CSS3 with Macedonian-inspired design
+- CSS3 with Macedonia-inspired design
 - Interactive SVG maps
 
 ### Backend
 - Node.js
 - Express.js
+- Multer (for media uploads)
+- MySQL (for data storage)
 
 ## 📱 Usage
 
