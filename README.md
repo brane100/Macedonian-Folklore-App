@@ -21,7 +21,7 @@ macedonian-folklore-app/
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/brane100/Macedonian-Folklore-App.git
    cd macedonian-folklore-app
    ```
 
