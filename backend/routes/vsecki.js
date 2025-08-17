@@ -2,6 +2,8 @@ const express = require('express')
 const DB = require('../DB/dbConn')
 const vsecki = express.Router()
 
+vsecki.use(express.json()); // Enable JSON parsing for request bodies
+
 vsecki.get('/', async (req, res) => {
     try {
         // Fetch user's favorite posts from the database

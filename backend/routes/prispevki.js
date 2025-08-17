@@ -12,6 +12,8 @@ const multimediaFolder = path.join(__dirname, '../multimedia/');
 
 const uploads = multer({ dest: multimediaFolder}) // Adjust destination as needed
 
+prispevki.use(express.json()); // Enable JSON parsing for request bodies
+
 // Upload media files and return their paths (include prispevekId in filename)
 prispevki.post('/upload-media/:prispevekId', uploads.array('media'), (req, res) => {
     try {

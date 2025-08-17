@@ -18,6 +18,9 @@ function checkNotAuthenticated(req, res, next) {
     next();
 }
 
+// Middleware to parse JSON bodies
+uporabnik.use(express.json());
+
 // Get all users
 uporabnik.get('/', async (req, res) => {
     try {

@@ -4,7 +4,7 @@ const DB = require('../DB/dbConn');
 const { requireModerator, requireSuperAdmin, USER_ROLES } = require('../middleware/roleAuth');
 
 
-
+moderacija.use(express.json());
 
 // Get pending contributions for moderation
 moderacija.get('/pending', requireModerator, async (req, res) => {

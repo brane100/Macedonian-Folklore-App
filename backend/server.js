@@ -22,13 +22,6 @@ const app = express();
 const PORT = process.env.PORT || 4445;
 
 
-app.use(express.static(path.join(__dirname, "build")))
-
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "build", "index.html")) 
-})
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,6 +48,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "build")))
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
@@ -144,5 +138,17 @@ app.post('/users', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🏛️ Macedonian Folklore API server running on port ${PORT}`);
 });
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"))
+})
+
+// Always put this at the end to catch all other routes
+//////////////////////////////////////////////////////////////////////
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html")) 
+})
+//////////////////////////////////////////////////////////////////////
+
 
 module.exports = app;
