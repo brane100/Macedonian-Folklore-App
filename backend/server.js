@@ -1,6 +1,6 @@
 require('dotenv').config();
 /////////////////////////////////////////////////////////////
-require('./keepalive.js'); // Keep the server alive
+require('./routes/keepalive.js'); // Keep the server alive
 
 const express = require('express');
 const cors = require('cors');
