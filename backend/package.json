@@ -10,13 +10,14 @@
     "build": "echo 'Backend build completed'"
   },
   "dependencies": {
-    "bcrypt": "^6.0.0",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "express-flash": "^0.0.2",
     "express-session": "^1.18.2",
+    "forever": "^1.0.1",
     "jsonwebtoken": "^9.0.0",
     "method-override": "^3.0.0",
     "mongoose": "^7.0.0",

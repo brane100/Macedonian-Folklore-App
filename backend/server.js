@@ -1,5 +1,6 @@
 require('dotenv').config();
 /////////////////////////////////////////////////////////////
+require('./keepalive.js'); // Keep the server alive
 
 const express = require('express');
 const cors = require('cors');
@@ -77,6 +78,10 @@ app.get('/', (req, res) => {
     message: 'Macedonian Folklore API is running!',
     version: '1.0.0'
   });
+});
+
+app.get('/keepalive', (req, res) => {
+  res.send("I'm alive!");
 });
 
 // app.get('/test-env', (req, res) => {
