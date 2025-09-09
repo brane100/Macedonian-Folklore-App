@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
         try {
             setLoading(true);
             await fetch(`${process.env.REACT_APP_API_URL}/uporabnik/logout`, {
-                method: 'POST',
+                method: 'GET',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
