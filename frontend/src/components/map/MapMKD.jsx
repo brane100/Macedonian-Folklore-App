@@ -58,7 +58,7 @@ const getBorderMunicipalityStyle = (municipalityId) => {
 };
 
 // Компонента за генерирање на path елементи со автоматски стилови
-const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMouseLeave, ...props }) => {
+const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMouseLeave, onTouchMove, ...props }) => {
   const handleTouchStart = (e) => {
     e.preventDefault();
     if (onMouseEnter) {
@@ -80,6 +80,12 @@ const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMous
     }
   };
 
+  const handleTouchMove = (e) => {
+    if (!onMouseMove) return;
+    const touch = e.touches[0];
+    onMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+  };
+
   return (
     <path
       id={id}
@@ -89,6 +95,7 @@ const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMous
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       tabIndex="0"
       role="button"
@@ -99,15 +106,16 @@ const MunicipalityPath = ({ id, d, regionName, onMouseEnter, onMouseMove, onMous
 };
 
 // Компонента за групирање општини по региони
-const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, onClick, children, ...props }) => (
+const RegionGroup = ({ regionName, onMouseEnter, onMouseMove, onMouseLeave, onTouchMove, onClick, children, ...props }) => (
   <g className={`region-group region-${regionName}`} {...props}>
     {React.Children.map(children, child =>
-      React.cloneElement(child, { 
-        regionName, 
-        onMouseEnter, 
-        onMouseMove, 
-        onMouseLeave, 
-        onClick: onClick ? () => onClick(regionName) : undefined 
+      React.cloneElement(child, {
+        regionName,
+        onMouseEnter,
+        onMouseMove,
+        onMouseLeave,
+        onTouchMove,
+        onClick: onClick ? () => onClick(regionName) : undefined
       })
     )}
   </g>
